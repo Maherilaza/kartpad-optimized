@@ -44,3 +44,27 @@ Reproduction uses the fresh CLI's `translate-mod` with the frozen release base m
 Do not merge or release this candidate based on unit tests alone. Upstream [PR 218](https://github.com/patchzyy/Wiicompiled/pull/218) reports PR 182 increases Retro Rewind generated mod size by roughly 42%, with pathological compilation in an aggregate shard. PR 218 is open, and the issue 83 commenter reports its filtering removes the `0x807EF16C` resume point. Neither a broad pin bump nor unexamined adoption of PR 218 is justified.
 
 The exact-profile regeneration now confirms both dispatch behavior and the substantial growth risk. Before merge, develop and regression-test narrower continuation code generation that preserves both addresses and all six added continuations; simply increasing the shard count is insufficient for the largest expanded function. Only after graph review should a native build and item-change/Item Rain gameplay check become the acceptance gate. The current Android 80 runtime has not been changed by this investigation.
+
+
+## Shared-dispatch mitigation
+
+A follow-up `wiicompiled-shared-lr-dispatch.patch` addresses the multiplication directly without adopting upstream PR 218's target filter. When a function contains multiple continuation-aware calls, each call retains its register reload and normal-return LR guard, but changed LR branches to one shared dispatch tail. That tail preserves the complete local address switch and registered external continuation fallback. Single-call code generation remains unchanged. The shared tail is outside block-local scopes and after an explicit return, preventing accidental normal fallthrough.
+
+Fresh exact-profile regeneration under `/private/tmp/kartpad-issue248-shared-graph` yields:
+
+| Measurement | Released | PR 182 alone | Shared dispatch |
+| --- | ---: | ---: | ---: |
+| Retro mod lines | 1,430,752 | 2,021,781 | 1,666,963 |
+| Retro mod bytes | 34,304,688 | 50,313,490 | 39,915,562 |
+| Largest Retro shard lines | 48,875 | 183,361 | 65,837 |
+| Overlay `8062C3A4` lines | 25,675 | 154,388 | 37,286 |
+
+Remaining mod line growth is **16.5%**, down from 41.3%. The formerly sixfold overlay expansion is now 45.2%; the largest shard is 34.7% larger than the released graph. This reduces the pathological expansion without claiming native compilation cost is proven acceptable.
+
+All **4,101** generated function names and their distinct case-address sets match the PR 182-only graph. All **107** emitted `rr_continue` symbols are preserved, including the six additions over the released graph. The planner still reports 81 continuations, and both `0x807A1A6C` and `0x807EF16C` have local dispatch cases. Translation reports zero C++ failures.
+
+Two new binary-free regression cases exercise 2 and 20 continuation calls: both fail against PR 182 alone and pass with shared dispatch. They require one switch, a guard and shared-tail jump for every call, preserved local and external dispatch, and normal fallthrough before the dispatch tail. The full fresh translator suite passes **624 tests**. Patch reverse-application and preparation-script syntax checks pass.
+
+The generated two-call synthetic function was also compiled with Clang C++17 at both `-O0` and `-O2`, using `-Wall -Wextra -Werror` and minimal runtime stubs. Each binary executed nine scenarios covering normal return, skipping at the first or second call, local resumption, registered external dispatch, and an unregistered external return. Assertions checked call counts and final register state. Both binaries passed. Synthetic harness and logs remain in the isolated graph directory; no real game code was compiled in this check.
+
+Next gate: focused native compilation of the largest changed generated overlays and their actual runtime headers, followed by the full candidate native build if bounded compiler behavior holds. Actual item-change/Item Rain gameplay remains necessary. No full native build, device operation, or merge was performed in this mitigation pass.
