@@ -105,13 +105,14 @@ reporter controller/device acceptance remains open. See the
 
 ## Recent follow-up: macOS integration and Android input
 
-- PR #112 contributor head `74fe75c` incorporates current main and is mergeable;
-  the contributor reports ready to merge. PR #254 corrects two fresh-preparation
-  integration failures. The full integration check is separate from a newly
-  published Mac package; the current download remains build 39.
+- PR #112 is integrated through PR #254, preserving contributor history. Two
+  fresh-preparation failures were corrected; the full ARM64 Original/Retro
+  build and isolated package/signature audit passed. Source integration is
+  separate from a newly published Mac package; the current download remains
+  build 39, and new Retro gameplay acceptance is still open.
 - #250 is a macOS presentation/VSync request. The release source prefers Metal
   Immediate when available with FIFO fallback; it has no VSync switch. A
-  startup-only opt-in candidate is under review. Tearing and pacing acceptance
+  startup-only opt-in candidate is in draft PR #255. Tearing and pacing acceptance
   remain open; #101 projection stretching is a separate issue.
 - #197 has a [concrete shared-input investigation](ANDROID-INPUT-197.md). A held
   A from either input source can suppress fresh menu edges, but the actual
