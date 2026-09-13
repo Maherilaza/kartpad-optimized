@@ -155,11 +155,11 @@ def main() -> None:
         "containsTranslatedGameCode": True, "containsGameData": False,
         "containsPrivateSigningMaterial": False, "maintainerAuthorizedFreeCommunityRelease": True,
         "upstreamRightsConfirmed": False, "profileableByShell": False, "debuggable": False,
-        "physicalAcceptance": "Owner accepted Retro single-player racing and touch on private code78; final HUD/editor and public release-payload acceptance must be recorded before publication. No online fix or affected-controller acceptance inferred.",
+        "physicalAcceptance": "Owner accepted Retro single-player racing and touch on private code78; private code79 passed physical Large HUD, saved-size persistence and D-pad Show/Hide checks. Final code80 was not installed on hardware because the phone disconnected. Its debug-signed release twin has 154 payload members identical to the public APK. The owner explicitly authorized publication after this boundary was disclosed. No completed-race, online fix or affected-controller acceptance inferred.",
         "sourceArchive": {"filename": args.source_archive.name, "bytes": args.source_archive.stat().st_size,
                           "sha256": sha(args.source_archive.read_bytes()),
                           "reconstruction": "Exact current Git snapshots, prepared Android runtime and pinned dependency source archives are supplied. Private translated game functions are regenerated from user-supplied inputs using delivered emitters and recipes. No new independent second-host or bit-identical rebuild claim."},
-        "emulatorAcceptance": "The emulator Dawn fixture aborted; no emulator graphics or interaction acceptance is claimed. Focused source tests remain separate from full gameplay, online, physical performance and affected-controller acceptance.",
+        "emulatorAcceptance": "The final release twin passed the emulator selector check. A separate earlier Dawn fixture aborted; it is not graphics or gameplay acceptance. Emulator and focused source checks remain separate from full gameplay, online, physical performance and affected-controller acceptance.",
         "noticesSHA256": {n: sha(b) for n, b in sorted(data.items())},
     }
     data["PROVENANCE.json"] = (json.dumps(provenance, indent=2, sort_keys=True) + "\n").encode()
