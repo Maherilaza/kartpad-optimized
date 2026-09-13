@@ -90,17 +90,25 @@ logs out of URL parameters, and require review before public sharing.
 
 ### 2. Agree on the destination, without blocking the exporter
 
-Ask patchzyy one question: direct user reports clearly labelled KartPad, or
-linked reports brought upstream after KartPad investigation? Until answered,
-keep the visible upstream links and existing KartPad reporting destination.
-Do not assume that every gameplay or rendering symptom belongs upstream.
+The selected direction is direct user submission of suspected WiiCompiled
+runtime problems, with explicit KartPad origin. Do not require a KartPad
+maintainer to investigate or forward every report. Retain KartPad as the
+app/platform destination and fallback when the reporter cannot choose.
 
-If direct reports are preferred, agree on the existing form and truthful build
-labelling first, then add a WiiCompiled destination to the same reviewed-report
-flow. A separate derivative form is optional. If maintainer handoffs are
-preferred, link the original KartPad evidence instead of asking the player to
-collect it again. In either case KartPad retains its app/platform support and
-tells its users when an upstream fix reaches a KartPad release.
+Coordinate only the receiving form and truthful build labelling with patchzyy;
+do not ask him to choose between direct reporting and a relay service again.
+His current forms assume stock/latest WiiCompiled and Windows log paths. A
+separate derivative form is optional. The next implementation should offer
+both destinations using the same reviewed report, explain that a runtime
+symptom does not prove upstream fault, and never check stock-build claims on
+the user's behalf. Until implemented and validated, existing app buttons
+still target KartPad. The currently prepared branch adds visibility and
+metadata but does not yet implement this direct upstream destination.
+
+Keep existing conversations where they are unless a specific move is useful;
+do not bulk-copy issues, auto-post logs, or make the reporter collect the same
+session twice. Fork migration is a separate decision; see
+[Fork connection options](FORK-OPTIONS.md).
 
 ### 3. Validate and ship in small steps
 
