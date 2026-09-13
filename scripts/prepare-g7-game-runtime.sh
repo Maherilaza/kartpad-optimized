@@ -57,6 +57,8 @@ PYTHONPATH="${repo_root}/builder" python3 -m kartpad_builder.release_header \
 patch --batch -p1 -d "${runtime_source}/aurora-main" < \
   "${repo_root}/patches/aurora-present-telemetry.patch"
 patch --batch -p1 -d "${runtime_source}/aurora-main" < \
+  "${repo_root}/patches/aurora-macos-vsync-startup.patch"
+patch --batch -p1 -d "${runtime_source}/aurora-main" < \
   "${repo_root}/patches/aurora-metal-view-lifetime.patch"
 patch --batch -p1 -d "${runtime_source}/aurora-main" < \
   "${repo_root}/patches/aurora-gx-resolve-snapshot-copy-src.patch"
@@ -106,6 +108,8 @@ patch --batch -p1 -d "${runtime_source}" < \
   "${repo_root}/patches/wiicompiled-macos-controller-settings.patch"
 patch --batch -p1 -d "${runtime_source}" < \
   "${repo_root}/patches/wiicompiled-macos-unified-settings.patch"
+patch --batch -p1 -d "${runtime_source}" < \
+  "${repo_root}/patches/wiicompiled-macos-vsync-startup.patch"
 patch --batch -p1 -d "${runtime_source}" < \
   "${repo_root}/patches/wiicompiled-macos-settings-shortcut.patch"
 # Guard the translated REL diagnostic path on every product sharing this runtime.
