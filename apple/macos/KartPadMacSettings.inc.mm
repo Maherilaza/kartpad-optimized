@@ -218,7 +218,7 @@
   // Show the top of each scrollable settings page, including smaller displays.
   for(NSTabViewItem *item in self.settingsTabs.tabViewItems) {
     NSScrollView *scroll=(NSScrollView *)item.view;
-    [scroll.contentView scrollToPoint:NSMakePoint(0,std::max<CGFloat>(0,740-scroll.contentView.bounds.size.height))];
+    [scroll.contentView scrollToPoint:NSMakePoint(0,std::max<CGFloat>(0,scroll.documentView.frame.size.height-scroll.contentView.bounds.size.height))];
     [scroll reflectScrolledClipView:scroll.contentView];
   }
 }
@@ -228,6 +228,6 @@
   // A hidden capture must never change a binding while editing another tab.
   if(![item.identifier isEqual:@"Controllers"]) [KPControllers() cancelCapture];
   NSScrollView *scroll=(NSScrollView *)item.view;
-  [scroll.contentView scrollToPoint:NSMakePoint(0,std::max<CGFloat>(0,740-scroll.contentView.bounds.size.height))];
+  [scroll.contentView scrollToPoint:NSMakePoint(0,std::max<CGFloat>(0,scroll.documentView.frame.size.height-scroll.contentView.bounds.size.height))];
   [scroll reflectScrolledClipView:scroll.contentView];
 }
