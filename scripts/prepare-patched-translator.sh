@@ -10,6 +10,7 @@ kamek_v2_patch="$repo/patches/wiicompiled-kamek-v2.patch"
 dual_symbols_patch="$repo/patches/wiicompiled-dual-profile-symbols.patch"
 dual_closure_patch="$repo/patches/wiicompiled-dual-profile-closure.patch"
 dynamic_overrides_patch="$repo/patches/wiicompiled-dynamic-overrides.patch"
+kamek_skip_return_patch="$repo/patches/wiicompiled-kamek-skip-return.patch"
 
 mkdir -p "$stage"
 rsync -a --delete --exclude .git --exclude bin --exclude obj \
@@ -20,6 +21,7 @@ git apply --recount --unsafe-paths --directory="$stage" "$kamek_v2_patch"
 patch --batch -p1 -d "$stage" < "$dual_symbols_patch"
 patch --batch -p1 -d "$stage" < "$dual_closure_patch"
 patch --batch -p1 -d "$stage" < "$dynamic_overrides_patch"
+git apply --recount --unsafe-paths --directory="$stage" "$kamek_skip_return_patch"
 
 dotnet_bin=/opt/homebrew/opt/dotnet@8/bin/dotnet
 project="$stage/translator/src/Translator.Cli/Translator.Cli.csproj"
