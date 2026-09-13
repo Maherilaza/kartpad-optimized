@@ -66,3 +66,15 @@ attribute. The current public code83 APK was correctly rejected as non-profileab
 Its native library matched all 26 allocated sections of the retained unstripped
 code83 symbols; using the stripped APK library as symbols was rejected. No
 hardware actions or new diagnostic build occurred in this preparation step.
+
+## Current diagnostic built after the review
+
+Private **0.4.18-profile.1/code84** has now been packaged from code83 source (`2cea47f`) with shell profiling enabled and debugging disabled. Its four native libraries are byte-identical to public83. Package/AAB audits and the profiler preflight passed; all 26 allocated `libmain.so` sections match the retained unstripped symbols.
+
+- APK SHA-256: `a2b13f94ca1fb1f22ce566f3d821030663af7ac928546cd05b39ccbca2cceb4c`
+- Native SHA-256: `d4f0281b7d9b1b9761492fd3a5f735769c70c7fbb1829969e46fa5a729ba10be`
+- Symbols SHA-256: `4524a4d84e9db364b3e8ebbe8f9b54dc32a285976ae1fcaf19ed077b329a55a5`
+
+The APK uses the existing Community Release certificate and remains private. It is suitable for an in-place update only after checking the recipient's installed version and signer. The owner's last verified Pixel installation is Debug-signed code82, so this Community-signed APK must not be installed over it; derive and audit a compatible private signing twin if that phone is used. Never uninstall to bridge this difference.
+
+No installation, capture or performance improvement is claimed. The next step is the already accepted private tester handoff, or an owned local phone session with compatible packaging, followed by one warmed driven capture. No further native compilation is required merely to obtain that baseline.
