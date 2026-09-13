@@ -101,3 +101,22 @@ responsive-editor work (#238) merged in PR245 and passed physical code79 UI
 checks; public Android code80 also delivers PR219 shoulder remapping. Exact
 reporter controller/device acceptance remains open. See the
 [controls audit](artifacts/2026-09-13/android-controls-request-audit.md).
+
+
+## Recent follow-up: macOS integration and Android input
+
+- PR #112 contributor head `74fe75c` incorporates current main and is mergeable;
+  the contributor reports ready to merge. PR #254 corrects two fresh-preparation
+  integration failures. The full integration check is separate from a newly
+  published Mac package; the current download remains build 39.
+- #250 is a macOS presentation/VSync request. The release source prefers Metal
+  Immediate when available with FIFO fallback; it has no VSync switch. A
+  startup-only opt-in candidate is under review. Tearing and pacing acceptance
+  remain open; #101 projection stretching is a separate issue.
+- #197 has a [concrete shared-input investigation](ANDROID-INPUT-197.md). A held
+  A from either input source can suppress fresh menu edges, but the actual
+  reporter cause is unconfirmed. Use the existing touch-only request and the
+  focused lifecycle/handoff controls, not another generic input questionnaire.
+- #234 same-phone restore remains a save/identity boundary, not a renderer
+  failure. The support guide now separates raw-save/rating import from complete
+  Mii, console identity and country configuration restoration.
