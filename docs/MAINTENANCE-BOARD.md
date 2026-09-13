@@ -97,5 +97,7 @@ the requirement to derive and audit each diagnostic/public candidate.
 Apple0.4.17 downloads are published. Android code78 passed the owner's bounded
 Retro race/touch trial; possible Retro WFC menu lag remains uncertain. Two
 licenses are accepted by the owner and must not be merged/reset. FPS-size and
-responsive-editor work (#238) is in progress; see the
+responsive-editor work (#238) merged in PR245 and passed physical code79 UI
+checks; public Android code80 also delivers PR219 shoulder remapping. Exact
+reporter controller/device acceptance remains open. See the
 [controls audit](artifacts/2026-09-13/android-controls-request-audit.md).

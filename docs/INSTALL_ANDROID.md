@@ -2,20 +2,19 @@
 
 ## Current update
 
-[**0.4.16 Android 2 / code 65**](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.16-android.2)
-is the current owner-accepted Android community update. It refreshes the
-translated Retro Rewind 6.12.8 graph and retains the numeric console-serial
-correction. Physical Pixel 9 Pro XL testing confirmed launch, touch controls,
-Retro WFC login and worldwide lobby entry. See the
-[release notes](releases/v0.4.16-android.2.md).
+[**0.4.17 Android 1 / code 80**](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.17-android.1)
+adds saved FPS counter sizes, a touch editor whose Show/Hide action stays
+reachable in narrow landscape, and shoulder-to-D-pad remapping. It retains
+Retro Rewind 6.12.8 and the console-serial correction. See the
+[release notes](releases/v0.4.17-android.1.md) for exact testing and artifact provenance.
 Menu transitions, graphics corruption on some GPUs, online stalls and cup crashes
 are not declared resolved. Download the APK, notices and checksums; the source
 archive is available for rebuilding and modification.
 
 ## Download and first launch
 
-1. Open the [current Android release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.16-android.2).
-   Download `KartPad-v0.4.16-android.2-arm64.apk`, `SHA256SUMS`, and the companion
+1. Open the [current Android release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.17-android.1).
+   Download `KartPad-v0.4.17-android.1-arm64.apk`, `SHA256SUMS`, and the companion
    notices ZIP. APK is Android's installable format; IPA is Apple-only. The AAB
    is a developer bundle and is not needed for installation (it is not published).
 2. Use an ARM64 phone/tablet with Vulkan and Android 9/API 28 or newer. The
@@ -54,7 +53,7 @@ debug certificate. Android will reject the public release as an in-place update
 over those previews. Do not uninstall to force it through: preserve the working
 preview and its app data, and plan a deliberate backed-up migration separately.
 The first public package was code 21; the testing preview was code 28. The
-current public package is code 65.
+current public package is code 80.
 Changing a package signature is not a save migration.
 Self-built APKs similarly cannot update public builds unless the signer matches.
 
@@ -71,13 +70,12 @@ and local reporting tools. Touch controls are movable, resizable and hideable;
 the floating movement stick follows your initial thumb position within its
 pickup area. Existing custom layouts are preserved.
 
-The next 0.4.17 update adds **Display → FPS Counter Size… → Small / Medium /
+Version 0.4.17 adds **Display → FPS Counter Size… → Small / Medium /
 Large**. This changes the counter text only; the separate **Show FPS Counter**
 toggle controls visibility. It also keeps the touch editor's **Back** and
-**Show/Hide** actions on screen in narrow landscape layouts. These additions
-are in the current device candidate and are not in public code 65.
+**Show/Hide** actions on screen in narrow landscape layouts. Small is the default; the size choice is saved across restarts.
 
-The same candidate adds **R** and **D-pad Up** under Controller Button Mapping.
+Version 0.4.17 also adds **R** and **D-pad Up** under Controller Button Mapping.
 Assigning Right Shoulder to D-pad Up swaps its former R assignment to avoid
 triggering both actions. Existing valid custom mappings are retained; the
 affected Thor/Odin controller still needs its own trial.
