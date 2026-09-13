@@ -141,3 +141,7 @@ reporter controller/device acceptance remains open. See the
 4. **iOS 27 (#196):** new matching-device crash analytics remain the useful next evidence. Reissuing the existing IPA with a new version number would not address the observed failure. Current iOS source/preparation paths have no new correction for it.
 
 #92 and #238 were closed with concrete implementation/delivery evidence. #105's manual save/rating handoff is reporter-confirmed; its remaining feature requests stay open. #194's clearer mismatch guidance is source-merged, while automatic updating remains unimplemented. #203's metadata question has a tested helper, but USA-region translation is still a separate compatibility project.
+
+### Code 82 owner acceptance
+
+The Pixel was updated in place to private code 82 after a complete verified backup, with all 6,319 protected files unchanged before launch. Preferred Game startup/return checks passed for Original and Retro. The owner then reported “the game works”; record general gameplay acceptance without inferring Item Rain, completed-race counts or online coverage. #252 is merged; #248’s specific affected-path report stays open. Public 0.4.18/code 83 preparation uses the tested wrapper/runtime, pending signed artifact and hosted download verification.
