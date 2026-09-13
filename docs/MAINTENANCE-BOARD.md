@@ -20,7 +20,7 @@ the next actions below supersede those dated assignments.
 | --- | --- | --- |
 | 0 / `retro-save-loss` | #169 / 1 | `awaiting-reporter`: classify lost progress and ordinary exit versus pack replacement from the existing request. Do not deliberately lose more data. |
 | 1 / `android-exits` | #143, #200, #205, #208–210, #128, #131, #207, #215, #216 / 9 | `awaiting-reporter`: one matching exit classification per distinct launch/cup/race subcase. #208 is canonical for #209/#210; similar wording does not establish a common runtime defect. |
-| 1 / `ios27-startup` | #196 / 1 | `awaiting-reporter`: corrected [0.4.17/build39 IPA](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.17-ios.1) published and owner-accepted on iPhone14; matching iPhone17 Pro Max/iOS27 Original/Retro race/relaunch result remains. Do not repeat completed build/simulator work. |
+| 1 / `ios27-startup` | #196 / 1 | `awaiting-reporter`: matching iPhone17 Pro Max/iOS27 retest of [0.4.17/build39](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.17-ios.1) **failed** on 13 September: Retro crashes about two seconds after the KartPad screen; Original still fails. New per-mode crash analytics were promised but are not attached. The iPhone14 trial does not resolve this device failure; preserve data and await the new reports. |
 | 2 / `android-online` | #206 / 1 | `awaiting-reporter`: await #206's already requested Wi-Fi endurance confirmation beyond the prior four/five-race window. #123 is closed upstream and remains historical evidence only; closure is not technical online acceptance. |
 | 3 / `adreno-geometry` | #102, #104, #120, #137, #166, #193, #211 / 7 | `awaiting-owner`: release operator and affected-device tester establish compatible signing/delivery for the retained dynamic/literal/dynamic character-draw comparison. No GPU-wide cause or correction is established. |
 | 4 / `warmed-performance` | #198, #167, #103, #169, #195, #204, #207, #135 / 8 | `awaiting-owner`: #198 tester is willing. The prepared profiler needs compatible signing or an approved data-preserving route **and** private delivery before capture. Retained Debug-signed APK is not a public-app in-place upgrade. |
@@ -38,7 +38,7 @@ when creating/updating a handoff. A request is not evidence that a test started.
 
 | Request / evidence | Disposition and next gate |
 | --- | --- |
-| [#196 corrected release handoff](https://github.com/chrissotraidis/kartpad/issues/196#issuecomment-5649940869) | Build36 retains the historical fault; published0.4.17/build39 contains the corrected compiled guard. Clean simulator checks, iPhone14 owner trial and public package audits completed. Matching iPhone17/iOS27 acceptance remains pending. |
+| [#196 failed matching-device retest](https://github.com/chrissotraidis/kartpad/issues/196#issuecomment-5651820707) | At 2026-09-13 07:00:59 UTC the reporter confirmed build39 still fails on iPhone17 Pro Max/iOS27: Retro reaches the KartPad screen then crashes about two seconds later, and Original still fails. The [maintainer response](https://github.com/chrissotraidis/kartpad/issues/196#issuecomment-5651930724) requests the promised new crash analytics labelled Original/Retro. None were attached at this update. Earlier iPhone14 acceptance and compiled-guard proof do not establish this new crash cause or resolve the report; no reinstall or data erasure is needed. |
 | [#123 closed upstream](https://github.com/chrissotraidis/kartpad/issues/123) and [last maintainer response](https://github.com/chrissotraidis/kartpad/issues/123#issuecomment-5644306282) | GitHub records `CLOSED` / `COMPLETED` at 2026-09-12T07:41:52Z. The final comment separates a music workaround for menu lag from reported online-race frame drops. This is a support-state reconciliation, not a technical fix or race/results/reconnect acceptance; do not assign more #123 work unless it is reopened with new evidence. |
 | [#206 cellular/Wi-Fi comparison](https://github.com/chrissotraidis/kartpad/issues/206#issuecomment-5642749400) | `awaiting-reporter`: [acknowledgement posted](https://github.com/chrissotraidis/kartpad/issues/206#issuecomment-5642834780). On Samsung SM-S921W / Android 14 / build 65, mobile data worked once while Wi-Fi reportedly works normally. This is sufficient to isolate a network-dependent subcase; it does not prove a NAT, carrier or guest-runtime cause. Await the already requested confirmation that Wi-Fi passes beyond the prior four/five-race window before claiming a stable workaround; do not repeat the acknowledgement, known build/device questions or generic log request. |
 | [#211 Retro screenshot response](https://github.com/chrissotraidis/kartpad/issues/211#issuecomment-5642589742) | `needs-one-detail`: Galaxy S24 Ultra and corruption in both profiles are supplied. Current in-app build and official pack version remain requested. Do not ask the handset again or infer GPU/driver. |
@@ -111,9 +111,14 @@ reporter controller/device acceptance remains open. See the
   separate from a newly published Mac package; the current download remains
   build 39, and new Retro gameplay acceptance is still open.
 - #250 is a macOS presentation/VSync request. The release source prefers Metal
-  Immediate when available with FIFO fallback; it has no VSync switch. A
-  startup-only opt-in candidate is in draft PR #255. Tearing and pacing acceptance
-  remain open; #101 projection stretching is a separate issue.
+  Immediate when available with FIFO fallback. The public Mac build 39 still has
+  no VSync switch. PR #255 is merged: source now offers experimental startup-only
+  VSync, with full native builds, local package audits and isolated native settings
+  checks completed. A [bounded isolated Original startup](artifacts/2026-09-13/macos-vsync-isolated-startup.md)
+  selected Immediate off and FIFO on after restart; normal data/prefs stayed
+  unchanged. The FIFO run logged an audio queue-full/drop warning. No new Mac
+  release is published; physical tearing, warmed pacing and audio quality remain
+  open. #101 projection stretching is a separate issue.
 - #197 has a [concrete shared-input investigation](ANDROID-INPUT-197.md). A held
   A from either input source can suppress fresh menu edges, but the actual
   reporter cause is unconfirmed. Use the existing touch-only request and the
