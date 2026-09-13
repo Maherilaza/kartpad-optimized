@@ -62,3 +62,33 @@ fix be selected. Its regression test should cover a lost release at the actual
 boundary plus normal held input, short taps between guest samples, and detach.
 Host touch/contract tests validate their own code paths; they do not reproduce
 this ipega report or prove menu acceptance.
+
+## Host cache experiment (2026-09-13)
+
+Run `python3 scripts/test-android-controller-lifecycle.py PREPARED_RUNTIME`.
+Like the controller-probe harness, this compiles the actual prepared Aurora
+functions against a synthetic controller store. It also extracts the prepared
+KPAD classic-trigger expression. SDL device/OS delivery is outside this harness.
+
+Candidate 80 prepared source at `615225b` passed; relevant cache, lifecycle,
+assignment, snapshot and controller-probe patches are unchanged at `975ed07`.
+The existing controller-probe harness also passed on that source.
+
+- Short press/release survives exactly one sample.
+- A genuinely held button survives suspend/resume; a subsequent release clears it.
+- A release delivered while suspended clears A before resume.
+- A short tap delivered entirely during suspension is deferred for one sample,
+  then clears; this does not reproduce indefinite acceleration.
+- Deliberately omitting release reproduces held A for 20 samples and suppresses
+  merged touch A triggers. A fresh physical down/up restores neutral after its
+  one retained edge. This proves the consequence of injected loss, not actual
+  event loss on Android or the reporter's device.
+- Actual `remove_controller` erases held and pending state while suspended;
+  resume and a late release remain disconnected and neutral.
+
+No runtime fix follows from these results: normal event delivery and removal
+recover correctly. Clearing on resume without reconciling physical state would
+break the genuinely-held negative control. The next narrow investigation is
+whether Android/SDL 3.4.4 drops A key-up across focus loss or mode change before
+`update_standard_gamepad_button` receives it. Distinguish Android input-device
+removal from SDL gamepad removal; the two notifications are not interchangeable.
