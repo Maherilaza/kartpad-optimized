@@ -138,9 +138,9 @@
         197
       ],
       "state": "ready-local",
-      "next_action": "Inspect physical-controller detach/handoff and shared touch/game menu state using the supplied ipega Xbox-mode report. Prepare a bounded local reproduction that distinguishes stale held input from A/B mapping, with a negative control. The reporter already answered menu/input-source questions and has an unanswered fresh offline touch-only comparison request; do not ask those again or operate a live device without ownership.",
+      "next_action": "Use the documented held-versus-released focus-loss and detach matrix to distinguish touch acceleration lock from stale SDL cached A. Shared held-A suppression is established at source level, but the reported cause is not reproduced. Prepare a discriminator with ordinary press/release and true detach controls; preserve valid held input on resume. The fresh offline touch-only reporter question is already outstanding; do not repeat it or change live device state without ownership.",
       "acceptance": "A source-level discriminator either demonstrates stale input across handoff or rejects that hypothesis and records the next narrow path. Default-mode A/B mapping, auto-acceleration and affected moto g200 hardware acceptance remain separate; #184 remapping is not acceptance for #197.",
-      "checkpoint": "docs/artifacts/2026-09-13/maintenance-ready-actions.md",
+      "checkpoint": "docs/ANDROID-INPUT-197.md",
       "priority_reason": "Both touch and controller fail after controller use; shared input state can be inspected while the requested reporter comparison is pending."
     },
     {
