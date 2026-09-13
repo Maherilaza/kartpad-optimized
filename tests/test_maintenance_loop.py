@@ -104,7 +104,7 @@ class MaintenanceLoopTests(unittest.TestCase):
         self.assertFalse(ranked[0]["externally_blocked"])
         self.assertEqual(ranked[1]["issue"]["number"], 196)
         self.assertTrue(ranked[1]["externally_blocked"])
-        self.assertIn("matching iPhone 17 Pro Max/iOS 27", ranked[1]["purpose"])
+        self.assertIn("retest failed", ranked[1]["purpose"])
 
     def test_unanswered_reporter_question_remains_ready(self):
         unanswered = issue(
@@ -336,14 +336,15 @@ class MaintenanceLoopTests(unittest.TestCase):
         self.assertIn(".9 is source-dirty exploratory", purpose)
         self.assertIn("imported-game device exit evidence", purpose)
 
-    def test_ios_crash_dependency_preserves_local_gate(self):
+    def test_ios_crash_dependency_preserves_failed_device_retest(self):
         plan, purpose = MAINTENANCE_LOOP.test_plan(196)
 
         self.assertIsNone(plan)
-        self.assertIn("compatible signed guarded candidate", purpose)
+        self.assertIn("new crash analytics or in-app report", purpose)
+        self.assertIn("retest failed", purpose)
         self.assertEqual(
             MAINTENANCE_LOOP.DEPENDENCY_STATES[196],
-            "simulator-race-gate-passed; signed-matching-iOS27-device-external",
+            "matching-build39-device-retest-failed; new-report-external",
         )
 
     def test_same_passing_contract_waits_for_new_evidence_or_source(self):
@@ -664,7 +665,7 @@ class MaintenanceLoopTests(unittest.TestCase):
         crash = next(row for row in dependencies if row["issue"] == 196)
         self.assertEqual(
             crash["state"],
-            "simulator-race-gate-passed; signed-matching-iOS27-device-external",
+            "matching-build39-device-retest-failed; new-report-external",
         )
 
     def test_long_gratitude_reply_does_not_reopen_answered_issue(self):

@@ -1,6 +1,6 @@
 # Maintenance work and test board
 
-Snapshot: 13 September 2026. Current GitHub refresh: 45 open issues. Start at the
+Snapshot: 13 September 2026. Current GitHub refresh: 46 open issues. Start at the
 [support-agent hub](SUPPORT-AGENTS.md). The [priority source](maintenance-priorities.json)
 owns ordering, readiness, exact next actions and acceptance; this board records
 support decisions and evidence. Refresh GitHub and local ownership before acting.
@@ -19,11 +19,11 @@ the next actions below supersede those dated assignments.
 | Priority / card | Issues / authors | Current decision and next actor |
 | --- | --- | --- |
 | 0 / `retro-save-loss` | #169 / 1 | `awaiting-reporter`: classify lost progress and ordinary exit versus pack replacement from the existing request. Do not deliberately lose more data. |
-| 1 / `android-exits` | #143, #200, #205, #208–210, #128, #131, #207, #215, #216 / 9 | `awaiting-reporter`: one matching exit classification per distinct launch/cup/race subcase. #208 is canonical for #209/#210; similar wording does not establish a common runtime defect. |
+| 1 / `android-exits` | #143, #200, #205, #208–210, #128, #131, #207, #215, #216, #236 / 10 | `awaiting-reporter`: one matching exit classification per distinct launch/cup/race subcase. #208 is canonical for #209/#210; similar wording does not establish a common runtime defect. |
 | 1 / `ios27-startup` | #196 / 1 | `awaiting-reporter`: matching iPhone17 Pro Max/iOS27 retest of [0.4.17/build39](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.17-ios.1) **failed** on 13 September: Retro crashes about two seconds after the KartPad screen; Original still fails. New per-mode crash analytics were promised but are not attached. The iPhone14 trial does not resolve this device failure; preserve data and await the new reports. |
-| 2 / `android-online` | #206 / 1 | `awaiting-reporter`: await #206's already requested Wi-Fi endurance confirmation beyond the prior four/five-race window. #123 is closed upstream and remains historical evidence only; closure is not technical online acceptance. |
-| 3 / `adreno-geometry` | #102, #104, #120, #137, #166, #193, #211 / 7 | `awaiting-owner`: release operator and affected-device tester establish compatible signing/delivery for the retained dynamic/literal/dynamic character-draw comparison. No GPU-wide cause or correction is established. |
-| 4 / `warmed-performance` | #198, #167, #103, #169, #195, #204, #207, #135 / 8 | `awaiting-owner`: #198 tester is willing. The prepared profiler needs compatible signing or an approved data-preserving route **and** private delivery before capture. Retained Debug-signed APK is not a public-app in-place upgrade. |
+| 2 / `warmed-performance` | #198, #167, #103, #169, #195, #204, #207, #135 / 8 | `ready-local`: private code84 is packaged and audited against public83 native payload and exact symbols; arrange compatible private delivery, then capture one warmed driven slowdown. #198 has supplied captures and agreed to the handoff; do not repeat those requests. |
+| 3 / `adreno-geometry` | #102, #104, #120, #137, #166, #193, #211 / 7 | `ready-local`: recover the retained actual-draw comparison into a clean current build, compile generated shaders and retain draw identity. Affected-device dynamic/literal/dynamic testing remains required. |
+| 4 / `android-online` | #206 / 1 | `awaiting-reporter`: await the existing Wi-Fi endurance request beyond four/five races. #123 is closed; that is not technical online acceptance. |
 
 These are checkpoints, not verified fixes. Finish available preparation before
 parking work. If one of these owner actions becomes locally executable, update
@@ -45,7 +45,7 @@ when creating/updating a handoff. A request is not evidence that a test started.
 | [#166 additional device request](https://github.com/chrissotraidis/kartpad/issues/166#issuecomment-5628217442) | `requested`: exact device/build/profile and available renderer lines for the added report. Existing synthetic checks do not clear the failing gameplay draw. No duplicate probe/request. |
 | [#198 willingness](https://github.com/chrissotraidis/kartpad/issues/198#issuecomment-5640922655) | `preparing`: existing warmed evidence justifies a bounded function profile. Signer compatibility/data preservation and private delivery are maintainer dependencies. Do not re-ask willingness, attach the APK publicly or represent installation/testing as started. |
 | [#167 completed comparison](https://github.com/chrissotraidis/kartpad/issues/167#issuecomment-5608282606) | Supplied Infinix Hot 60 Pro / Android 16 / KartPad 0.4.11 / Original details and unchanged 1x aspect comparison are sufficient to stop that settings sweep. A selected warmed profile is a different decision; don't ask for the same device/build again. |
-| [#215 launch/exit reply](https://github.com/chrissotraidis/kartpad/issues/215#issuecomment-5643185926) | `awaiting-reporter`: Xiaomi 25057RN09G (shortened to 25057RN09 in the reply), Android 15/API 35, 0.4.16-android.2/build 65. Both Original and Retro repeatedly exit around the reported “about to play” step. Reply is posted; await only chooser-versus-Android-home destination, selected profile/import completion and one short redacted exit result. No shared runtime cause is established. |
+| [#215 launch/exit reply](https://github.com/chrissotraidis/kartpad/issues/215#issuecomment-5643185926) | `awaiting-reporter`: Xiaomi 25057RN09G (shortened to 25057RN09 in the reply), Android 15/API 35, 0.4.16-android.2/build 65. Both Original and Retro repeatedly exit around the reported “about to play” step. Reply is posted; Android-home exit is now confirmed. Await the matching native/Java/OS exit classification, not the destination again. No shared runtime cause is established. |
 | [#216 black-surface/exit reply](https://github.com/chrissotraidis/kartpad/issues/216#issuecomment-5643186097) | `awaiting-reporter`: Galaxy Tab A (8.4-inch, 2020), One UI 3.1, Android 11/API 30, reported 0.4.16 Android; exact build unconfirmed. Both Original and Retro show a black game surface with touch controls, then exit. Reply is posted; await only chooser-versus-Android-home destination, selected profile/import completion and one short redacted exit result. Keep separate from #215 and renderer hypotheses. |
 | [#208 canonical launch report](https://github.com/chrissotraidis/kartpad/issues/208) | `requested`: chooser versus Android home, profile/import state and matching exit result; #209/#210 do not justify new requests or three engineering assignments. |
 
@@ -67,7 +67,7 @@ current comments and the linked source scope before promoting one into active wo
 | Retro installation/version | #192 download/import and #194 updater design. Verify current app/official pack and last completed step; separate executable compatibility from a request for automatic updates. |
 | Input/system UI | #119 bars, #184 mapping, #197 menu input, #202 aspect/display. Match physical/touch and chooser/gameplay paths; no renderer patch for an unclassified button/inset report. #184 has a bounded feature scope in [future features](FUTURE-FEATURES.md#android-d-pad-and-shoulder-remapping). |
 | External display | #100 and #199. Match local-only, wired and AirPlay transitions/recovery separately. Existing Metal/source checks are not affected-display acceptance. |
-| Apple controls/projection/multiplayer | #5, #91, #101, #127; open PR [#112](https://github.com/chrissotraidis/kartpad/pull/112); [#157](https://github.com/chrissotraidis/kartpad/pull/157) shipped in Mac0.4.17. Reconcile current heads, candidate ownership and exact controller/split-screen scene before another build. |
+| Apple controls/projection/multiplayer | #5, #91, #101, #127; PR [#112](https://github.com/chrissotraidis/kartpad/pull/112), integrated through #254; [#157](https://github.com/chrissotraidis/kartpad/pull/157) shipped in Mac0.4.17. Reconcile current heads, candidate ownership and exact controller/split-screen scene before another build. |
 | Apple performance | #135. A10X startup is already accepted; remaining frame-rate concern needs its own affected-device comparison, separate from Android CPU/GPU hypotheses. |
 | Save/rating lifecycle | #105 manual transfer is accepted; automatic two-way sync and Mii scope remain distinct. #169 lost progress must be classified separately from performance and system bars. |
 | Feature/compatibility | #90 Original Wiimmfi, #91 controller/DSU, #203 disc revision/NAND/cheats. Define requested behavior, supported input and implementation boundary; do not request generic logs for missing features. |
@@ -127,25 +127,16 @@ reporter controller/device acceptance remains open. See the
   failure. The support guide now separates raw-save/rating import from complete
   Mii, console identity and country configuration restoration.
 
-## 13 September minor-request pass
+## Current delivery and next release gate
 
-- #238 is closed: the responsive D-pad Show/Hide editor shipped in code 80 and passed physical code-79 UI checks. Reopen for a concrete remaining current-build failure.
-- #203 now has a read-only [disc-header metadata helper](SUPPORT.md#read-a-disc-revision-without-sharing-the-image), covering the requester’s inability to find a raw ISO revision. Region compatibility, NAND import/export and cheats remain separate unfinished features.
-- Release priority: code 81 is a private, audited continuation candidate awaiting exact-device Item Rain/race/relaunch testing. Public code 80 remains stable. No new iOS runtime fix has been completed for the failed #196 retest; repackaging the same IPA would not address it. Mac VSync is built and startup-verified, but its warmed audio/pacing and physical tearing gates remain open. Bundle small documentation/UI guidance into the next tested release rather than assigning it an unsupported crash-fix claim.
+[Android 0.4.18/code 83](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.18-android.1) is published with APK, source, notices and checksums; all four hosted downloads were verified. Preferred Game and continuation handling are delivered. D-pad/FPS changes were already delivered in code 80. Private code 82 passed the owner's general gameplay acceptance and remains the last verified phone installation; exact Item Rain and online coverage are not inferred. See the [release evidence](artifacts/2026-09-13/android-code83-public-release.md).
 
-### Next bounded work and release decision
+The [high-impact review](artifacts/2026-09-13/high-impact-priority-review.md) recommends measured sustained performance first and Android geometry second. Apple external-display recovery is the alternative second focus. The signing key location is resolved; current diagnostic packaging and affected-device delivery are still work to complete. Do not distribute the old Debug-signed profiler as a public-app update.
 
-1. **Android Preferred Game (#105):** implement an optional startup preference (Ask Every Time by default) only after installed-content validation, with a reliable Return to KartPad Menu escape. This is distinct from Mii database import and automatic save synchronization. Source/UI validation can proceed without the phone; exact-candidate hardware startup and escape checks follow before release.
-2. **Android continuation (#248 / draft #252):** private code 81 is packaged and audited. Resume with a fresh verified device backup when the owner returns the Pixel, then test item/Item Rain paths, race and relaunch. Do not publish it based solely on native compilation.
-3. **Mac VSync (#250):** retain the merged off-by-default candidate and mismatch guidance (#263) for the next tested Mac build. Startup selected the requested modes, but warmed audio/pacing and physical tearing remain unverified; the FIFO startup warning is not yet attributed.
-4. **iOS 27 (#196):** new matching-device crash analytics remain the useful next evidence. Reissuing the existing IPA with a new version number would not address the observed failure. Current iOS source/preparation paths have no new correction for it.
+#196 was reopened after a completed closure without a passing result. The matching build39 retest still failed; the reporter says new analytics are absent and the in-app report fallback has already been requested. Reissuing the same IPA is not a correction.
 
-#92 and #238 were closed with concrete implementation/delivery evidence. #105's manual save/rating handoff is reporter-confirmed; its remaining feature requests stay open. #194's clearer mismatch guidance is source-merged, while automatic updating remains unimplemented. #203's metadata question has a tested helper, but USA-region translation is still a separate compatibility project.
+#203 has a tested read-only disc-header helper; region compatibility, NAND and cheats remain separate features. #105 manual transfer is accepted and Preferred Game is delivered; automatic synchronization and Mii scope remain open. #194 mismatch guidance is merged, not an automatic updater. #92 and #238 remain closed on their documented evidence.
 
-### Code 82 owner acceptance
+No open pull requests remained at this review. Merged Mac VSync still needs warmed pacing/audio and tearing acceptance before a new Mac release. A new Android performance or graphics release requires a measured correction and matching gameplay checks, not another version bump.
 
-The Pixel was updated in place to private code 82 after a complete verified backup, with all 6,319 protected files unchanged before launch. Preferred Game startup/return checks passed for Original and Retro. The owner then reported “the game works”; record general gameplay acceptance without inferring Item Rain, completed-race counts or online coverage. #252 is merged; #248’s specific affected-path report stays open. Public 0.4.18/code 83 preparation uses the tested wrapper/runtime, pending signed artifact and hosted download verification.
-
-### Published Android 0.4.18 / code 83
-
-[Public code 83](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.18-android.1) is published with APK, source, notices and checksums. All four anonymous downloads match expected hashes/sizes and the hosted APK passes the release audit. Preferred Game and continuation handling are now delivered; the D-pad/FPS fixes were already delivered in code 80. General owner gameplay acceptance came from private code 82, which remains on the Pixel. Specific Item Rain/online and reporter-device outcomes remain open. See the [release evidence](artifacts/2026-09-13/android-code83-public-release.md).
+Ownership audit: [46/46 open tickets assigned and replied to](artifacts/2026-09-13/open-ticket-ownership-audit.md). Current [code84 profiling evidence](artifacts/2026-09-13/android-profiler-preflight.md#current-diagnostic-built-after-the-review) is preparation, not a performance fix.

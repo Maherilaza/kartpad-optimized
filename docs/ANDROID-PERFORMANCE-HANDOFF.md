@@ -1,72 +1,27 @@
 # Android investigation handoff
 
-Current starting point: **published Android 0.4.14 preview 1/code 63**. Read the
-[maintenance board](MAINTENANCE-BOARD.md) for priorities and candidate/test state,
-then [the coordinator runbook](MAINTENANCE-AUTOMATION.md) for claims and dispatch.
-The [September9 assignment](archive/android-performance-handoff-2026-09-09.md)
-is historical. Do not rebuild its preview 2 or assume the phone still has code 25.
+Current public baseline: **Android 0.4.18/code 83**. Its APK, source, notices and checksums are published and independently downloaded/verified. See the [release evidence](artifacts/2026-09-13/android-code83-public-release.md), [priority review](artifacts/2026-09-13/high-impact-priority-review.md) and [maintenance board](MAINTENANCE-BOARD.md). Older code63/code73 assignments are historical.
 
-## Start from available evidence
+## First: sustained frame time
 
-The [September10 release record](artifacts/2026-09-10/platform-release-verification.md)
-pins application `6a2dffc`, APK hash, signer compatibility and owner acceptance.
-PR #141 alarm ordering, frame overlap, first GEN_MODE state correction and PR #173
-pack replacement save preservation are already included. The release does not
-resolve every reported freeze, Adreno draw, cup crash or performance gap.
+#198 already supplied three captures and agreed to a profiler handoff. Its Helio G85 report is 25–29 FPS after the pipeline queue reaches zero, with 94–97% main-thread occupancy and 2.3–2.6 ms measured presentation. This supports CPU sampling; it does not identify the expensive function. GX CPU work outside the presentation timer remains a possibility.
 
-Refresh all issue bodies/comments, including unlabeled reports, PR heads and
-actual owner/process state. One coordinator owns public replies. One worker
-owns the Android native build/device session. Source-only work can proceed in
-isolation; a historical owner label or a scheduled wake never authorizes taking
-over a phone in use. Preserve private inputs, every save/profile/identity and
-signing. Never uninstall, clear data, or force a signer migration.
+Prepare a current, non-debuggable, shell-profileable diagnostic with exact native symbols and a compatible signer. The release signing key location is resolved. The retained code73 Debug-signed profiler cannot update a Community-signed installation. Confirm the recipient's installed version/signer and concrete private delivery route before handing off a diagnostic. Keep credentials, symbols and private game inputs out of public artifacts.
 
-## Next tasks
+Capture a bounded approximately 20-second, 99-Hz symbolized sample during a warmed driven slowdown. Separate guest execution, GX CPU preparation and waits before choosing one correction. Use the owner's phone for a local baseline when available; it cannot establish Helio acceptance. Do not repeat #198's willingness/log requests, #167's completed resolution/aspect sweep or #103's already supplied build/settings questions. #204 is Cookie Land **battle**, not time trial. #135 A10X performance is an Apple comparison with no proven shared cause.
 
-1. **Existing candidate comparisons:** code 63 to #123's familiar online menu,
-   and #104's same character selection/starting grid. Verify relevant patch
-   inclusion, candidate identity and any newer reply first. Do not re-request
-   completed validation, import, settings or broad logs. Record a negative
-   comparison as a result before deciding another experiment.
-2. **Data loss/transition:** #169 ordinary-exit loss remains separate from PR #173.
-   Use safe fixture/source evidence while its requested lost-data/exit details
-   are pending. #128/#131 need matching exit classification or an owned ceremony
-   reproduction; Original and Retro share a reported transition, not proven cause.
-3. **Actual draw:** if affected Adreno still fails, select one observed character
-   draw and a specific transform/shader/upload invariant. Passing Pixel and
-   generic compute/draw probes cannot accept Adreno gameplay. Keep character-only,
-   road-texture and broad HONOR corruption distinct until a mechanism links them.
-4. **Performance:** one current-build warmed driven scene at stable settings,
-   normal power mode and comparable thermal state. Measure frame-time tails,
-   audio and exact scene as well as FPS. Existing menu on/off gains do not
-   establish a public28-versus63 speedup or sustained racing improvement.
+For baseline/candidate, hold scene, settings, normal power mode and thermal range comparable. Record frame-time tails and gaps, effective cadence, audio and health; separate cold shader compilation. Prefer three matched runs per artifact. Improvement must exceed baseline variation without graphics, audio, save or lifecycle regressions. Finish with profiling disabled.
 
-Each assignment needs an expected distinguishing observation, exact source,
-output, tester/fixture and completion condition. After two non-informative
-attempts obtain independent review and choose a different experiment or precise
-dependency. Do not rotate through previously passing probes or old recordings.
+## Second: actual failing character draw
 
-## Candidate and device gate
+Recover the retained PNMTX experiment into a clean current-code83 source tree. Preserve selected-draw and pipeline identity, disable diagnostic draw merging and compile the actual generated vertex shaders. Old scratch APK names are not provenance. Finite CPU matrices and generic passing probes do not validate the failing shader.
 
-Build only for a reviewed correction or a narrowly justified diagnostic that
-an identified tester/fixture can exercise. Use the intended non-debug configuration
-for a performance candidate; APK build defaults alone are not sufficient.
-Record exact version/code, source, native payload, SHA-256 and signer compatibility.
-Use current candidate when it already answers the question.
+Use an affected device for dynamic → selected literal → dynamic comparison on the same observed character draw. A Pixel pass cannot accept S24/Adreno840 corruption. Only after the comparison discriminates the cause should a narrow correction be tested on affected and known-working hardware.
 
-Host/ART regression, emulator update preservation, package audits and physical
-acceptance remain separate. Physical acceptance names the operation: selection,
-controls, driven race, cup/ceremony, return/restart with saves, or online results.
-Never convert one completed milestone into universal hardware support. A new
-artifact produces a concrete short test card, not a broad request to test everything.
+## Ownership and release gate
 
-## References
+Refresh issue comments and current build/device ownership before acting. One operator owns native builds and the device session. Preserve saves, profiles, identities and signing; never uninstall or clear data to cross a signer mismatch. Keep source-only experiments isolated from concurrent work.
 
-- [Alarm evidence](artifacts/2026-09-09/issue-123-alarm-reschedule-guard.md) and
-  [online timing](artifacts/2026-09-09/pixel-online-log-review.md).
-- [Actual-draw limits](artifacts/2026-09-09/graphics-preview28-evidence.md),
-  [cup-transition investigation](artifacts/2026-09-09/cup-transition-investigation.md).
-- [Current release63 record](artifacts/2026-09-10/android-release63-verification.md),
-  [source delivery](artifacts/2026-09-10/android-source-delivery.md).
-- [Build](../android/README.md), [install](INSTALL_ANDROID.md),
-  [physical procedures](ANDROID-PHYSICAL-HANDOFF.md), [performance](PERF.md).
+Every handoff identifies source, version/code, APK hash, native payload, signer, exact operation and completion condition. Host checks, installation, startup, driven gameplay and online endurance are distinct evidence. Build a new public release only for a verified correction; a diagnostic is not a performance-fix release.
+
+[Build instructions](../android/README.md) · [Physical procedures](ANDROID-PHYSICAL-HANDOFF.md) · [Performance notes](PERF.md)

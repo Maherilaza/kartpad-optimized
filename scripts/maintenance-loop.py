@@ -34,13 +34,13 @@ STATE_IO = importlib.util.module_from_spec(_STATE_SPEC)
 _STATE_SPEC.loader.exec_module(STATE_IO)
 
 EXTERNAL_NEXT_ACTIONS = {
-    196: "obtain a compatible signed guarded candidate; if the signing/device gate permits, run a data-preserving iPad smoke test, then obtain the matching iPhone 17 Pro Max/iOS 27 retest with existing data",
+    196: "matching build39 iPhone 17 Pro Max/iOS27 retest failed; await the already requested new crash analytics or in-app report, preserving data; do not repeat the same IPA or simulator gate",
     135: "obtain the remaining physical A10X performance acceptance result; startup correction is already separate",
     123: "use the fresh-source private 0.4.17-android.12-wfctrace123 candidate to trace the physical Retro VS disconnect after WFC entry; inspect corrected recv_success/recv_eof/recv_eagain/recv_error events plus wait/timeout, peer-session and deferred completion events, and do not publish until a race/reconnect result is clean",
     128: "obtain the matching device/build/import state and a redacted exit/console excerpt",
     131: "obtain a matching exit/console excerpt for the post-cup Next transition in Original and Retro",
     143: "obtain exact build/profile/import completion and a matching exit/final-console excerpt",
-    198: "use the already-built private profileable candidate through an approved private handoff; collect a 20-second native CPU profile at roughly 99 Hz on the same Helio G85 after pipelines_queued reaches zero, then classify guest, renderer-preparation, or synchronization hot paths before changing source",
+    198: "prepare a current-code83 non-debuggable shell-profileable diagnostic with compatible signing and matching symbols; existing code73 is stale; use the already accepted private handoff to obtain a 20-second approximately 99 Hz warmed native CPU profile and classify guest, GX CPU and waits before changing source",
     167: "use the supplied Infinix Hot 60 Pro / Android 16 / Mali-G57 MC2 / 0.4.11 Original rev0 evidence; obtain a matched slow-scene profile only when this lane is selected",
     195: "obtain the matched v0.4.16 Original/Retro performance comparison on the affected Galaxy S25",
     127: "run an equivalent-scene macOS main-versus-PR comparison before attributing the two-player offsets",
@@ -52,13 +52,13 @@ EXTERNAL_NEXT_ACTIONS = {
     192: "retest the online-only Retro Rewind pack download on v0.4.16",
     105: "retain the reporter-confirmed manual save/rating transfer; keep automatic synchronization and remaining Mii scope separate",
     200: "confirm public .2 and import state, then capture process-exits.json reason/status/profile and final redacted startup lines for Original and Retro separately; private .9 is source-dirty exploratory evidence, not a controlled A/B candidate",
-    207: "obtain the exact current build, Original-versus-Retro scope, crash boundary and one redacted exit/diagnostic result from the Samsung A05 before selecting a performance or renderer change",
+    207: "Samsung A05 already supplied code65, both profiles and entry/return symptoms with validation off; obtain only the remaining matching process-exit classification before selecting a separate crash correction",
     208: "treat duplicate reports #209 and #210 as one HONOR launch/exit family; obtain chooser-versus-Android-home boundary, selected profile, import completion and one redacted exit result without another uninstall or data clear",
     209: "follow the canonical #208 handoff; do not request duplicate diagnostics, and reopen only if this thread adds a distinct device, build or failure boundary",
     210: "follow the canonical #208 handoff; do not request duplicate diagnostics, and reopen only if this thread adds a distinct device, build or failure boundary",
     203: "record the requested RMCE01 revision and keep NAND/cheat requests in the feature-compatibility queue; do not begin a profile/build without a verified disc revision and scope",
     205: "obtain the exact import completion, selected profile and final redacted startup/exit boundary on the Adreno 610 target",
-    206: "obtain the search-versus-lobby-versus-race boundary, dashboard/player state, matching Retro pack version and a short redacted excerpt without data clearing",
+    206: "await the already requested Wi-Fi endurance result beyond four/five races; the cellular-versus-Wi-Fi distinction is supplied and acknowledged, not proof of a carrier/runtime cause",
 }
 
 # Public issues are reports, not independent engineering projects.  These
@@ -128,8 +128,8 @@ def issue_family(issue_number: int) -> str:
 # gate is actionable and must remain visible in the durable checkpoint. A
 # generic blocked-external label would hide that work from the next wake.
 DEPENDENCY_STATES = {
-    196: "simulator-race-gate-passed; signed-matching-iOS27-device-external",
-    198: "profileable-candidate-built; same-device-external",
+    196: "matching-build39-device-retest-failed; new-report-external",
+    198: "current-profileable-preparation-local; same-device-capture-external",
 }
 
 
