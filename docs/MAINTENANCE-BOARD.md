@@ -140,3 +140,7 @@ The [high-impact review](artifacts/2026-09-13/high-impact-priority-review.md) re
 No open pull requests remained at this review. Merged Mac VSync still needs warmed pacing/audio and tearing acceptance before a new Mac release. A new Android performance or graphics release requires a measured correction and matching gameplay checks, not another version bump.
 
 Ownership audit: [46/46 open tickets assigned and replied to](artifacts/2026-09-13/open-ticket-ownership-audit.md). Current [code84 profiling evidence](artifacts/2026-09-13/android-profiler-preflight.md#current-diagnostic-built-after-the-review) is preparation, not a performance fix.
+
+## Concrete source corrections after deeper review
+
+[Local failure review](artifacts/2026-09-13/android-source-failure-review.md): Original startup now skips unrelated Retro recovery, and recovery defers to an active cross-process Retro install transaction. Real filesystem/process tests reproduce and cover both boundaries. A shared packed-vertex helper also reads only its required three bytes. These changes need a new candidate to reach users; public83 is unchanged, and no broad launch/geometry issue is closed on this evidence.
