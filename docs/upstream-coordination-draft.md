@@ -1,18 +1,14 @@
-# WiiCompiled coordination reply — not sent
+# Optional WiiCompiled reply — not sent
 
-Draft for the maintainer to adapt personally. No message has been sent.
+No message has been sent. Implementing the reporting changes does not depend
+on sending this reply or arranging an ongoing handoff.
 
-Hey, I understand the issue. KartPad was created as a separate repository,
-which is why GitHub doesn't show the fork relationship. I'm checking the
-migration options, but I don't want that to hold up fixing the reporting flow.
+Hey, I understand the reporting concern. KartPad was created as a separate
+repository, so GitHub does not display a fork relationship.
 
-I'm changing the plan so users can report suspected WiiCompiled runtime
-problems directly to your tracker, with KartPad-specific installation, UI and
-platform issues staying here. The report will identify the KartPad build and
-upstream baseline when recorded, and include the relevant reviewed runtime
-logs. Users won't need me to relay every report.
-
-Which of your forms should those reports use? They currently ask for the
-latest WiiCompiled release and Windows log paths, so I'd like to make sure
-mobile/Mac users identify their modified build accurately. I can handle the
-KartPad-side export and instructions.
+I’m updating the issue chooser, documentation and app reporting flow so users
+can open suspected WiiCompiled runtime reports directly on your tracker.
+KartPad installation, controls and platform issues still have a separate route.
+Reports identify the modified KartPad build and the recorded runtime version
+when available; users attach their reviewed logs themselves. They won’t need
+me to relay reports, and the app won’t claim they tested stock WiiCompiled.

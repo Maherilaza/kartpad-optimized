@@ -236,7 +236,7 @@ Supported in-place updates preserve saves; **do not uninstall or clear app data*
 <details>
 <summary>Is everything finished? How do I report a problem?</summary>
 
-No. Check [current platform acceptance](docs/STATUS.md), [known issues](docs/KNOWN-ISSUES.md) and [technical debt](docs/TECH-DEBT.md). Report your exact build, device/OS, selected game, settings and reproducible steps using the [bug form](https://github.com/chrissotraidis/kartpad/issues/new?template=bug_report.yml). Export a problem report using the [support guide](docs/SUPPORT.md), review it before sharing, and keep saves, identities and game data private.
+No. Check [current platform acceptance](docs/STATUS.md), [known issues](docs/KNOWN-ISSUES.md) and [technical debt](docs/TECH-DEBT.md). Report your exact build, device/OS, selected game, settings and reproducible steps using the [reporting guide to choose KartPad or WiiCompiled](docs/REPORTING.md). Export a problem report using the [support guide](docs/SUPPORT.md), review it before sharing, and keep saves, identities and game data private.
 
 </details>
 
@@ -256,8 +256,8 @@ ARM64 and renders through Vulkan on Android or Metal on Apple platforms.
 
 For a bug report, include the exact app/build, device, OS, game, settings and
 reproduction steps. Review diagnostics before sharing; never attach game data,
-saves, account identifiers or signing material. Use the
-[report form](https://github.com/chrissotraidis/kartpad/issues/new?template=bug_report.yml).
+saves, account identifiers or signing material. Choose the relevant tracker in the
+[reporting guide](docs/REPORTING.md).
 
 ## Credits and license
 

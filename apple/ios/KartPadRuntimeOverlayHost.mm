@@ -22,6 +22,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import <TargetConditionals.h>
 #import <UIKit/UIKit.h>
+#import <SafariServices/SafariServices.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #include <algorithm>
@@ -37,7 +38,9 @@ extern "C" int g_gxFrameCount;
 - (void)runMainMenu;
 @end
 
-@interface KartPadGameOverlay : SunPadGameOverlay
+@interface KartPadGameOverlay : SunPadGameOverlay <SFSafariViewControllerDelegate>
+@property(nonatomic, strong) NSURL *reportDraftURL;
+- (void)presentReportBrowserURL:(NSURL *)url;
 @property(nonatomic, strong) KartPadFloatingStickView *kartPadMoveStick;
 @property(nonatomic, copy) void (^multiplayerRequested)(void);
 @property(nonatomic, copy) void (^mainMenuRequested)(void);
@@ -77,8 +80,11 @@ extern "C" int g_gxFrameCount;
 - (void)reportProblem;
 - (void)createDiagnosticReportFromPrompt:(UIAlertController *)prompt
                               openGitHub:(BOOL)openGitHub;
+- (void)chooseReportDestinationWithID:(NSString *)reportID
+                               answers:(NSDictionary<NSString *, NSString *> *)answers;
 - (void)openGitHubReportWithID:(NSString *)reportID
-                       answers:(NSDictionary<NSString *, NSString *> *)answers;
+                       answers:(NSDictionary<NSString *, NSString *> *)answers
+                      upstream:(BOOL)upstream;
 @end
 
 namespace {
@@ -1645,7 +1651,7 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   NSString *logText = self.reportURL ? [NSString stringWithContentsOfURL:self.reportURL encoding:NSUTF8StringEncoding error:&readError] : nil;
   const BOOL readable = logText != nil;
   log.text = logText;
-  if (!readable) log.text = @"The saved log could not be read. You can explain the problem using ‘I can’t attach the log’.";
+  if (!readable) log.text = @"The saved log could not be read. Choose Continue Without a Log to describe the problem on GitHub.";
   log.accessibilityLabel = @"Diagnostic log";
   self.reviewButton = [UIButton buttonWithType:UIButtonTypeSystem];
   self.reviewButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeading;
@@ -1660,12 +1666,12 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   share.enabled = self.reportURL != nil;
   [share addTarget:self action:@selector(shareLog:) forControlEvents:UIControlEventTouchUpInside];
   self.continueButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  [self.continueButton setTitle:@"Open GitHub — I’ll Attach the Log" forState:UIControlStateNormal];
+  [self.continueButton setTitle:@"Choose Project — I’ll Attach the Log" forState:UIControlStateNormal];
   self.continueButton.titleLabel.numberOfLines = 0;
   self.continueButton.enabled = NO;
   [self.continueButton addTarget:self action:@selector(continueWithLog) forControlEvents:UIControlEventTouchUpInside];
   UIButton *unable = [UIButton buttonWithType:UIButtonTypeSystem];
-  [unable setTitle:@"I can’t attach the log…" forState:UIControlStateNormal];
+  [unable setTitle:@"Continue Without a Log" forState:UIControlStateNormal];
   [unable addTarget:self action:@selector(explainMissingLog) forControlEvents:UIControlEventTouchUpInside];
   UIStackView *stack = [[UIStackView alloc] initWithArrangedSubviews:@[instructions, log, self.reviewButton, share, self.continueButton, unable]];
   stack.axis = UILayoutConstraintAxisVertical;
@@ -1703,32 +1709,16 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
 }
 - (void)finishWithEvidence:(NSString *)evidence {
   void (^continuation)(NSString *) = self.continueReport;
-  [self dismissViewControllerAnimated:YES completion:^{ if (continuation) continuation(evidence); }];
+  if (continuation) continuation(evidence);
 }
 - (void)continueWithLog {
   if (!self.reviewButton.selected) return;
   [self finishWithEvidence:[NSString stringWithFormat:@"I reviewed the diagnostic log for private information. I will attach %@ manually below; it has not been uploaded by KartPad. Add a screenshot for visual issues.", self.reportURL.lastPathComponent]];
 }
 - (void)explainMissingLog {
-  UIAlertController *prompt = [UIAlertController alertControllerWithTitle:@"Why can’t you attach the log?" message:@"Explain what prevents you from attaching it. This explanation is included in the GitHub draft; no log is uploaded." preferredStyle:UIAlertControllerStyleAlert];
-  [prompt addTextFieldWithConfigurationHandler:^(UITextField *field) { field.placeholder = @"Reason (required)"; }];
-  [prompt addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
-  __weak KartPadReportReviewController *weakSelf = self;
-  __weak UIAlertController *weakPrompt = prompt;
-  UIAlertAction *continueAction = [UIAlertAction actionWithTitle:@"Continue" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-    NSString *reason = [weakPrompt.textFields.firstObject.text stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
-    if (reason.length == 0) return;
-    [weakSelf finishWithEvidence:[NSString stringWithFormat:@"Diagnostic log not attached. Reason: %@\nNo log was uploaded by KartPad.", reason]];
-  }];
-  continueAction.enabled = NO;
-  [prompt addAction:continueAction];
-  __weak UIAlertAction *weakContinue = continueAction;
-  [prompt.textFields.firstObject addAction:[UIAction actionWithHandler:^(__kindof UIAction *action) {
-    NSString *reason = [weakPrompt.textFields.firstObject.text stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
-    weakContinue.enabled = reason.length > 0;
-  }] forControlEvents:UIControlEventEditingChanged];
-  [self presentViewController:prompt animated:YES completion:nil];
+  [self finishWithEvidence:@"Diagnostic log not included yet. No log was uploaded by KartPad. I can add reviewed diagnostics or screenshots in the browser."];
 }
+
 @end
 
 @implementation KartPadGameOverlay
@@ -2289,7 +2279,7 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   if (presenter == nil) return;
   NSString *instructions =
       @"Describe the problem. KartPad adds device details and recent logs.\n\n"
-       "KartPad uses WiiCompiled and maintains its own platform changes. Report KartPad problems here; maintainers coordinate shared issues upstream.\n\n"
+       "KartPad uses WiiCompiled and maintains its own platform changes. After reviewing your report, choose KartPad or WiiCompiled directly. Choose KartPad if you are unsure.\n\n"
        "Attach the log and relevant screenshots. Nothing is uploaded automatically. GitHub reports are public; review before posting.";
   UIAlertController *prompt =
       [UIAlertController alertControllerWithTitle:@"Report a Problem"
@@ -2315,13 +2305,17 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction *action) {
     (void)action;
-    [weakSelf createDiagnosticReportFromPrompt:prompt openGitHub:NO];
+    [prompt dismissViewControllerAnimated:YES completion:^{
+      [weakSelf createDiagnosticReportFromPrompt:prompt openGitHub:NO];
+    }];
   }]];
-  [prompt addAction:[UIAlertAction actionWithTitle:@"Report on GitHub"
+  [prompt addAction:[UIAlertAction actionWithTitle:@"Continue to GitHub…"
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction *action) {
     (void)action;
-    [weakSelf createDiagnosticReportFromPrompt:prompt openGitHub:YES];
+    [prompt dismissViewControllerAnimated:YES completion:^{
+      [weakSelf createDiagnosticReportFromPrompt:prompt openGitHub:YES];
+    }];
   }]];
   [prompt addAction:[UIAlertAction actionWithTitle:@"Reporting Guide"
                                               style:UIAlertActionStyleDefault
@@ -2348,74 +2342,115 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
     @"frequency" : frequency ?: @"",
   };
   NSString *technicalContext = [self.delegate gameOverlayDiagnosticContext:self];
-  SunPadLog(@"diagnostic report requested id=%@ destination=%@",
-            reportID, openGitHub ? @"github" : @"share-sheet");
-  NSError *error = nil;
-  NSURL *reportURL = SunPadDiagnosticsReportURL(
-      reportID, answers, technicalContext, &error);
   UIViewController *presenter = KartPadVisibleViewController(self.window);
-  NSString *report = reportURL ? [NSString stringWithContentsOfURL:reportURL
-                                               encoding:NSUTF8StringEncoding
-                                                  error:&error] : nil;
-  NSURL *kartPadReportURL = nil;
-  if (report != nil) {
-    report = [report stringByReplacingOccurrencesOfString:
-        @"SunPad Diagnostic Report v2" withString:@"KartPad Diagnostic Report v2"];
-    report = [report stringByReplacingOccurrencesOfString:
-        @"issuesURL=https://github.com/chrissotraidis/sunpad/issues"
-                                                 withString:
-        @"issuesURL=https://github.com/chrissotraidis/kartpad/issues"];
-    report = [report stringByAppendingString:
-        @"\nreportOrigin=KartPad (modified WiiCompiled platform integration)\n"
-         "upstreamProject=https://github.com/patchzyy/Wiicompiled\n"];
-    NSURL *destination = [reportURL.URLByDeletingLastPathComponent
-        URLByAppendingPathComponent:@"Latest-KartPad-Diagnostic.log"];
-    if ([report writeToURL:destination atomically:YES
-                 encoding:NSUTF8StringEncoding error:&error]) {
-      kartPadReportURL = destination;
-    }
-  }
-  reportURL = kartPadReportURL;
-  if (reportURL == nil && !openGitHub) {
-    UIAlertController *alert =
-        [UIAlertController alertControllerWithTitle:@"Diagnostic Report Unavailable"
-                                            message:error.localizedDescription ?: @"The report could not be prepared. Try again or report on GitHub without a log."
-                                     preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:@"OK"
-                                              style:UIAlertActionStyleDefault
-                                            handler:nil]];
-    [presenter presentViewController:alert animated:YES completion:nil];
-    return;
-  }
+  if (presenter == nil) return;
+  UIAlertController *preparing = [UIAlertController alertControllerWithTitle:@"Preparing Report…"
+      message:@"Collecting recent diagnostics. Nothing is uploaded."
+      preferredStyle:UIAlertControllerStyleAlert];
+  [presenter presentViewController:preparing animated:YES completion:^{
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+      SunPadLog(@"diagnostic report requested id=%@ destination=%@",
+                reportID, openGitHub ? @"github" : @"share-sheet");
+      NSError *error = nil;
+      NSURL *reportURL = SunPadDiagnosticsReportURL(
+          reportID, answers, technicalContext, &error);
+      NSString *report = reportURL ? [NSString stringWithContentsOfURL:reportURL
+                                                   encoding:NSUTF8StringEncoding
+                                                      error:&error] : nil;
+      NSURL *kartPadReportURL = nil;
+      if (report != nil) {
+        report = [report stringByReplacingOccurrencesOfString:
+            @"SunPad Diagnostic Report v2" withString:@"KartPad Diagnostic Report v2"];
+        report = [report stringByReplacingOccurrencesOfString:
+            @"issuesURL=https://github.com/chrissotraidis/sunpad/issues"
+                                                     withString:
+            @"issuesURL=https://github.com/chrissotraidis/kartpad/issues"];
+        report = [report stringByAppendingString:
+            @"\nreportOrigin=KartPad (modified WiiCompiled platform integration)\n"
+             "upstreamProject=https://github.com/patchzyy/Wiicompiled\n"];
+        NSString *candidateBaseline = [NSBundle.mainBundle objectForInfoDictionaryKey:@"KartPadCandidateNativeBaseline"];
+        NSString *candidateAdapter = [NSBundle.mainBundle objectForInfoDictionaryKey:@"KartPadCandidateReportingSHA256"];
+        if (candidateBaseline.length > 0 && candidateAdapter.length > 0) {
+          report = [report stringByAppendingFormat:
+              @"candidateScope=reporting adapter rebuild; native baseline retained\nnativeBaseline=%@\nreportingAdapterSHA256=%@\n",
+              candidateBaseline, candidateAdapter];
+        }
+        NSURL *destination = [reportURL.URLByDeletingLastPathComponent
+            URLByAppendingPathComponent:@"Latest-KartPad-Diagnostic.log"];
+        if ([report writeToURL:destination atomically:YES
+                     encoding:NSUTF8StringEncoding error:&error]) {
+          kartPadReportURL = destination;
+        }
+      }
+      reportURL = kartPadReportURL;
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [preparing dismissViewControllerAnimated:YES completion:^{
+          if (reportURL == nil && !openGitHub) {
+            UIAlertController *alert =
+                [UIAlertController alertControllerWithTitle:@"Diagnostic Report Unavailable"
+                                                    message:error.localizedDescription ?: @"The report could not be prepared. Try again or report on GitHub without a log."
+                                             preferredStyle:UIAlertControllerStyleAlert];
+            [alert addAction:[UIAlertAction actionWithTitle:@"OK"
+                                                      style:UIAlertActionStyleDefault
+                                                    handler:nil]];
+            [presenter presentViewController:alert animated:YES completion:nil];
+            return;
+          }
 
-  if (openGitHub) {
-    KartPadReportReviewController *review = [[KartPadReportReviewController alloc] init];
-    review.reportURL = reportURL;
-    __weak KartPadGameOverlay *weakSelf = self;
-    review.continueReport = ^(NSString *evidence) {
-      NSMutableDictionary *reviewedAnswers = [answers mutableCopy];
-      reviewedAnswers[@"diagnostics"] = evidence;
-      [weakSelf openGitHubReportWithID:reportID answers:reviewedAnswers];
-    };
-    UINavigationController *navigation = [[UINavigationController alloc] initWithRootViewController:review];
-    navigation.modalPresentationStyle = UIModalPresentationFormSheet;
-    [presenter presentViewController:navigation animated:YES completion:nil];
-    return;
-  }
+          if (openGitHub) {
+            KartPadReportReviewController *review = [[KartPadReportReviewController alloc] init];
+            review.reportURL = reportURL;
+            __weak KartPadGameOverlay *weakSelf = self;
+            review.continueReport = ^(NSString *evidence) {
+              NSMutableDictionary *reviewedAnswers = [answers mutableCopy];
+              reviewedAnswers[@"diagnostics"] = evidence;
+              [weakSelf chooseReportDestinationWithID:reportID answers:reviewedAnswers];
+            };
+            UINavigationController *navigation = [[UINavigationController alloc] initWithRootViewController:review];
+            navigation.modalPresentationStyle = UIModalPresentationFormSheet;
+            [presenter presentViewController:navigation animated:YES completion:nil];
+            return;
+          }
 
-  UIActivityViewController *share =
-      [[UIActivityViewController alloc] initWithActivityItems:@[reportURL]
-                                       applicationActivities:nil];
-  UIPopoverPresentationController *popover = share.popoverPresentationController;
-  UIButton *menuButton = (UIButton *)KartPadSubviewWithAccessibilityLabel(
-      self, @"Menu", UIButton.class);
-  popover.sourceView = menuButton ?: self;
-  popover.sourceRect = menuButton != nil ? menuButton.bounds : self.bounds;
-  [presenter presentViewController:share animated:YES completion:nil];
+          UIActivityViewController *share =
+              [[UIActivityViewController alloc] initWithActivityItems:@[reportURL]
+                                               applicationActivities:nil];
+          UIPopoverPresentationController *popover = share.popoverPresentationController;
+          UIButton *menuButton = (UIButton *)KartPadSubviewWithAccessibilityLabel(
+              self, @"Menu", UIButton.class);
+          popover.sourceView = menuButton ?: self;
+          popover.sourceRect = menuButton != nil ? menuButton.bounds : self.bounds;
+          [presenter presentViewController:share animated:YES completion:nil];
+        }];
+      });
+    });
+  }];
+}
+
+- (void)chooseReportDestinationWithID:(NSString *)reportID
+                               answers:(NSDictionary<NSString *, NSString *> *)answers {
+  UIAlertController *choice = [UIAlertController alertControllerWithTitle:@"Where should this report go?"
+      message:@"Choose KartPad for app problems or when unsure. Choose WiiCompiled for shared game/runtime problems. Your draft identifies your KartPad build and keeps your reviewed-log choice. Attach the file in the browser."
+      preferredStyle:UIAlertControllerStyleAlert];
+  [choice addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+  __weak KartPadGameOverlay *weakSelf = self;
+  [choice addAction:[UIAlertAction actionWithTitle:@"KartPad" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+    [choice dismissViewControllerAnimated:YES completion:^{
+      [weakSelf openGitHubReportWithID:reportID answers:answers upstream:NO];
+    }];
+  }]];
+  [choice addAction:[UIAlertAction actionWithTitle:@"WiiCompiled" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+    [choice dismissViewControllerAnimated:YES completion:^{
+      [weakSelf openGitHubReportWithID:reportID answers:answers upstream:YES];
+    }];
+  }]];
+  choice.preferredAction = choice.actions[1];
+  [KartPadVisibleViewController(self.window) presentViewController:choice animated:YES completion:nil];
 }
 
 - (void)openGitHubReportWithID:(NSString *)reportID
-                       answers:(NSDictionary<NSString *, NSString *> *)answers {
+                       answers:(NSDictionary<NSString *, NSString *> *)answers
+                      upstream:(BOOL)upstream {
   NSBundle *bundle = NSBundle.mainBundle;
   NSString *version = [bundle objectForInfoDictionaryKey:
       @"CFBundleShortVersionString"] ?: @"unknown";
@@ -2448,12 +2483,50 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
     [NSURLQueryItem queryItemWithName:@"frequency" value:answers[@"frequency"]],
     [NSURLQueryItem queryItemWithName:@"diagnostics" value:answers[@"diagnostics"] ?: @"Diagnostic log not attached."],
   ];
+  if (upstream) {
+    components = [NSURLComponents componentsWithString:@"https://github.com/patchzyy/Wiicompiled/issues/new"];
+    components.queryItems = @[
+      [NSURLQueryItem queryItemWithName:@"template" value:@"2-bug-report.yml"],
+      [NSURLQueryItem queryItemWithName:@"title" value:[NSString stringWithFormat:@"[Bug] [KartPad] %@", problem]],
+      [NSURLQueryItem queryItemWithName:@"version" value:[NSString stringWithFormat:
+          @"KartPad %@ (build %@), modified WiiCompiled integration; not verified on latest stock WiiCompiled", version, build]],
+      [NSURLQueryItem queryItemWithName:@"what" value:answers[@"problem"] ?: @""],
+      [NSURLQueryItem queryItemWithName:@"doing" value:[NSString stringWithFormat:
+          @"KartPad report %@. Frequency: %@\n%@\nRelated KartPad issue: add link if available.", reportID, answers[@"frequency"] ?: @"", answers[@"context"] ?: @""]],
+      [NSURLQueryItem queryItemWithName:@"os" value:platform],
+      [NSURLQueryItem queryItemWithName:@"gpu" value:@"Apple device, Metal; exact GPU not collected"],
+      [NSURLQueryItem queryItemWithName:@"logs" value:answers[@"diagnostics"] ?: @"Diagnostic log not attached."],
+    ];
+  }
   NSURL *url = components.URL;
   if (url == nil) return;
-  [UIApplication.sharedApplication openURL:url options:@{}
-                         completionHandler:^(BOOL success) {
-    if (!success) SunPadLog(@"diagnostic github open failed id=%@", reportID);
-  }];
+  [self presentReportBrowserURL:url];
+}
+
+- (void)presentReportBrowserURL:(NSURL *)url {
+  self.reportDraftURL = url;
+  SFSafariViewController *browser = [[SFSafariViewController alloc] initWithURL:url];
+  browser.delegate = self;
+  [KartPadVisibleViewController(self.window) presentViewController:browser animated:YES completion:nil];
+}
+
+- (void)safariViewController:(SFSafariViewController *)controller didCompleteInitialLoad:(BOOL)didLoadSuccessfully {
+  if (didLoadSuccessfully) return;
+  NSURL *url = self.reportDraftURL;
+  UIAlertController *failure = [UIAlertController alertControllerWithTitle:@"GitHub Could Not Be Loaded"
+      message:@"Your report is still available. Retry, copy the draft link, or return to your report."
+      preferredStyle:UIAlertControllerStyleAlert];
+  __weak KartPadGameOverlay *weakSelf = self;
+  [failure addAction:[UIAlertAction actionWithTitle:@"Retry" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+    [controller.presentingViewController dismissViewControllerAnimated:YES completion:^{ [weakSelf presentReportBrowserURL:url]; }];
+  }]];
+  [failure addAction:[UIAlertAction actionWithTitle:@"Copy Draft Link" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+    UIPasteboard.generalPasteboard.URL = url;
+  }]];
+  [failure addAction:[UIAlertAction actionWithTitle:@"Back to Report" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+    [controller.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+  }]];
+  [controller presentViewController:failure animated:YES completion:nil];
 }
 
 - (void)rPressureChanged:(uint8_t)pressure fullPress:(BOOL)fullPress {

@@ -1016,6 +1016,29 @@ static bool KPFullscreenAcrossNotch() {
     [NSURLQueryItem queryItemWithName:@"diagnostics" value:
         @"No diagnostic file has been uploaded. Use Help → Save Diagnostics Report…, review the saved text, then attach it manually here if relevant."],
   ];
+  NSAlert *choice = [NSAlert new];
+  choice.messageText = @"Where should this report go?";
+  choice.informativeText = @"Choose KartPad if unsure. WiiCompiled receives a draft identifying your modified KartPad build. Do not confirm stock WiiCompiled checks unless tested. Save and review diagnostics, then attach manually; nothing is uploaded automatically.";
+  [choice addButtonWithTitle:@"KartPad"];
+  [choice addButtonWithTitle:@"WiiCompiled"];
+  [choice addButtonWithTitle:@"Cancel"];
+  NSModalResponse response = [choice runModal];
+  if (response == NSAlertThirdButtonReturn) return;
+  if (response == NSAlertSecondButtonReturn) {
+    NSMutableDictionary<NSString *, NSString *> *fields = [NSMutableDictionary dictionary];
+    for (NSURLQueryItem *item in draft.queryItems) fields[item.name] = item.value;
+    draft = [NSURLComponents componentsWithString:@"https://github.com/patchzyy/Wiicompiled/issues/new"];
+    draft.queryItems = @[
+      [NSURLQueryItem queryItemWithName:@"template" value:@"2-bug-report.yml"],
+      [NSURLQueryItem queryItemWithName:@"title" value:@"[Bug] [KartPad] "],
+      [NSURLQueryItem queryItemWithName:@"version" value:[NSString stringWithFormat:
+          @"KartPad %@, modified WiiCompiled integration; not verified on latest stock WiiCompiled", fields[@"revision"]]],
+      [NSURLQueryItem queryItemWithName:@"doing" value:@"Report origin: KartPad on macOS. Add reproduction steps and a related KartPad issue link if available."],
+      [NSURLQueryItem queryItemWithName:@"os" value:fields[@"platform"]],
+      [NSURLQueryItem queryItemWithName:@"gpu" value:@"Apple Silicon, Metal; exact GPU not collected"],
+      [NSURLQueryItem queryItemWithName:@"logs" value:fields[@"diagnostics"]],
+    ];
+  }
   if (draft.URL != nil) [NSWorkspace.sharedWorkspace openURL:draft.URL];
 }
 

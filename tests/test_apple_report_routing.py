@@ -14,10 +14,12 @@ class AppleReportRoutingTests(unittest.TestCase):
             self.skipTest('Apple SDK unavailable')
         ios = (ROOT / 'apple/ios/KartPadRuntimeOverlayHost.mm').read_text()
         start = ios.index('  NSString *report = reportURL ?', ios.index('- (void)createDiagnosticReportFromPrompt:'))
-        export = ios[start:ios.index('  if (reportURL == nil && !openGitHub)', start)]
+        export = ios[start:ios.index('  dispatch_async(dispatch_get_main_queue()', start)]
         mac = (ROOT / 'apple/macos/KartPadMacShell.mm').read_text()
         start = mac.index('  NSBundle *bundle', mac.index('- (void)reportProblem:'))
-        draft = mac[start:mac.index('  if (draft.URL != nil)', start)]
+        draft = mac[start:mac.index('  NSAlert *choice', start)]
+        start = mac.index('    NSMutableDictionary<NSString *, NSString *> *fields', mac.index('- (void)reportProblem:'))
+        upstream = mac[start:mac.index('\n  }\n  if (draft.URL != nil)', start)]
         source = '''#import <Foundation/Foundation.h>
 #include <cassert>
 static NSURL *Export(NSURL *reportURL) {
@@ -27,6 +29,11 @@ static NSURL *Export(NSURL *reportURL) {
 }
 static NSURL *Draft() {
 ''' + draft + '''
+  return draft.URL;
+}
+static NSURL *Upstream() {
+  NSURLComponents *draft = [NSURLComponents componentsWithURL:Draft() resolvingAgainstBaseURL:NO];
+''' + upstream + '''
   return draft.URL;
 }
 int main() { @autoreleasepool {
@@ -55,6 +62,14 @@ int main() { @autoreleasepool {
   assert([fields[@"context"] containsString:@"KartPad (modified WiiCompiled"]);
   assert([fields[@"diagnostics"] containsString:@"No diagnostic file has been uploaded"]);
   assert([fields[@"diagnostics"] containsString:@"attach it manually"]);
+  NSURLComponents *up = [NSURLComponents componentsWithURL:Upstream() resolvingAgainstBaseURL:NO];
+  assert([up.path isEqual:@"/patchzyy/Wiicompiled/issues/new"]);
+  NSMutableDictionary *upfields = [NSMutableDictionary dictionary];
+  for (NSURLQueryItem *item in up.queryItems) upfields[item.name] = item.value;
+  assert([upfields[@"template"] isEqual:@"2-bug-report.yml"]);
+  assert([upfields[@"version"] containsString:@"not verified on latest stock WiiCompiled"]);
+  assert([upfields[@"logs"] isEqual:fields[@"diagnostics"]]);
+  assert(upfields[@"preflight"] == nil);
 } }
 '''
         with tempfile.TemporaryDirectory() as temp:

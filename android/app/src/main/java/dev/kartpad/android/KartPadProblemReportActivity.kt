@@ -20,6 +20,10 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.Spinner
+import android.widget.ArrayAdapter
+import android.widget.AdapterView
+import android.content.pm.PackageManager
 import java.util.UUID
 
 /** Keeps the report open while Android's document picker or share sheet is in front. */
@@ -32,10 +36,14 @@ class KartPadProblemReportActivity : Activity() {
     private lateinit var reviewed: CheckBox
     private lateinit var selectedFile: TextView
     private lateinit var status: TextView
+    private lateinit var destination: Spinner
+    private lateinit var upstreamKind: Spinner
     private var attachment: Uri? = null
     private var attachmentName = ""
     private var reportId = ""
     private var export: LocalExport? = null
+    private var exportSession: String? = null
+    private var logCheckGeneration = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +51,7 @@ class KartPadProblemReportActivity : Activity() {
             ?: "KP-${UUID.randomUUID().toString().take(8).uppercase()}"
         attachment = savedInstanceState?.getString("attachment")?.let(Uri::parse)
         attachmentName = savedInstanceState?.getString("attachment_name").orEmpty()
+        exportSession = savedInstanceState?.getString("export_session")
         val column = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(24), dp(20), dp(24), dp(20))
@@ -70,28 +79,59 @@ class KartPadProblemReportActivity : Activity() {
             column.addView(this)
         }
         label("Report a Problem").textSize = 24f
-        label("KartPad builds on WiiCompiled. This form reports problems with KartPad. See the reporting guide for help choosing the relevant project.")
-        button("Reporting Guide…") {
-            openHandoff(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/chrissotraidis/kartpad/blob/main/docs/REPORTING.md")))
+        label("KartPad builds on WiiCompiled. Choose where to send your draft below.")
+        label("").apply {
+            text = android.text.Html.fromHtml("<a href='https://github.com/chrissotraidis/kartpad/blob/main/docs/REPORTING.md'>Reporting guide</a> · <a href='https://github.com/patchzyy/Wiicompiled'>About WiiCompiled</a>", android.text.Html.FROM_HTML_MODE_LEGACY)
+            movementMethod = android.text.method.LinkMovementMethod.getInstance()
         }
-        button("About WiiCompiled…") {
-            openHandoff(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/patchzyy/Wiicompiled")))
+        label("Send to")
+        destination = Spinner(this).apply {
+            adapter = ArrayAdapter(this@KartPadProblemReportActivity, android.R.layout.simple_spinner_dropdown_item,
+                arrayOf("KartPad — app, platform, or unsure", "WiiCompiled — suspected runtime problem"))
+            column.addView(this)
+            setSelection(savedInstanceState?.getInt("destination", 0) ?: 0)
         }
+        upstreamKind = Spinner(this).apply {
+            adapter = ArrayAdapter(this@KartPadProblemReportActivity, android.R.layout.simple_spinner_dropdown_item, KartPadUpstreamReport.kinds)
+            column.addView(this)
+            setSelection(savedInstanceState?.getInt("upstream_kind", 0) ?: 0)
+        }
+        val upstreamNote = label("This is a modified KartPad build. Only confirm upstream checks you have verified; if its form does not fit, report to KartPad.")
+        fun updateDestination() {
+            upstreamKind.visibility = if (destination.selectedItemPosition == 1) View.VISIBLE else View.GONE
+            upstreamNote.visibility = upstreamKind.visibility
+        }
+        destination.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) = updateDestination()
+            override fun onNothingSelected(parent: AdapterView<*>?) = Unit
+        }
+        updateDestination()
         problem = field("What went wrong?", "problem", 2000, 2)
         area = field("Area and what you were doing", "area", 1000)
         frequency = field("Every time, sometimes, once, or not sure?", "frequency", 160)
-        label("Device logs are strongly recommended for slowdowns, graphics problems and crashes. Export privately, review locally, then choose only relevant log text. Reports on GitHub are public.")
+        label("GitHub opens a public draft in your browser. Attach reviewed logs or screenshots there; nothing is uploaded by KartPad.")
+        status = label(savedInstanceState?.getString("status").orEmpty()).apply {
+            accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
+        }
+        button("Open GitHub Draft") { handoff(github = true) }
+        label("Optional: prepare logs or share a report file")
         button("Export Private Logs…") {
             AlertDialog.Builder(this)
                 .setTitle("Review before sharing")
                 .setMessage("This saves a private ZIP. Open it locally and choose relevant .log, .txt or .json files to share. Do not attach the whole private ZIP, game data, saves, NAND, identities or credentials. Exporting does not upload anything or select an attachment.")
                 .setNegativeButton("Back", null)
                 .setPositiveButton("Save Private ZIP…") { _, _ ->
-                    launchDocument(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                        type = "application/zip"
-                        addCategory(Intent.CATEGORY_OPENABLE)
-                        putExtra(Intent.EXTRA_TITLE, "KartPad-private-diagnostics.zip")
-                    }, EXPORT_LOGS)
+                    val sessions = runCatching { KartPadDiagnosticExport.sessions(this) }.getOrDefault(emptyList())
+                    if (sessions.isEmpty()) status.text = "No game session logs are available yet. You can report without logs."
+                    else AlertDialog.Builder(this).setTitle("Choose the game session")
+                        .setItems(sessions.map { "${it.id}\nLast written: ${java.util.Date(it.modified)}" }.toTypedArray()) { _, index ->
+                            exportSession = sessions[index].id
+                            launchDocument(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                                type = "application/zip"
+                                addCategory(Intent.CATEGORY_OPENABLE)
+                                putExtra(Intent.EXTRA_TITLE, "KartPad-private-diagnostics.zip")
+                            }, EXPORT_LOGS)
+                        }.setNegativeButton("Back", null).show()
                 }.show()
         }
         choices = RadioGroup(this).apply {
@@ -128,14 +168,10 @@ class KartPadProblemReportActivity : Activity() {
             reviewed.visibility = chooseFile.visibility
             reason.visibility = if (choices.checkedRadioButtonId == WITHOUT_LOGS) View.VISIBLE else View.GONE
         }
-        choices.setOnCheckedChangeListener { _, _ -> refreshChoice() }
+        choices.setOnCheckedChangeListener { _, _ -> logCheckGeneration++; refreshChoice() }
         choices.check(savedInstanceState?.getInt("choice", -1) ?: -1)
         refreshChoice()
-        status = label(savedInstanceState?.getString("status").orEmpty()).apply {
-            accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
-        }
         button("Share Report…") { handoff(github = false) }
-        button("Report on GitHub…") { handoff(github = true) }
         button("Back to Game") { finish() }
         setContentView(ScrollView(this).apply {
             addView(column)
@@ -152,6 +188,9 @@ class KartPadProblemReportActivity : Activity() {
                 insets
             }
         })
+        if (status.text.toString().startsWith("Checking the log file")) {
+            status.text = "The file check was interrupted. Choose or share the log again; your draft was restored."
+        }
         export = lastNonConfigurationInstance as? LocalExport
         if (export == null && status.text.toString() == "Exporting private logs…") {
             status.text = "The app stopped during export. Check the destination for an incomplete ZIP, or export again. Your draft was restored."
@@ -169,38 +208,58 @@ class KartPadProblemReportActivity : Activity() {
 
     private fun handoff(github: Boolean) {
         val evidence = evidence()
-        evidence.validationError()?.let { status.text = it; return }
-        // SAF documents can be removed or changed while their editor is open.
-        // Recheck the same gate for both share and browser handoffs.
-        if (evidence.choice == "logs" && (attachment?.let(::logMetadata) == null || runCatching {
-                contentResolver.openAssetFileDescriptor(attachment!!, "r")?.use { true } == true
-            }.getOrDefault(false).not())) {
-            reviewed.isChecked = false
-            status.text = "The selected log is no longer readable or eligible. Choose it again; your draft is still here."
+        if (github) {
+            logCheckGeneration++
+            status.text = "Opening your GitHub draft in a browser…"
+            openBrowser(githubIntent(evidence))
             return
         }
-        if (github) {
-            AlertDialog.Builder(this)
-                .setTitle("GitHub report draft")
-                .setMessage(if (evidence.choice == "logs")
-                    "The browser cannot attach your selected file automatically. Attach that reviewed log file in the GitHub draft before submitting. Your answers stay here if you return."
-                    else "Your report will explain why logs are unavailable. GitHub reports are public; review the draft before submitting.")
-                .setNegativeButton("Back", null)
-                .setPositiveButton("Open GitHub Draft") { _, _ -> openHandoff(githubIntent(evidence)) }
-                .show()
-        } else {
-            val send = Intent(Intent.ACTION_SEND).apply {
-                type = "text/plain"
-                putExtra(Intent.EXTRA_SUBJECT, "KartPad Android problem $reportId")
-                putExtra(Intent.EXTRA_TEXT, report(evidence.summary(false)))
-                if (evidence.choice == "logs") {
-                    putExtra(Intent.EXTRA_STREAM, attachment)
-                    clipData = ClipData("Reviewed diagnostic log", arrayOf("text/plain"), ClipData.Item(attachment!!))
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                }
+        evidence.validationError()?.let { showLogError(it); return }
+        if (evidence.choice == "logs") {
+            val sharingUri = requireNotNull(attachment)
+            checkLogAsync(sharingUri) { metadata ->
+                if (metadata == null) {
+                    reviewed.isChecked = false
+                    showLogError("The selected log is no longer readable. Choose it again; your draft is still here.")
+                } else if (attachment == sharingUri && reviewed.isChecked) shareReport(evidence, sharingUri)
             }
-            openHandoff(Intent.createChooser(send, "Share KartPad report"))
+        } else shareReport(evidence)
+    }
+
+    private fun shareReport(evidence: KartPadReportEvidence, sharingUri: Uri? = null) {
+        val send = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_SUBJECT, "KartPad Android problem $reportId")
+            putExtra(Intent.EXTRA_TEXT, report(evidence.summary(false)))
+            if (evidence.choice == "logs") {
+                putExtra(Intent.EXTRA_STREAM, sharingUri)
+                clipData = ClipData("Reviewed diagnostic log", arrayOf("text/plain"), ClipData.Item(requireNotNull(sharingUri)))
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
         }
+        status.text = "Opening the share sheet…"
+        openHandoff(Intent.createChooser(send, "Share KartPad report"))
+    }
+
+    private fun showLogError(message: String) {
+        status.text = message
+        android.widget.Toast.makeText(this, message, android.widget.Toast.LENGTH_LONG).show()
+    }
+
+    private fun checkLogAsync(uri: Uri, complete: (Pair<String, Long>?) -> Unit) {
+        val generation = ++logCheckGeneration
+        status.text = "Checking the log file… Your draft stays available."
+        android.widget.Toast.makeText(this, "Checking the log file…", android.widget.Toast.LENGTH_SHORT).show()
+        Thread {
+            val metadata = runCatching {
+                logMetadata(uri)?.takeIf {
+                    contentResolver.openAssetFileDescriptor(uri, "r")?.use { true } == true
+                }
+            }.getOrNull()
+            runOnUiThread {
+                if (!isFinishing && !isDestroyed && generation == logCheckGeneration) complete(metadata)
+            }
+        }.start()
     }
 
     private fun report(logEvidence: String) = buildString {
@@ -214,9 +273,37 @@ class KartPadProblemReportActivity : Activity() {
     }
 
     private fun technicalSummary() =
-        KartPadReportMetadata.summary(intent.getStringExtra(TECHNICAL_CONTEXT).orEmpty())
+        KartPadReportMetadata.summary(intent.getStringExtra(TECHNICAL_CONTEXT) ?: buildString {
+            appendLine("Version: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
+            appendLine("Android: ${android.os.Build.VERSION.RELEASE} (API ${android.os.Build.VERSION.SDK_INT})")
+            appendLine("Device: ${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}")
+            append("Runtime profile and upstream runtime version: unknown outside the game; see selected console.log header.")
+        })
+
+    private fun openBrowser(action: Intent) {
+        // Resolve a generic web link to avoid the GitHub app dropping issue-form fields.
+        val web = Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com")).addCategory(Intent.CATEGORY_BROWSABLE)
+        val browsers = packageManager.queryIntentActivities(web, PackageManager.MATCH_DEFAULT_ONLY)
+            .map { it.activityInfo.packageName }.distinct()
+        if (browsers.isEmpty()) {
+            status.text = "No browser is available. Install or enable a web browser, then try again. Your draft is still here."
+            return
+        }
+        val options = browsers.map { Intent(action).setPackage(it).addCategory(Intent.CATEGORY_BROWSABLE) }
+        val preferred = packageManager.resolveActivity(web, PackageManager.MATCH_DEFAULT_ONLY)?.activityInfo?.packageName
+        val direct = options.firstOrNull { it.`package` == preferred }
+        openHandoff(direct ?: if (options.size == 1) options.first() else
+            Intent.createChooser(options.first(), "Open report in browser").putExtra(Intent.EXTRA_INITIAL_INTENTS, options.drop(1).toTypedArray()))
+    }
 
     private fun githubIntent(evidence: KartPadReportEvidence): Intent {
+        if (destination.selectedItemPosition == 1) {
+            val uri = Uri.parse("https://github.com/patchzyy/Wiicompiled/issues/new").buildUpon()
+            KartPadUpstreamReport.fields(upstreamKind.selectedItemPosition, problem.text.toString().trim(), area.text.toString().trim(),
+                frequency.text.toString().trim(), "Report ID: $reportId\n${technicalSummary()}", evidence.browserSummary())
+                .forEach { (key, value) -> uri.appendQueryParameter(key, value) }
+            return Intent(Intent.ACTION_VIEW, uri.build())
+        }
         val uri = Uri.parse("https://github.com/chrissotraidis/kartpad/issues/new").buildUpon()
             .appendQueryParameter("template", "bug_report.yml")
             .appendQueryParameter("title", "[Bug]: ${problem.text.toString().trim().ifBlank { "KartPad problem" }.take(100)}")
@@ -227,7 +314,7 @@ class KartPadProblemReportActivity : Activity() {
             .appendQueryParameter("summary", problem.text.toString().trim())
             .appendQueryParameter("context", "Runtime profile: ${intent.getStringExtra(PROFILE).orEmpty()}\n${area.text.toString().trim()}")
             .appendQueryParameter("frequency", frequency.text.toString().trim())
-            .appendQueryParameter("diagnostics", "${evidence.summary(true)}\n\n${technicalSummary()}")
+            .appendQueryParameter("diagnostics", "${evidence.browserSummary()}\n\n${technicalSummary()}")
             .build()
         return Intent(Intent.ACTION_VIEW, uri)
     }
@@ -239,6 +326,7 @@ class KartPadProblemReportActivity : Activity() {
     }
 
     private fun launchDocument(action: Intent, request: Int) {
+        logCheckGeneration++
         runCatching { startActivityForResult(action, request) }.onFailure {
             status.text = "The document picker could not open. Your draft is still here."
         }
@@ -260,22 +348,27 @@ class KartPadProblemReportActivity : Activity() {
         if (resultCode != RESULT_OK) return
         val uri = data?.data?.takeIf { it.scheme == "content" } ?: return
         if (requestCode == CHOOSE_LOG) {
-            val metadata = logMetadata(uri)
-            if (metadata == null) {
-                status.text = "Choose a .log, .txt or .json file up to 4 MiB with a known size. Do not attach the private ZIP."
-                return
-            }
-            attachment = uri
-            attachmentName = metadata.first
             reviewed.isChecked = false
-            selectedFile.text = "Selected: $attachmentName. Review it before checking the confirmation below."
-            status.text = ""
+            checkLogAsync(uri) { metadata ->
+                if (metadata == null) {
+                    showLogError("Choose a readable .log, .txt or .json file up to 4 MiB with a known size. Do not attach the private ZIP.")
+                } else {
+                    attachment = uri
+                    attachmentName = metadata.first
+                    selectedFile.text = "Selected: $attachmentName. Review it before checking the confirmation below."
+                    status.text = "Log selected. Review it before sharing."
+                }
+            }
         } else if (requestCode == EXPORT_LOGS) {
             if (export?.running == true) {
                 status.text = "An export is already running. Wait for it to finish."
                 return
             }
-            export = LocalExport(applicationContext, uri).also { job ->
+            val session = exportSession ?: run {
+                status.text = "Choose a game session again before exporting."
+                return
+            }
+            export = LocalExport(applicationContext, uri, session).also { job ->
                 status.text = job.status
                 job.onUpdate = { status.text = it }
                 job.start()
@@ -285,6 +378,9 @@ class KartPadProblemReportActivity : Activity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putString("report_id", reportId)
+        outState.putInt("destination", destination.selectedItemPosition)
+        outState.putInt("upstream_kind", upstreamKind.selectedItemPosition)
+        outState.putString("export_session", exportSession)
         outState.putString("attachment", attachment?.toString())
         outState.putString("attachment_name", attachmentName)
         outState.putString("problem", problem.text.toString())
@@ -298,16 +394,16 @@ class KartPadProblemReportActivity : Activity() {
     }
 
     override fun onRetainNonConfigurationInstance(): Any? = export
-    override fun onDestroy() { export?.onUpdate = null; super.onDestroy() }
+    override fun onDestroy() { logCheckGeneration++; export?.onUpdate = null; super.onDestroy() }
     private fun dp(value: Int) = (value * resources.displayMetrics.density).toInt()
 
-    private class LocalExport(val context: android.content.Context, val destination: Uri) {
+    private class LocalExport(val context: android.content.Context, val destination: Uri, val session: String) {
         @Volatile var status = "Exporting private logs…"
         @Volatile var running = true
         var onUpdate: ((String) -> Unit)? = null
         fun start() {
             Thread {
-                val success = runCatching { KartPadDiagnosticExport.write(context, destination) }.isSuccess
+                val success = runCatching { KartPadDiagnosticExport.write(context, destination, session) }.isSuccess
                 status = if (success) "Private ZIP saved. Review locally, then choose a relevant log text file. Nothing was uploaded."
                     else "Export failed. The destination may contain an incomplete ZIP. Your report draft is still here."
                 running = false

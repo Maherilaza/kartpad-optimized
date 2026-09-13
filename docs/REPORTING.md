@@ -8,28 +8,27 @@ are independently maintained.
 
 ## Choose a destination
 
-- **Using WiiCompiled directly:** use the
-  [WiiCompiled issue chooser](https://github.com/patchzyy/Wiicompiled/issues/new/choose)
-  and its log instructions.
-- **Using KartPad:** use the
-  [KartPad issue chooser](https://github.com/chrissotraidis/kartpad/issues/new/choose)
-  for app/install/touch-control problems and when the cause is uncertain.
-- **A known or suspected shared runtime problem:** search
-  [WiiCompiled's existing issues](https://github.com/patchzyy/Wiicompiled/issues)
-  too. Link a matching report in your KartPad issue. If contributing evidence
-  upstream, clearly state that it came from KartPad, with its exact version
-  and modifications/baseline if known. Follow that project's instructions.
+- **KartPad app, installation, touch controls, or an uncertain cause:** use the
+  [KartPad issue chooser](https://github.com/chrissotraidis/kartpad/issues/new/choose).
+- **A suspected WiiCompiled runtime problem, or using WiiCompiled directly:** use
+  the [WiiCompiled issue chooser](https://github.com/patchzyy/Wiicompiled/issues/new/choose).
+  KartPad users can submit directly; no KartPad maintainer handoff is required.
+  Clearly identify the modified KartPad build and whether the problem has also
+  been reproduced on unmodified WiiCompiled. **Not tested** is a valid answer.
 
-A crash during a race or a graphics problem can involve KartPad changes too;
-the symptom alone does not establish ownership. You do not need to diagnose
-the source code to ask for help. Maintainers should connect related reports
-and explain which released KartPad build contains an upstream correction.
+Search the chosen tracker first and add evidence to a matching issue instead
+of creating another. If reports already exist in both projects, cross-link
+them. You do not need to open one in each project.
 
-WiiCompiled's current forms ask about its latest release and include Windows
-log paths. Do not check a statement that is untrue for your KartPad build.
-If the form does not fit, keep the evidence in KartPad and link the upstream
-issue for coordination. No general upstream acceptance of KartPad reports is
-being claimed.
+A race crash or graphics problem can involve KartPad changes too; the symptom
+alone does not establish ownership. You do not need to diagnose the source
+code to ask for help. Use KartPad when unsure.
+
+WiiCompiled's forms ask about its latest release and include Windows log paths.
+Do not check a statement that is untrue for your KartPad build or claim that
+KartPad logs came from a stock WiiCompiled run. If the available form requires
+a claim you cannot make, use KartPad and link any relevant upstream issue.
+Each project's maintainers decide which reports they can investigate.
 
 ## Collect once, review, then attach
 
@@ -59,74 +58,32 @@ identities, personal paths and network/account identifiers. The private Android
 archive is for local inspection, not automatic public upload. Keep your
 installation and saves intact while troubleshooting.
 
-## Maintainer coordination and next implementation
+## Reporting changes in development
 
-The immediate changes make the relationship and destinations visible and carry
-more existing report context through GitHub. They do not change who accepts
-reports upstream, and require a new tested build to reach installed apps.
+The repository links above work independently of the installed app. Direct
+in-app destination selection and Android session selection are prepared in source;
+this guide does not announce a released build containing them. Older builds
+may open only a KartPad draft. You can open either tracker using the links above
+and attach the same reviewed evidence yourself.
 
-### 1. Finish one reusable runtime report
+In the **Android private candidate**, describe the problem, choose the visible
+KartPad/WiiCompiled destination, then tap **Open GitHub Draft**. You do not need
+to select a local file or explain missing logs first. Attach reviewed evidence
+on GitHub. **Share Report…** is separate and still checks any selected file
+before sharing it. Optional log export lets you choose the failed session.
 
-Improve the existing exporters rather than add a new reporting system. Offer
-the most recent game session with its start time and profile visible; let the
-player choose an earlier session when that is the one that failed. A new app
-launch or recent file modification must not silently replace the failed run.
+In the **iPhone/iPad private candidate**, **Continue to GitHub…** shows
+**Preparing Report…**, then a review screen. Choose **Choose Project — I’ll
+Attach the Log** after review, or **Continue Without a Log**, then select
+KartPad or WiiCompiled. The draft opens in an embedded Safari view. Returning
+from the destination choice or browser preserves the review; a loading failure
+offers retry, copying the draft link, or returning to the report. Nothing is
+submitted automatically. Apple still uses the existing current/previous-session
+exporter rather than Android's session picker.
 
-The reviewed export should contain a short cover sheet and that session's
-runtime console/crash text when available. Preserve startup/version information
-and a bounded failure tail; clearly mark omissions or truncation. Keep OS exit
-records separate and include only a matching record when one can be identified.
-Missing crash text is not evidence that the run did not crash.
+The [support guide](SUPPORT.md#collect-a-useful-report) describes logs and older
+builds. These reporting changes do not establish gameplay stability or announce
+a public release.
 
-Record KartPad build/source revision, WiiCompiled baseline, device/OS and game
-profile from that session's recorded build information. New builds should stamp
-the verified upstream baseline during preparation/build. For older logs, show
-unknown rather than substitute today's checkout or currently installed build.
-Reproduction on unmodified WiiCompiled is **yes / no / not tested**.
-
-Use this same report for saving, attaching to an existing issue, or preparing a
-new issue. Opening GitHub never uploads it. Keep the report ID stable, keep raw
-logs out of URL parameters, and require review before public sharing.
-
-### 2. Direct destinations, no mandatory maintainer relay
-
-The selected direction is direct user submission of suspected WiiCompiled
-runtime problems, with explicit KartPad origin. The repository issue chooser
-links directly to WiiCompiled's existing forms. This needs no fork conversion,
-new upstream form, or mandatory coordination conversation.
-
-Keep KartPad as the app/platform destination and fallback for uncertainty.
-Do not assume every gameplay or rendering symptom proves an upstream defect.
-Users must follow the receiving form honestly: never auto-check latest/stock
-WiiCompiled or reproduction claims. The creator still controls his tracker and
-can redirect or close reports; a direct link is not a support guarantee.
-
-The app implementation still needs to carry its prepared report to a choice
-of destination. The current branch improves context and project visibility;
-its app submission buttons still create KartPad drafts. Finish that destination
-selection without auto-posting, copying old issues, or uploading raw logs.
-Users should review and submit once to their selected tracker, with the same
-session evidence. Repository migration remains separate; see
+Repository migration is a separate decision; see
 [Fork connection options](FORK-OPTIONS.md).
-
-### 3. Validate and ship in small steps
-
-The attribution, chooser links and reporting improvements already prepared in
-source can be reviewed independently of the exporter work. Publish only checked
-documentation; links in packaged apps must resolve when those apps ship.
-
-Implement session selection on Android first, where the existing multi-session
-ZIP causes confusion, then use the same report fields in the existing Mac and
-iPhone/iPad exporters. Keep platform-specific collection code. tvOS remains a
-separate script-based collection path with the same origin/session labels.
-
-For each platform test a normal run, a failed run followed by relaunch, missing
-logs, and an older session from a different build. Verify the report keeps the
-correct session/build and does not include unrelated sessions or private files.
-Then check review, save/share, browser handoff and cancellation on the actual
-platform. These reporting tests do not establish gameplay stability.
-
-After release, review the next ten reports that use the new flow: could the
-maintainer identify the build and relevant session without another generic log
-request, and did related upstream evidence reach the agreed destination? Use
-the existing issues for this check; no analytics service or extra ticket store.

@@ -34,10 +34,12 @@ open class KartPadLaunchActivity : Activity() {
     private var retroInstalled = false
     private var gameDataReady = false
     private var pendingProfile: String? = null
+    private var exportSession: String? = null
     private lateinit var preferredLaunch: KartPadPreferredLaunch
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        exportSession = savedInstanceState?.getString("diagnostic_session")
         preferredLaunch = KartPadPreferredLaunch(
             savedInstanceState?.getBoolean(STATE_PREFERRED_CONSUMED) == true ||
                 intent.getBooleanExtra(EXTRA_SKIP_PREFERRED_GAME, false) || pausedProfile() != null,
@@ -72,6 +74,7 @@ open class KartPadLaunchActivity : Activity() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString("diagnostic_session", exportSession)
         outState.putBoolean(STATE_PREFERRED_CONSUMED, preferredLaunch.consumed)
         super.onSaveInstanceState(outState)
     }
@@ -398,11 +401,17 @@ open class KartPadLaunchActivity : Activity() {
                     .setMessage("Save recent runtime logs to a location you choose. Logs may contain local paths or personal details. No game images, saves, profiles, or signing material are copied. Keep this file private and review it before sharing.")
                     .setNegativeButton("Cancel", null)
                     .setPositiveButton("Save Locally…") { _, _ ->
-                        startActivityForResult(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                            addCategory(Intent.CATEGORY_OPENABLE)
-                            type = "application/zip"
-                            putExtra(Intent.EXTRA_TITLE, "KartPad-private-diagnostics.zip")
-                        }, REQUEST_DIAGNOSTICS)
+                        val sessions = runCatching { KartPadDiagnosticExport.sessions(this@KartPadLaunchActivity) }.getOrDefault(emptyList())
+                        if (sessions.isEmpty()) showStatus("No game session logs are available yet.")
+                        else AlertDialog.Builder(this@KartPadLaunchActivity).setTitle("Choose the game session")
+                            .setItems(sessions.map { "${it.id}\nLast written: ${java.util.Date(it.modified)}" }.toTypedArray()) { _, index ->
+                                exportSession = sessions[index].id
+                                startActivityForResult(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                                    addCategory(Intent.CATEGORY_OPENABLE)
+                                    type = "application/zip"
+                                    putExtra(Intent.EXTRA_TITLE, "KartPad-private-diagnostics.zip")
+                                }, REQUEST_DIAGNOSTICS)
+                            }.setNegativeButton("Back", null).show()
                     }.show()
             }
         }, layout(0))
@@ -458,10 +467,11 @@ open class KartPadLaunchActivity : Activity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode != REQUEST_DIAGNOSTICS || resultCode != RESULT_OK) return
         val destination = data?.data ?: return
+        val session = exportSession ?: run { showStatus("Choose the game session again before exporting."); return }
         showStatus("Exporting private diagnostics…")
         validator.execute {
             val succeeded = runCatching {
-                KartPadDiagnosticExport.write(applicationContext, destination)
+                KartPadDiagnosticExport.write(applicationContext, destination, session)
             }.isSuccess
             runOnUiThread {
                 if (!isFinishing && !isDestroyed) showStatus(

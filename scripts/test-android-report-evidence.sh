@@ -16,6 +16,7 @@ mkdir -p "$out"
   -no-stdlib -no-reflect -jvm-target 17 -classpath "$stdlib" -d "$out/tests.jar" \
   "$repo/android/app/src/main/java/dev/kartpad/android/KartPadReportEvidence.kt" \
   "$repo/android/app/src/main/java/dev/kartpad/android/KartPadReportMetadata.kt" \
+  "$repo/android/app/src/main/java/dev/kartpad/android/KartPadUpstreamReport.kt" \
   "$repo/tests/android_report/ReportEvidenceTests.kt" \
   "$repo/android/app/src/main/java/dev/kartpad/android/KartPadDiagnosticExport.kt" \
   "$repo/tests/android_report/ExportTests.kt" \
