@@ -159,7 +159,7 @@ def main() -> None:
         "sourceArchive": {"filename": args.source_archive.name, "bytes": args.source_archive.stat().st_size,
                           "sha256": sha(args.source_archive.read_bytes()),
                           "reconstruction": "Exact current Git snapshots, prepared Android runtime and pinned dependency source archives are supplied. Private translated game functions are regenerated from user-supplied inputs using delivered emitters and recipes. No new independent second-host or bit-identical rebuild claim."},
-        "emulatorAcceptance": "Focused source and fixture tests do not establish full gameplay, online, physical performance or affected-controller acceptance.",
+        "emulatorAcceptance": "The emulator Dawn fixture aborted; no emulator graphics or interaction acceptance is claimed. Focused source tests remain separate from full gameplay, online, physical performance and affected-controller acceptance.",
         "noticesSHA256": {n: sha(b) for n, b in sorted(data.items())},
     }
     data["PROVENANCE.json"] = (json.dumps(provenance, indent=2, sort_keys=True) + "\n").encode()
