@@ -1,6 +1,6 @@
 # macOS issue #250: VSync candidate and acceptance boundary
 
-Source review: 2026-09-13. An isolated source candidate is implemented below. No packaged build, public response, or physical acceptance is claimed by this record.
+Status: 2026-09-13. The opt-in candidate is implemented, all three native products have built, and local packages passed audit. Actual native settings actions and layout passed an isolated harness. No public build was released, no game app was launched, and physical pacing/tearing acceptance remains open. See the [build and native UI follow-up](macos-vsync255-build-native-ui.md).
 
 ## Intake and integration identity
 
@@ -28,7 +28,7 @@ Use a macOS-only, opt-in, restart-required setting first:
 4. When requested on Metal, choose FIFO from the surface capabilities; otherwise retain the existing selector. If the requested mode cannot be selected, log the fallback and requested-versus-selected state rather than claiming VSync is active. Keep the existing selected-mode startup log.
 5. Do not modify live reload, interpolation targets, resolution limits, guest clocks, or presenter queue policy in this initial candidate. A later live-toggle implementation needs an explicit renderer-thread mode update before Configure, not just a pending reconfigure flag.
 
-The restart boundary avoids additional presenter synchronization work. It does not remove the need to test FIFO itself. The source candidate implements this boundary with two macOS preparation patches, the native checkbox, and a native test runner. It is suitable for review and subsequent local build validation; source tests do not establish acceptable Metal presentation behavior.
+The restart boundary avoids additional presenter synchronization work. It does not remove the need to test FIFO itself. The source candidate implements this boundary with two macOS preparation patches, the native checkbox, and a native test runner. Local full builds and package audits subsequently passed, as did the isolated native settings harness. Those results support source review but do not establish acceptable physical Metal presentation behavior.
 
 ## Source validation completed
 
