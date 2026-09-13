@@ -68,3 +68,18 @@ Two new binary-free regression cases exercise 2 and 20 continuation calls: both 
 The generated two-call synthetic function was also compiled with Clang C++17 at both `-O0` and `-O2`, using `-Wall -Wextra -Werror` and minimal runtime stubs. Each binary executed nine scenarios covering normal return, skipping at the first or second call, local resumption, registered external dispatch, and an unregistered external return. Assertions checked call counts and final register state. Both binaries passed. Synthetic harness and logs remain in the isolated graph directory; no real game code was compiled in this check.
 
 Next gate: focused native compilation of the largest changed generated overlays and their actual runtime headers, followed by the full candidate native build if bounded compiler behavior holds. Actual item-change/Item Rain gameplay remains necessary. No full native build, device operation, or merge was performed in this mitigation pass.
+
+
+## Focused Android native compilation
+
+The largest shard from each graph was compiled serially with the retained Android 80 `compile_commands.json` entry. Only the input C++ path and isolated output object path changed. The command retained NDK 29.0.14206865, `aarch64-none-linux-android28`, release `-O2`, actual runtime headers, definitions, and the existing validated PCH. `/usr/bin/time -l` measured each invocation. The shared candidate's largest shard includes the previously inflated `8062C3A4` overlay.
+
+| Largest-shard probe | Lines | Wall time | Maximum RSS | Result |
+| --- | ---: | ---: | ---: | --- |
+| Released | 48,875 | 3.29 s | 315,621,376 bytes | Compiled |
+| PR 182 alone | 183,361 | 87.78 s | 971,735,040 bytes | Compiled |
+| Shared dispatch | 65,837 | 9.56 s | 439,566,336 bytes | Compiled |
+
+These are single serial probes on a machine doing other build work, with different shard membership, not controlled performance benchmarks. They show the real worst-shard compile completes and materially improves over the unmitigated candidate; they do not establish runtime performance or full-link success. Original source, objects, PCH, and released artifacts were read only. Probe command arrays, timing logs, and isolated objects are at `/private/tmp/kartpad-issue248-shared-graph/native-probe`.
+
+The focused native gate passes. The full candidate runtime build, link, packaging, and item-change/Item Rain gameplay gates remain open.
