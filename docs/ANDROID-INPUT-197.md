@@ -92,3 +92,43 @@ break the genuinely-held negative control. The next narrow investigation is
 whether Android/SDL 3.4.4 drops A key-up across focus loss or mode change before
 `update_standard_gamepad_button` receives it. Distinguish Android input-device
 removal from SDL gamepad removal; the two notifications are not interchangeable.
+
+## Exact bundled SDL event path (2026-09-13)
+
+The local and candidate-80 `SDL3-3.4.4.aar` both hash to
+`8652e2b16a7644fb6a755f9a12590f87ae1932f46755485f96c5bd5a4555ce7e`.
+The locked SDL Android ZIP records upstream commit
+`5848e584a1b606de26e3dbd1c7e4ecbc34f807a6`. `javap -c -p` on its
+`classes.jar` established these paths without substituting a newer SDL:
+
+- KartPadActivity has no key overrides. SDLActivity delegates key dispatch to
+  Android Activity; the SDLSurface OnKeyListener invokes `handleKeyEvent`.
+- `handleKeyEvent` calls native pad-down and pad-up symmetrically, conditional
+  on `SDLControllerManager.isDeviceSDLJoystick(deviceId)` at each event.
+- Focus changes send a native window-focus event and transition SDL's native
+  state. They do not explicitly release gamepad buttons in the Java hook.
+- KartPad's menu is a focusable PopupWindow and its dialogs own focus. A release
+  routed to that window need not visit the SDLSurface listener. That Android
+  window-dispatch route remains untested; the host harness does not simulate it.
+
+The pinned [native Android driver](https://github.com/libsdl-org/SDL/blob/5848e584a1b606de26e3dbd1c7e4ecbc34f807a6/src/joystick/android/SDL_sysjoystick.c)
+forwards both down and up to `SDL_SendJoystickButton`; its periodic update is
+empty. The pinned [joystick event code](https://github.com/libsdl-org/SDL/blob/5848e584a1b606de26e3dbd1c7e4ecbc34f807a6/src/joystick/SDL_joystick.c)
+explicitly permits releases without focus. Host test:
+
+```sh
+python3 scripts/test-android-sdl-button-focus.py \
+  /path/to/pinned/SDL/src/joystick/SDL_joystick.c \
+  /path/to/pinned/SDL/src/joystick/android/SDL_sysjoystick.c
+```
+
+This compiles those actual three functions with controlled focus, registry and
+mapping stand-ins. It passed release while unfocused, ignored background down,
+normal foreground down/up, and symmetric unopened-pad keyboard fallback.
+Consequently SDL's native focus filter itself does not drop the release.
+
+Remaining narrow routes are release reaching a different Android window, or
+input-device identity/source changing between down and up before SDL dispatch.
+The latter gate rechecks current InputDevice sources; it is not fixed by changing
+A/B mapping alone. Neither route is established as this report's trigger, and
+no state-clearing workaround is justified by the successful negative controls.
