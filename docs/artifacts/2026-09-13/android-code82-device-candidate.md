@@ -27,4 +27,6 @@ This candidate has not replaced public code 80. Installation/startup and prefere
 
 After these UI/startup checks, no save, license, Mii/identity, game-data, or existing settings file changed. Differences were log rotation/new logs, the installed-profile marker, WorkManager WAL/shared-memory state, and the new `PreferredGame` file. Full private manifests and the verified backup remain local; they are not public attachments.
 
-The owner has been asked to test an Original race, a Retro race, relaunch, and Item Rain if available. Those results remain pending. No public release or #248 runtime-fix closure is claimed. The phone now runs private code 82, not the prior code 79 or public code 80.
+The owner was asked to test an Original race, a Retro race, relaunch, and Item Rain if available. They subsequently reported: “the game works.” This is recorded as general physical gameplay acceptance of installed code 82 and authorization to proceed with the public package. No exact course, completed-race count, Item Rain coverage or online result was supplied, so none is inferred. #248 remains open for its specific affected-path result. The phone runs private code 82, not the prior code 79 or public code 80.
+
+The continuation source is merged in #252 after its translator/native checks, physical startup checks and owner gameplay acceptance. Public 0.4.18/code 83 packaging is being prepared with the same tested Android wrapper and native runtime; exact published-artifact verification is a separate gate.
