@@ -12,19 +12,19 @@ import subprocess
 import tarfile
 import zipfile
 
-TAG = "v0.4.18-android.1"
-VERSION = "0.4.18-android.1"
-CODE = 83
+TAG = "v0.4.19-android.1"
+VERSION = "0.4.19-android.1"
+CODE = 85
 # Exact candidate; changing notes must not relabel its compiled source as HEAD.
-APPROVED_SOURCE = "c9d8a7fba9e5798e311570a605c61f336eab1169"
-APPROVED_APK = "6eefdbe1d39627014595b9a6d50a79d0aab920eaf732a39ed8f6c5be362e9c9e"
-APPROVED_AAB = "d351edf5a55ff9b61d262333a55bc1671951fa0da5f172bf37be0ba612a221ee"
-APPROVED_SOURCE_ARCHIVE = "8d76c6fb45651cb6c5999176e6684ae4fa63c172a7a512627180aa2c274b2002"
+APPROVED_SOURCE = "97261697df1c3f4f4908533a5a7e3cfdbee967f0"
+APPROVED_APK = "49e5942eb7651e8457c28e5fd5125f19e00c95d1dde701bef8236e01981fa59f"
+APPROVED_AAB = "f4af956ff821be980d4d4caa4be08e45036b3c8a6d69c64616d35bef7ff2dd94"
+APPROVED_SOURCE_ARCHIVE = "f6e4007e674f4e3d11343b65c2ecc8d7088d6a4889f314bd4b360e151827a01d"
 APPROVED_NATIVE = {
     "lib/arm64-v8a/libSDL3.so": "d7a17c375adcb71818210581b885f59832d5f95b663aa7a7d493484a00a94753",
     "lib/arm64-v8a/libc++_shared.so": "c4c2fe5cbcb1fba0003a31fc7ab29a9bb12df6cc187ec45a806462540e83d93b",
     "lib/arm64-v8a/libkartpad_discio.so": "1d6c9fde69a3e4117987422bb6f0ebf41a40ec2de4945ebb7539b8a4b8e89207",
-    "lib/arm64-v8a/libmain.so": "d4f0281b7d9b1b9761492fd3a5f735769c70c7fbb1829969e46fa5a729ba10be"
+    "lib/arm64-v8a/libmain.so": "28dea49a4643304c9345876dd9f2bd19252f21fbe5a0a81c91e77ae722468295"
 }
 REPO = Path(__file__).resolve().parents[1]
 
@@ -157,11 +157,11 @@ def main() -> None:
         "containsTranslatedGameCode": True, "containsGameData": False,
         "containsPrivateSigningMaterial": False, "maintainerAuthorizedFreeCommunityRelease": True,
         "upstreamRightsConfirmed": False, "profileableByShell": False, "debuggable": False,
-        "physicalAcceptance": "Private code82 passed Preferred Game startup, persistence and return-to-menu checks on the owner phone; all 6319 protected files matched immediately after the in-place update. The owner then reported general gameplay works. Code83 retains identical native libraries and Android wrapper sources with release/version metadata changes. No Item Rain-specific, exact 0x807EF16C crash, completed-race count, online or affected-controller acceptance is inferred.",
+        "physicalAcceptance": "No fresh physical Android gameplay acceptance is claimed for code85. Original startup and Retro installation corrections passed filesystem/process tests and Android compilation. The shader correction passed boundary and pinned-Dawn compute/draw checks on Mac. Earlier code82 owner acceptance is historical, not code85 gameplay acceptance.",
         "sourceArchive": {"filename": args.source_archive.name, "bytes": args.source_archive.stat().st_size,
                           "sha256": sha(args.source_archive.read_bytes()),
                           "reconstruction": "Exact current Git snapshots, prepared Android runtime and pinned dependency source archives are supplied. Private translated game functions are regenerated from user-supplied inputs using delivered emitters and recipes. No new independent second-host or bit-identical rebuild claim."},
-        "releaseTwin": "A private debug-signed twin of code83 has all 155 ZIP entries byte-identical to the public APK; only the signing block differs. This package comparison is not gameplay acceptance. No new code83 emulator result is claimed here.",
+        "releaseTwin": "No code85 private signing twin or device install is claimed. Public APK uses the existing Community Release certificate; a differently signed private preview must not be uninstalled to force this update.",
         "noticesSHA256": {n: sha(b) for n, b in sorted(data.items())},
     }
     data["PROVENANCE.json"] = (json.dumps(provenance, indent=2, sort_keys=True) + "\n").encode()
