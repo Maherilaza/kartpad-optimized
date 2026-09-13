@@ -1,6 +1,6 @@
 # Maintenance work and test board
 
-Snapshot: 13 September 2026. Current GitHub refresh: 45 open issues. Start at the
+Snapshot: 13 September 2026. Current GitHub refresh: 46 open issues. Start at the
 [support-agent hub](SUPPORT-AGENTS.md). The [priority source](maintenance-priorities.json)
 owns ordering, readiness, exact next actions and acceptance; this board records
 support decisions and evidence. Refresh GitHub and local ownership before acting.

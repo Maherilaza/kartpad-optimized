@@ -1,6 +1,6 @@
 # High-impact priority review — 13 September 2026
 
-Three independent reviews covered Android performance, Android stability/graphics, and Apple issues against current comments and source. The refresh found 45 open issues after reopening #196, and no open pull requests. This is a prioritization decision, not a new fix or performance claim.
+Three independent reviews covered Android performance, Android stability/graphics, and Apple issues against current comments and source. The refresh found 46 open issues after reopening #196, and no open pull requests. This is a prioritization decision, not a new fix or performance claim.
 
 ## Recommended focus
 
@@ -26,4 +26,4 @@ Android 0.4.18/code83 is public, including Preferred Game and continuation handl
 
 For performance, compare matched warmed baseline/candidate runs, preferably three each, with frame-time tails, audio, cadence and comparable thermal/power state. Ship only a measured gain beyond baseline variation with correctness and data-preserving lifecycle checks. For geometry, require an actual failing-draw comparison followed by affected-device and known-working-device acceptance. Publish exact platform-specific changes and remaining limits; neither a build nor an issue closure proves all-device support.
 
-The [Android handoff](../../ANDROID-PERFORMANCE-HANDOFF.md) records execution details. Performance preparation can proceed immediately; Android geometry is the recommended second workstream while the owner's optional Apple-versus-Android preference is pending.
+The [Android handoff](../../ANDROID-PERFORMANCE-HANDOFF.md) records execution details. The owner selected Android impact over external-display and A10X work. Drive sustained Android performance first without assuming continuous phone access; keep actual-draw geometry as the next workstream.
