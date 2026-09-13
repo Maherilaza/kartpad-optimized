@@ -12,7 +12,7 @@ Source review: 2026-09-13. An isolated source candidate is implemented below. No
 
 ## Source findings
 
-`aurora-main/lib/webgpu/gpu.cpp::best_present_mode()` chooses Immediate for Metal when supported, then FIFO. `AuroraConfig` explicitly has no VSync field. The existing startup log reports the chosen mode.
+`aurora-main/lib/webgpu/gpu.cpp::best_present_mode()` chooses Immediate for Metal when supported, then FIFO. The unmodified `AuroraConfig` explicitly has no VSync field. The existing startup log reports the chosen mode.
 
 `refresh_surface()` forces `resize_swapchain()` but preserves the cached `surfaceConfiguration.presentMode`. A settings reload followed only by a reconfigure request would therefore leave the old presentation mode active. Live changes also require the renderer-owned mutation path to drain the presenter and acquire surface ownership before renderer ownership; calling Dawn Configure from the AppKit settings action would violate that ownership.
 
@@ -40,11 +40,9 @@ The restart boundary avoids additional presenter synchronization work. It does n
 
 ## Validation still required before release
 
-- Fresh prepared source against the integrated PR #112 base, both base and Retro Rewind; no pre-existing generated tree as evidence. Run existing native settings/controller tests and compile the affected native translation units with the actual Dawn headers.
-- Config behavior with isolated temporary application data: missing key, true, false, malformed value, save failure, unrelated keys preserved, and state after process restart. Assert saving VSync never calls a live renderer mutation.
-- Exercise actual selector code with controlled surface capabilities: Metal FIFO opt-in; Metal off Immediate; FIFO-only fallback; unexpected missing FIFO. Confirm requested and selected modes are distinguishable. Verify other platform preparation does not apply the new patch.
+- Full native compilation of both base and Retro Rewind against the integrated PR #254 base and actual Dawn headers, rebuilding all AuroraConfig consumers together. Source preparation and the focused native tests above are already complete; they are not full game-build evidence.
 - Native settings interaction: save, reopen panel, quit/relaunch; display/interpolation/volume controls continue to work; writable-error feedback and layout remain correct.
 - Physical Mac comparison with the same build, course/camera, monitor and window mode: off/on, interpolation off first, then 120/180 where supported; 60 Hz and high refresh if available. Compare game time to wall time, audio continuity, queue-drop/presentation timing logs, resize, minimize/restore, fullscreen transitions and monitor changes.
-- Use a phone-camera clip to assess physical tearing; software capture alone is insufficient. Keep #250 open until this evidence supports the outcome. If FIFO causes pacing regressions, retain the candidate privately and investigate the producer/presenter interaction before release.
+- Use a phone-camera clip to assess physical tearing; software capture alone is insufficient. Keep #250 open until this evidence supports the outcome. If FIFO causes pacing regressions, keep the candidate unreleased and investigate the producer/presenter interaction before release.
 
 Next action is review of this isolated candidate and full native build/UI interaction validation, followed by physical pacing and tearing comparison. Reporter details already requested remain useful for matching the eventual physical comparison, not a reason to repeat an unanswered comment.
