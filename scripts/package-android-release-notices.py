@@ -12,19 +12,19 @@ import subprocess
 import tarfile
 import zipfile
 
-TAG = "v0.4.17-android.1"
-VERSION = "0.4.17-android.1"
-CODE = 80
+TAG = "v0.4.18-android.1"
+VERSION = "0.4.18-android.1"
+CODE = 83
 # Exact candidate; changing notes must not relabel its compiled source as HEAD.
-APPROVED_SOURCE = "615225b3f0e0507ca76d4c715c921d0a1caa9956"
-APPROVED_APK = "13b68c84a0a52960007fda5e3d33eafad1c1d9d567d7544586ced2ce23c1e833"
-APPROVED_AAB = "e8c3dac4777cb48bb5057e0857e1401aae8bb2e1c4d1bd1caaa4f3953b47a575"
-APPROVED_SOURCE_ARCHIVE = "57be7d71dc5c6683c4000ca858030b5ab5a0b2c60f718a58a1b921a965627c5e"
+APPROVED_SOURCE = "c9d8a7fba9e5798e311570a605c61f336eab1169"
+APPROVED_APK = "6eefdbe1d39627014595b9a6d50a79d0aab920eaf732a39ed8f6c5be362e9c9e"
+APPROVED_AAB = "d351edf5a55ff9b61d262333a55bc1671951fa0da5f172bf37be0ba612a221ee"
+APPROVED_SOURCE_ARCHIVE = "8d76c6fb45651cb6c5999176e6684ae4fa63c172a7a512627180aa2c274b2002"
 APPROVED_NATIVE = {
     "lib/arm64-v8a/libSDL3.so": "d7a17c375adcb71818210581b885f59832d5f95b663aa7a7d493484a00a94753",
     "lib/arm64-v8a/libc++_shared.so": "c4c2fe5cbcb1fba0003a31fc7ab29a9bb12df6cc187ec45a806462540e83d93b",
     "lib/arm64-v8a/libkartpad_discio.so": "1d6c9fde69a3e4117987422bb6f0ebf41a40ec2de4945ebb7539b8a4b8e89207",
-    "lib/arm64-v8a/libmain.so": "acae9e4a0459aaad4108d4280c608d1902c0da930819ba83bfe15a2d51ccab4a"
+    "lib/arm64-v8a/libmain.so": "d4f0281b7d9b1b9761492fd3a5f735769c70c7fbb1829969e46fa5a729ba10be"
 }
 REPO = Path(__file__).resolve().parents[1]
 
@@ -141,7 +141,8 @@ def main() -> None:
     packaging_files = ("README.md", "android/README.md", "scripts/package-android-release-notices.py",
                        "scripts/package-release-source.py", "scripts/restore-source-git.py",
                        "tools/android63-base-common-shards.json",
-                       "tests/test_android_public_release_contract.py")
+                       "tests/test_android_public_release_contract.py",
+                       "scripts/audit-android-bundle.sh", "tests/test_android_bundle_audit_contract.py")
     if any(not name.startswith("docs/") and name not in packaging_files
            for name in changed):
         parser.error("packaging source differs from candidate beyond documentation/packager")
@@ -155,11 +156,11 @@ def main() -> None:
         "containsTranslatedGameCode": True, "containsGameData": False,
         "containsPrivateSigningMaterial": False, "maintainerAuthorizedFreeCommunityRelease": True,
         "upstreamRightsConfirmed": False, "profileableByShell": False, "debuggable": False,
-        "physicalAcceptance": "Owner accepted Retro single-player racing and touch on private code78; private code79 passed physical Large HUD, saved-size persistence and D-pad Show/Hide checks. Final code80 was not installed on hardware because the phone disconnected. Its debug-signed release twin has 155 ZIP entries identical to the public APK. The owner explicitly authorized publication after this boundary was disclosed. No completed-race, online fix or affected-controller acceptance inferred.",
+        "physicalAcceptance": "Private code82 passed Preferred Game startup, persistence and return-to-menu checks on the owner phone; all 6319 protected files matched immediately after the in-place update. The owner then reported general gameplay works. Code83 retains identical native libraries and Android wrapper sources with release/version metadata changes. No Item Rain-specific, exact 0x807EF16C crash, completed-race count, online or affected-controller acceptance is inferred.",
         "sourceArchive": {"filename": args.source_archive.name, "bytes": args.source_archive.stat().st_size,
                           "sha256": sha(args.source_archive.read_bytes()),
                           "reconstruction": "Exact current Git snapshots, prepared Android runtime and pinned dependency source archives are supplied. Private translated game functions are regenerated from user-supplied inputs using delivered emitters and recipes. No new independent second-host or bit-identical rebuild claim."},
-        "emulatorAcceptance": "The code80 debug-signed release twin installed and launched its non-debuggable selector on the API 36 ARM64 emulator: Original Import Game and Retro Rewind Base Game Required, pinned to 6.12.8. No game runtime or race was tested without private game data. The separate debug menu fixture aborted in Dawn Vulkan setup and is not counted as passing. Emulator and focused source checks remain separate from gameplay, online, physical performance and affected-controller acceptance.",
+        "releaseTwin": "A private debug-signed twin of code83 has all 155 ZIP entries byte-identical to the public APK; only the signing block differs. This package comparison is not gameplay acceptance. No new code83 emulator result is claimed here.",
         "noticesSHA256": {n: sha(b) for n, b in sorted(data.items())},
     }
     data["PROVENANCE.json"] = (json.dumps(provenance, indent=2, sort_keys=True) + "\n").encode()
