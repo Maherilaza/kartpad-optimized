@@ -141,7 +141,8 @@ for shell_contract in \
   "Show KartPad Cache" \
   "Save Diagnostics Report" \
   "privacy=personal paths are replaced; game data, translated code, save contents, credentials, device identifiers, signing material, and unbounded logs are omitted"; do
-  if [[ "${product}" == base ]]; then
+  # These selectors/preferences are compiled only into the dual launcher.
+  if [[ "${product}" != dual ]]; then
     case "${shell_contract}" in
       "chooseRetroRewindData:"|"KartPadRuntimeProfile"|"Quit and reopen KartPad to switch games. Your saves and settings are preserved.") continue ;;
     esac

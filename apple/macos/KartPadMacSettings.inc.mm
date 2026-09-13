@@ -47,6 +47,7 @@
     @"video.resolution_multiplier":@(c.resolutionMultiplier.value_or(1.0f)),
     @"video.display_mode":[NSString stringWithUTF8String:c.displayMode.value_or("windowed").c_str()],
     @"video.frame_interpolation_fps":@(c.frameInterpolationFps.value_or(0)),
+    @"video.vsync":@(c.vsync.value_or(false)),
     @"video.show_fps":@(c.showFps.value_or(true)),
     @"video.disable_copy_filter":@(c.disableCopyFilter.value_or(true)),
     @"video.skip_unready_pipelines":@(c.skipUnreadyPipelines.value_or(true)),
@@ -85,6 +86,10 @@
   }
   if(!RuntimeConfigFile::WriteSetting([parts[0] UTF8String],[parts[1] UTF8String],value)) {
     self.settingsStatus.stringValue=@"Could not save this setting. Check that Config.toml is writable.";
+    [self refreshSettings];return;
+  }
+  if([key isEqual:@"video.vsync"]) {
+    self.settingsStatus.stringValue=@"Saved. Quit and reopen KartPad to apply VSync. The saved preference is shown here.";
     [self refreshSettings];return;
   }
   if([key isEqual:@"video.fullscreen_across_notch"]) {
@@ -136,17 +141,19 @@
     [self.settingsPanel.contentView addSubview:self.settingsStatus];
 
     NSView *graphics=[self settingsPage:@"Graphics"];
-    [self settingsLabel:@"Graphics & Display" page:graphics y:680].font=[NSFont boldSystemFontOfSize:19];
-    [self setting:@"video.resolution_multiplier" label:@"Render resolution" choices:@[@"Auto (window size)",@"Native (1×)",@"1.5×",@"2×",@"3×",@"4×",@"6×",@"8×"] values:@[@0,@1,@1.5,@2,@3,@4,@6,@8] page:graphics y:620];
-    [self setting:@"video.display_mode" label:@"Display mode" choices:@[@"Windowed",@"Borderless fullscreen",@"Exclusive fullscreen"] values:@[@"windowed",@"borderless",@"exclusive"] page:graphics y:565];
-    [self setting:@"video.frame_interpolation_fps" label:@"Frame interpolation" choices:@[@"Off (60 FPS)",@"120 FPS — experimental",@"180 FPS — experimental"] values:@[@0,@120,@180] page:graphics y:510];
-    [self settingsLabel:@"Interpolation may show visual artifacts. Resolution is limited to 4× when enabled." page:graphics y:450];
-    [self setting:@"video.show_fps" checkbox:@"Show FPS counter" page:graphics y:400];
-    [self setting:@"video.disable_copy_filter" checkbox:@"Disable the Wii copy filter (sharper picture)" page:graphics y:350];
-    [self setting:@"video.disabled_post_processing_paths" checkbox:@"Disable bloom (applies at the next scene)" page:graphics y:300];
-    [self setting:@"video.skip_unready_pipelines" checkbox:@"Skip draws while shaders compile" page:graphics y:250];
-    [self setting:@"video.fullscreen_across_notch" checkbox:@"Use full display in borderless fullscreen (including notch area)" page:graphics y:190];
-    [self settingsLabel:@"Requires restart. Uses desktop fullscreen instead of a separate Space. The notch can obscure the image; game aspect ratio is preserved." page:graphics y:130];
+    [graphics setFrameSize:NSMakeSize(780,795)];
+    [self settingsLabel:@"Graphics & Display" page:graphics y:735].font=[NSFont boldSystemFontOfSize:19];
+    [self setting:@"video.resolution_multiplier" label:@"Render resolution" choices:@[@"Auto (window size)",@"Native (1×)",@"1.5×",@"2×",@"3×",@"4×",@"6×",@"8×"] values:@[@0,@1,@1.5,@2,@3,@4,@6,@8] page:graphics y:675];
+    [self setting:@"video.display_mode" label:@"Display mode" choices:@[@"Windowed",@"Borderless fullscreen",@"Exclusive fullscreen"] values:@[@"windowed",@"borderless",@"exclusive"] page:graphics y:620];
+    [self setting:@"video.frame_interpolation_fps" label:@"Frame interpolation" choices:@[@"Off (60 FPS)",@"120 FPS — experimental",@"180 FPS — experimental"] values:@[@0,@120,@180] page:graphics y:565];
+    [self settingsLabel:@"Interpolation may show visual artifacts. Resolution is limited to 4× when enabled." page:graphics y:505];
+    [self setting:@"video.show_fps" checkbox:@"Show FPS counter" page:graphics y:455];
+    [self setting:@"video.disable_copy_filter" checkbox:@"Disable the Wii copy filter (sharper picture)" page:graphics y:405];
+    [self setting:@"video.disabled_post_processing_paths" checkbox:@"Disable bloom (applies at the next scene)" page:graphics y:355];
+    [self setting:@"video.skip_unready_pipelines" checkbox:@"Skip draws while shaders compile" page:graphics y:305];
+    [self setting:@"video.fullscreen_across_notch" checkbox:@"Use full display in borderless fullscreen (including notch area)" page:graphics y:245];
+    [self settingsLabel:@"Requires restart. Uses desktop fullscreen instead of a separate Space. The notch can obscure the image; game aspect ratio is preserved." page:graphics y:185];
+    [self setting:@"video.vsync" checkbox:@"VSync — experimental (requires restart)" page:graphics y:115];
     [self settingsLabel:@"Settings shortcut: Command-comma or F10 (Fn–F10 on media-key keyboards)." page:graphics y:65];
 
     NSView *audio=[self settingsPage:@"Audio"];
@@ -211,7 +218,7 @@
   // Show the top of each scrollable settings page, including smaller displays.
   for(NSTabViewItem *item in self.settingsTabs.tabViewItems) {
     NSScrollView *scroll=(NSScrollView *)item.view;
-    [scroll.contentView scrollToPoint:NSMakePoint(0,std::max<CGFloat>(0,740-scroll.contentView.bounds.size.height))];
+    [scroll.contentView scrollToPoint:NSMakePoint(0,std::max<CGFloat>(0,scroll.documentView.frame.size.height-scroll.contentView.bounds.size.height))];
     [scroll reflectScrolledClipView:scroll.contentView];
   }
 }
@@ -221,6 +228,6 @@
   // A hidden capture must never change a binding while editing another tab.
   if(![item.identifier isEqual:@"Controllers"]) [KPControllers() cancelCapture];
   NSScrollView *scroll=(NSScrollView *)item.view;
-  [scroll.contentView scrollToPoint:NSMakePoint(0,std::max<CGFloat>(0,740-scroll.contentView.bounds.size.height))];
+  [scroll.contentView scrollToPoint:NSMakePoint(0,std::max<CGFloat>(0,scroll.documentView.frame.size.height-scroll.contentView.bounds.size.height))];
   [scroll reflectScrolledClipView:scroll.contentView];
 }
