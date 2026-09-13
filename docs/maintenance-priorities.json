@@ -111,13 +111,13 @@
         135
       ],
       "state": "ready-local",
-      "next_action": "Refresh the nondebuggable shell-profileable diagnostic on current public code83 with exact symbols and compatible signer. Existing #198 captures and willingness are sufficient. Collect one bounded warmed driven-scene CPU profile; separate guest execution, GX preparation, waits and thermal effects before changing runtime source. Do not repeat the completed aspect/validation sweeps.",
+      "next_action": "Private code84 is packaged, non-debuggable and shell-profileable, with public83 native payload and verified symbols. Arrange the existing accepted private handoff after checking recipient version/signer; derive a Debug-signed twin before using the owner Pixel last verified on private82. Then capture one bounded warmed driven CPU sample to classify guest, GX CPU and waits. Do not rebuild native code or repeat answered settings/log/willingness requests.",
       "acceptance": "A matched warmed affected-device comparison shows a useful frame-time improvement with guest semantics and stability preserved. No FPS claim from a host microbenchmark.",
       "checkpoint": "docs/MAINTENANCE-BOARD.md",
       "priority_reason": "Owner explicitly prioritizes slowdowns. Sustained low FPS after shader queues empty is the strongest measured opportunity; a local diagnostic can progress now.",
       "dependency": {
         "owner": "performance worker and release operator",
-        "needs": "Current-baseline diagnostic package and private delivery route; Community signer is located. Owner Pixel can establish local measurement, while Helio G85 needs its affected-device result."
+        "needs": "Community-signed code84 audit passed. Concrete private delivery and affected-device capture remain; owner Pixel needs a compatible signing twin. Neither install nor capture has occurred."
       }
     },
     {
