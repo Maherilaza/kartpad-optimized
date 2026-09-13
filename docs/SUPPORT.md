@@ -8,6 +8,26 @@ exact app version/build in a report. Update over the existing installation;
 do not uninstall or clear storage to troubleshoot. Follow the platform's
 backup instructions before changing saves or signing identities.
 
+## Read a disc revision without sharing the image
+
+For a raw Wii `.iso` or an extracted `sys/boot.bin`, run this from a KartPad
+source checkout with Python 3:
+
+```sh
+python3 scripts/inspect-disc-header.py "/path/to/your/game.iso"
+```
+
+It reads only the 28-byte header and prints the six-character disc ID, disc
+number and numeric revision. It does not upload or modify the file, print its
+path, or extract game content. Share only those three metadata fields if asked.
+WBFS/RVZ/WIA and other containers are not parsed by this helper; do not rename a
+compressed image to `.iso` or assume its first bytes are a raw disc header.
+
+This identifies metadata only. `RMCE01` output does not enable USA compatibility;
+KartPad's validated profile remains RMCP01, disc 0, revision 0. The separate
+[#203 compatibility request](https://github.com/chrissotraidis/kartpad/issues/203)
+still needs a verified translation profile before a playable candidate exists.
+
 ## Android save transfer
 
 KartPad stores saves in Android's **internal app-private storage**, so its save

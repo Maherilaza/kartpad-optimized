@@ -71,7 +71,7 @@ current comments and the linked source scope before promoting one into active wo
 | Apple performance | #135. A10X startup is already accepted; remaining frame-rate concern needs its own affected-device comparison, separate from Android CPU/GPU hypotheses. |
 | Save/rating lifecycle | #105 manual transfer is accepted; automatic two-way sync and Mii scope remain distinct. #169 lost progress must be classified separately from performance and system bars. |
 | Feature/compatibility | #90 Original Wiimmfi, #91 controller/DSU, #203 disc revision/NAND/cheats. Define requested behavior, supported input and implementation boundary; do not request generic logs for missing features. |
-| Governance | #92 remains an upstream review dependency; do not create recurring runtime work from it. |
+| Governance | #92 closed after live verification of the root GPL license, identical license copy, and explicit combined-work/release-policy wording. Reopen only for a concrete remaining concern. |
 
 ## Preserve accepted subscopes
 
@@ -126,3 +126,9 @@ reporter controller/device acceptance remains open. See the
 - #234 same-phone restore remains a save/identity boundary, not a renderer
   failure. The support guide now separates raw-save/rating import from complete
   Mii, console identity and country configuration restoration.
+
+## 13 September minor-request pass
+
+- #238 is closed: the responsive D-pad Show/Hide editor shipped in code 80 and passed physical code-79 UI checks. Reopen for a concrete remaining current-build failure.
+- #203 now has a read-only [disc-header metadata helper](SUPPORT.md#read-a-disc-revision-without-sharing-the-image), covering the requester’s inability to find a raw ISO revision. Region compatibility, NAND import/export and cheats remain separate unfinished features.
+- Release priority: code 81 is a private, audited continuation candidate awaiting exact-device Item Rain/race/relaunch testing. Public code 80 remains stable. No new iOS runtime fix has been completed for the failed #196 retest; repackaging the same IPA would not address it. Mac VSync is built and startup-verified, but its warmed audio/pacing and physical tearing gates remain open. Bundle small documentation/UI guidance into the next tested release rather than assigning it an unsupported crash-fix claim.
