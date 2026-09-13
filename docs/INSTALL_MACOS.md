@@ -29,6 +29,13 @@ bans may need service-admin review. Do not reset identities to work around them.
    Original Mario Kart Wii** and reopen to switch back. Saves and settings are
    kept separately from the selected game-data folders.
 
+If **Unsupported Retro Rewind Data** appears, use the exact pack version shown
+in the alert. A newer pack needs a KartPad build that explicitly supports it;
+check the [release notes](https://github.com/chrissotraidis/kartpad/releases)
+before updating the app. KartPad does not automatically update Retro Rewind.
+Keep your existing data and saves; a rejected folder selection does not modify
+the folder.
+
 ## Menus and input
 
 - **Game** switches the game for the next launch and opens display/audio

@@ -337,8 +337,15 @@ static NSString *ChooseAndValidateRetroRewindData() {
   if (validation == nil && error == nil) return root;
   NSAlert *alert = [NSAlert new];
   alert.messageText = @"Unsupported Retro Rewind Data";
-  alert.informativeText = error.localizedDescription.length > 0
+  NSString *detail = error.localizedDescription.length > 0
       ? error.localizedDescription : validation;
+  alert.informativeText = [NSString stringWithFormat:
+      @"%@\n\nThis KartPad build supports Retro Rewind %@. Choose the matching "
+       "pack. To use a newer pack, first check KartPad's GitHub Releases for a "
+       "KartPad build that supports it. Retro Rewind updates are not installed "
+       "automatically.\n\nKeep your existing game data and saves; the selected "
+       "folder has not been changed.",
+      detail, @KARTPAD_RR_VERSION];
   [alert runModal];
   return @"";
 }
