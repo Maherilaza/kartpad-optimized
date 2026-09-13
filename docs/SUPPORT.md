@@ -1,5 +1,9 @@
 # KartPad support
 
+Start with [KartPad and WiiCompiled reports](REPORTING.md) to choose a
+destination and understand which logs to attach. WiiCompiled is the original
+runtime project; a KartPad report must identify the modified app it came from.
+
 Maintainers and automated support agents: start at the [support-agent hub](SUPPORT-AGENTS.md)
 for priorities, replies, diagnostics and build-test handoffs.
 
@@ -208,8 +212,9 @@ analytics labelled by mode; preserve the installation and data.
    report. Add a screenshot for a visual issue.
 3. **Report on GitHub** creates the file and prefills a new issue, but does
    **not** upload the log. Attach it from **Files → On My iPhone/iPad →
-   KartPad → Diagnostics → Latest-SunPad-Diagnostic.log**. The report ID
-   alone is not a log upload.
+   KartPad → Diagnostics**. Updated builds name the file
+   **Latest-KartPad-Diagnostic.log**; older builds use
+   **Latest-SunPad-Diagnostic.log**. The report ID alone is not a log upload.
 
 **Mac:** **Help → Save Diagnostics Report…** creates a bounded report with
 settings and current/previous session tails. Review it before attaching.

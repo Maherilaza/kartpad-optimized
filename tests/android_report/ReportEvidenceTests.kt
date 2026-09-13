@@ -23,5 +23,15 @@ fun main() {
     check(unavailable.summary(false) == unavailable.summary(true))
     check(!unavailable.summary(false).contains("selected"))
     check(KartPadReportEvidence("unavailable", reason="x".repeat(500)).summary(false).count { it == 'x' } == 300)
+    val technical = "Version: 0.4.19\nRuntime profile: retro_rewind\nRetro version state: version_mismatch\nKartPad source revision: ${"a".repeat(40)}"
+    val metadata = KartPadReportMetadata.summary(technical)
+    check(metadata.endsWith(technical))
+    check(metadata.contains("Report origin: KartPad Android"))
+    check(metadata.contains("does not establish whether the problem is upstream"))
+    check(KartPadReportMetadata.summary("").contains("Technical context unavailable."))
+    val oversized = KartPadReportMetadata.summary("x".repeat(9000))
+    check(oversized.contains("x".repeat(1500)))
+    check(!oversized.contains("x".repeat(1501)))
+    check(oversized.endsWith("[Technical context truncated]"))
     println("PASS: explicit evidence choice, reviewed file, unavailable reason, honest handoff status")
 }

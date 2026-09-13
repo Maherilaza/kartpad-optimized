@@ -2289,7 +2289,8 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   if (presenter == nil) return;
   NSString *instructions =
       @"Describe the problem. KartPad adds device details and recent logs.\n\n"
-       "Attach the log and relevant screenshots. GitHub reports are public; review before posting.";
+       "KartPad uses WiiCompiled and maintains its own platform changes. Report KartPad problems here; maintainers coordinate shared issues upstream.\n\n"
+       "Attach the log and relevant screenshots. Nothing is uploaded automatically. GitHub reports are public; review before posting.";
   UIAlertController *prompt =
       [UIAlertController alertControllerWithTitle:@"Report a Problem"
                                           message:instructions
@@ -2322,7 +2323,15 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
     (void)action;
     [weakSelf createDiagnosticReportFromPrompt:prompt openGitHub:YES];
   }]];
-  prompt.preferredAction = prompt.actions.lastObject;
+  [prompt addAction:[UIAlertAction actionWithTitle:@"Reporting Guide"
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction *action) {
+    (void)action;
+    [UIApplication.sharedApplication openURL:[NSURL URLWithString:
+        @"https://github.com/chrissotraidis/kartpad/blob/main/docs/REPORTING.md"]
+        options:@{} completionHandler:nil];
+  }]];
+  prompt.preferredAction = prompt.actions[prompt.actions.count - 2];
   [presenter presentViewController:prompt animated:YES completion:nil];
 }
 
@@ -2345,21 +2354,10 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   NSURL *reportURL = SunPadDiagnosticsReportURL(
       reportID, answers, technicalContext, &error);
   UIViewController *presenter = KartPadVisibleViewController(self.window);
-  if (reportURL == nil && !openGitHub) {
-    UIAlertController *alert =
-        [UIAlertController alertControllerWithTitle:@"Diagnostic Report Unavailable"
-                                            message:error.localizedDescription
-                                     preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:@"OK"
-                                              style:UIAlertActionStyleDefault
-                                            handler:nil]];
-    [presenter presentViewController:alert animated:YES completion:nil];
-    return;
-  }
-
   NSString *report = reportURL ? [NSString stringWithContentsOfURL:reportURL
                                                encoding:NSUTF8StringEncoding
-                                                  error:nil] : nil;
+                                                  error:&error] : nil;
+  NSURL *kartPadReportURL = nil;
   if (report != nil) {
     report = [report stringByReplacingOccurrencesOfString:
         @"SunPad Diagnostic Report v2" withString:@"KartPad Diagnostic Report v2"];
@@ -2367,8 +2365,27 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
         @"issuesURL=https://github.com/chrissotraidis/sunpad/issues"
                                                  withString:
         @"issuesURL=https://github.com/chrissotraidis/kartpad/issues"];
-    [report writeToURL:reportURL atomically:YES
-               encoding:NSUTF8StringEncoding error:nil];
+    report = [report stringByAppendingString:
+        @"\nreportOrigin=KartPad (modified WiiCompiled platform integration)\n"
+         "upstreamProject=https://github.com/patchzyy/Wiicompiled\n"];
+    NSURL *destination = [reportURL.URLByDeletingLastPathComponent
+        URLByAppendingPathComponent:@"Latest-KartPad-Diagnostic.log"];
+    if ([report writeToURL:destination atomically:YES
+                 encoding:NSUTF8StringEncoding error:&error]) {
+      kartPadReportURL = destination;
+    }
+  }
+  reportURL = kartPadReportURL;
+  if (reportURL == nil && !openGitHub) {
+    UIAlertController *alert =
+        [UIAlertController alertControllerWithTitle:@"Diagnostic Report Unavailable"
+                                            message:error.localizedDescription ?: @"The report could not be prepared. Try again or report on GitHub without a log."
+                                     preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"OK"
+                                              style:UIAlertActionStyleDefault
+                                            handler:nil]];
+    [presenter presentViewController:alert animated:YES completion:nil];
+    return;
   }
 
   if (openGitHub) {
@@ -2404,9 +2421,10 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
       @"CFBundleShortVersionString"] ?: @"unknown";
   NSString *build = [bundle objectForInfoDictionaryKey:
       @"CFBundleVersion"] ?: @"unknown";
-  NSString *platform =
-      self.traitCollection.userInterfaceIdiom == UIUserInterfaceIdiomPad
-          ? @"iPad" : @"iPhone";
+  UIDevice *device = UIDevice.currentDevice;
+  // Device family and OS only: never include the user-assigned name or identifiers.
+  NSString *platform = [NSString stringWithFormat:@"%@, %@ %@ (add exact model if known)",
+      device.model, device.systemName, device.systemVersion];
   NSString *problem = answers[@"problem"].length > 0
       ? answers[@"problem"] : @"KartPad problem";
   if (problem.length > 100) problem = [problem substringToIndex:100];
@@ -2424,7 +2442,9 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
     [NSURLQueryItem queryItemWithName:@"performance-profile"
                                 value:[self.delegate gameOverlayPerformanceProfile:self]],
     [NSURLQueryItem queryItemWithName:@"summary" value:answers[@"problem"]],
-    [NSURLQueryItem queryItemWithName:@"context" value:answers[@"context"]],
+    [NSURLQueryItem queryItemWithName:@"context" value:[NSString stringWithFormat:
+        @"Report origin: KartPad (modified WiiCompiled platform integration).\n%@",
+        answers[@"context"] ?: @""]],
     [NSURLQueryItem queryItemWithName:@"frequency" value:answers[@"frequency"]],
     [NSURLQueryItem queryItemWithName:@"diagnostics" value:answers[@"diagnostics"] ?: @"Diagnostic log not attached."],
   ];

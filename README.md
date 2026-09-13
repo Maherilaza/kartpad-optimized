@@ -5,10 +5,12 @@
   Native static recompilation through Vulkan on Android and Metal on Apple platforms, with touch controls, motion steering, controllers, and optional Retro Rewind content. tvOS is currently an experimental preview.
 </p>
 
-KartPad is an Apple and Android fork and productization of
-[WiiCompiled](https://github.com/patchzyy/Wiicompiled), the original static
-recompilation project for Mario Kart Wii. It adds native controls, a dual-game
-chooser, game-data management, packaging, and release workflows.
+KartPad builds on [WiiCompiled](https://github.com/patchzyy/Wiicompiled), the
+original Mario Kart Wii static recompilation project created by
+[patchzyy](https://github.com/patchzyy). WiiCompiled provides the foundational
+translator and runtime; KartPad maintains the Apple and Android integration,
+native controls, game chooser, game-data management, packaging, and releases.
+The projects are independently maintained.
 
 <p align="center">
   <img alt="Apple Silicon" src="https://img.shields.io/badge/Apple%20Silicon-arm64-0A84FF?logo=apple">
@@ -73,6 +75,10 @@ place using the same signing identity; do not uninstall or clear app data.**
 Private Android previews use a different signer and need a backed-up migration.
 
 ## Playing
+
+**Need help or found a bug?** [Where to report and follow up](docs/REPORTING.md).
+If you use KartPad, start here; maintainers investigate and coordinate confirmed
+shared problems with WiiCompiled.
 
 [Frequently asked questions](#frequently-asked-questions) · [Controls](docs/MULTIPLAYER.md) · [Save transfer and troubleshooting](docs/SUPPORT.md)
 

@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Where to report and follow up
+    url: https://github.com/chrissotraidis/kartpad/blob/main/docs/REPORTING.md
+    about: Using KartPad? Start here for help, known problems, and follow-up on an existing report.
+  - name: WiiCompiled — original project and runtime issues
+    url: https://github.com/patchzyy/Wiicompiled/issues
+    about: For WiiCompiled itself. KartPad users should start here in KartPad; disclose a modified KartPad build and cross-link reports if reporting upstream.

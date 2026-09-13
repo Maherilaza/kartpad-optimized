@@ -70,6 +70,13 @@ class KartPadProblemReportActivity : Activity() {
             column.addView(this)
         }
         label("Report a Problem").textSize = 24f
+        label("KartPad builds on WiiCompiled. This form reports problems with KartPad. See the reporting guide for help choosing the relevant project.")
+        button("Reporting Guide…") {
+            openHandoff(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/chrissotraidis/kartpad/blob/main/docs/REPORTING.md")))
+        }
+        button("About WiiCompiled…") {
+            openHandoff(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/patchzyy/Wiicompiled")))
+        }
         problem = field("What went wrong?", "problem", 2000, 2)
         area = field("Area and what you were doing", "area", 1000)
         frequency = field("Every time, sometimes, once, or not sure?", "frequency", 160)
@@ -199,12 +206,15 @@ class KartPadProblemReportActivity : Activity() {
     private fun report(logEvidence: String) = buildString {
         appendLine("KartPad Android diagnostic report")
         appendLine("Report ID: $reportId")
-        appendLine(intent.getStringExtra(TECHNICAL_CONTEXT).orEmpty())
+        appendLine(technicalSummary())
         appendLine("\nWhat went wrong:\n${problem.text.toString().trim().ifBlank { "Not provided" }}")
         appendLine("\nArea and what you were doing:\n${area.text.toString().trim().ifBlank { "Not provided" }}")
         appendLine("\nFrequency:\n${frequency.text.toString().trim().ifBlank { "Not provided" }}")
         appendLine("\nLog evidence:\n$logEvidence")
     }
+
+    private fun technicalSummary() =
+        KartPadReportMetadata.summary(intent.getStringExtra(TECHNICAL_CONTEXT).orEmpty())
 
     private fun githubIntent(evidence: KartPadReportEvidence): Intent {
         val uri = Uri.parse("https://github.com/chrissotraidis/kartpad/issues/new").buildUpon()
@@ -217,7 +227,7 @@ class KartPadProblemReportActivity : Activity() {
             .appendQueryParameter("summary", problem.text.toString().trim())
             .appendQueryParameter("context", "Runtime profile: ${intent.getStringExtra(PROFILE).orEmpty()}\n${area.text.toString().trim()}")
             .appendQueryParameter("frequency", frequency.text.toString().trim())
-            .appendQueryParameter("diagnostics", evidence.summary(true))
+            .appendQueryParameter("diagnostics", "${evidence.summary(true)}\n\n${technicalSummary()}")
             .build()
         return Intent(Intent.ACTION_VIEW, uri)
     }

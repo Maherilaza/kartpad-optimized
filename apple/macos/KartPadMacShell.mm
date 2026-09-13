@@ -434,6 +434,9 @@ static NSString *DiagnosticsReport() {
   return [NSString stringWithFormat:
       @"KartPad diagnostics\n"
        "schema=3\n"
+       "reportOrigin=KartPad (modified WiiCompiled platform integration)\n"
+       "issuesURL=https://github.com/chrissotraidis/kartpad/issues\n"
+       "upstreamProject=https://github.com/patchzyy/Wiicompiled\n"
        "generated=%@\n"
        "appVersion=%@\n"
        "appBuild=%@\n"
@@ -995,6 +998,39 @@ static bool KPFullscreenAcrossNotch() {
   [NSWorkspace.sharedWorkspace openURL:url];
 }
 
+- (void)reportProblem:(id)sender {
+  (void)sender;
+  NSBundle *bundle = NSBundle.mainBundle;
+  NSURLComponents *draft = [NSURLComponents componentsWithString:
+      @"https://github.com/chrissotraidis/kartpad/issues/new"];
+  draft.queryItems = @[
+    [NSURLQueryItem queryItemWithName:@"template" value:@"bug_report.yml"],
+    [NSURLQueryItem queryItemWithName:@"revision" value:[NSString stringWithFormat:@"%@ (build %@)",
+        [bundle objectForInfoDictionaryKey:@"CFBundleShortVersionString"] ?: @"unknown",
+        [bundle objectForInfoDictionaryKey:@"CFBundleVersion"] ?: @"unknown"]],
+    [NSURLQueryItem queryItemWithName:@"platform" value:[NSString stringWithFormat:
+        @"Apple Silicon Mac, %@ (add exact model if known)",
+        NSProcessInfo.processInfo.operatingSystemVersionString]],
+    [NSURLQueryItem queryItemWithName:@"context" value:
+        @"Report origin: KartPad (modified WiiCompiled platform integration)."],
+    [NSURLQueryItem queryItemWithName:@"diagnostics" value:
+        @"No diagnostic file has been uploaded. Use Help → Save Diagnostics Report…, review the saved text, then attach it manually here if relevant."],
+  ];
+  if (draft.URL != nil) [NSWorkspace.sharedWorkspace openURL:draft.URL];
+}
+
+- (void)showReportingGuide:(id)sender {
+  (void)sender;
+  [NSWorkspace.sharedWorkspace openURL:[NSURL URLWithString:
+      @"https://github.com/chrissotraidis/kartpad/blob/main/docs/REPORTING.md"]];
+}
+
+- (void)showWiiCompiled:(id)sender {
+  (void)sender;
+  [NSWorkspace.sharedWorkspace openURL:[NSURL URLWithString:
+      @"https://github.com/patchzyy/Wiicompiled"]];
+}
+
 - (void)saveDiagnostics:(id)sender {
   (void)sender;
   NSSavePanel *panel = NSSavePanel.savePanel;
@@ -1265,6 +1301,16 @@ static void InstallMenu() {
       keyEquivalent:@""];
   diagnostics.target = Controller();
   [helpMenu addItem:diagnostics];
+  NSMenuItem *report = [helpMenu addItemWithTitle:@"Report a KartPad Problem…"
+      action:@selector(reportProblem:) keyEquivalent:@""];
+  report.target = Controller();
+  NSMenuItem *guide = [helpMenu addItemWithTitle:@"Reporting and Existing Issues"
+      action:@selector(showReportingGuide:) keyEquivalent:@""];
+  guide.target = Controller();
+  [helpMenu addItem:NSMenuItem.separatorItem];
+  NSMenuItem *upstream = [helpMenu addItemWithTitle:@"Built on WiiCompiled"
+      action:@selector(showWiiCompiled:) keyEquivalent:@""];
+  upstream.target = Controller();
   helpMenuItem.submenu = helpMenu;
   [mainMenu addItem:helpMenuItem];
 }
