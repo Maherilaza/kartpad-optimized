@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "objective": "Stable gameplay and supported online play across Android and Apple builds, with Original and Retro tracked separately. Resolve launch/data-loss blockers first, then online session failures, real-game geometry and measured performance. Count completed affected-device outcomes, not diagnostics.",
+  "objective": "Stable gameplay across Android and Apple builds, with Original and Retro tracked separately. Actionable data-loss and launch blockers take precedence; prioritize measured sustained performance, then actual-game geometry while reporter-dependent cases await new evidence. Count affected-device outcomes, not diagnostics.",
   "work": [
     {
       "id": "retro-save-loss",
@@ -30,10 +30,11 @@
         131,
         207,
         215,
-        216
+        216,
+        236
       ],
       "state": "awaiting-reporter",
-      "next_action": "Use one matching OS exit or final transition excerpt per distinct launch/cup/race failure. Keep #208 canonical for #209/#210; no speculative common-runtime patch or repeated diagnostics request. For #215 and #216, await the already requested chooser-versus-Android-home destination, selected profile/import completion and one short redacted exit result; keep the two devices as separate subcases.",
+      "next_action": "Classify one actual OS/process exit per separate launch/cup/race case. #215 and #236 already confirm Android-home exit; do not re-ask that destination. Home exit alone does not distinguish native fault, Java exception or OS termination. Use the existing ApplicationExitInfo/report path; keep #208 canonical and avoid a speculative shared renderer fix.",
       "acceptance": "Each classified failure passes its affected import/start, cup-awards or race boundary on the exact target. Similar exits are not assumed to share a cause.",
       "dependency": {
         "owner": "the named reporters in each linked issue",
@@ -49,10 +50,10 @@
         196
       ],
       "state": "awaiting-reporter",
-      "next_action": "The corrected 0.4.17/build39 IPA is published and owner-accepted on iPhone14. Await the already requested in-place Original/Retro launch/race/relaunch result on the affected iPhone17 Pro Max/iOS27. Use https://github.com/chrissotraidis/kartpad/issues/196#issuecomment-5649940869; do not regenerate or repeat simulator checks without new source/evidence.",
+      "next_action": "Build39 still failed the matching iPhone17 Pro Max/iOS27 retest. Issue196 was reopened during current review after an unsupported completed closure. Await the already requested new per-mode crash analytics or in-app Share Report; reporter said current analytics were absent. Do not rebuild the same IPA or repeat old simulator tests as a fix.",
       "dependency": {
-        "owner": "issue-196 affected-device reporter",
-        "needs": "Install the published unsigned IPA with the existing compatible identity and return the requested matching-device result; no uninstall or reset."
+        "owner": "issue196 reporter",
+        "needs": "Already requested new crash report or recent in-app log, or confirmation that the menu cannot be reached. Preserve installation and data."
       },
       "acceptance": "The same corrected candidate preserves existing data and passes both Original and Retro launch, race and relaunch on the matching iPhone 17 Pro Max/iOS 27 target. Package/reporter/release acceptance remain separate.",
       "checkpoint": "docs/artifacts/2026-09-13/platform-candidate-handoff.md",
@@ -60,7 +61,7 @@
     },
     {
       "id": "android-online",
-      "priority": 2,
+      "priority": 4,
       "issues": [
         206
       ],
@@ -72,7 +73,7 @@
       },
       "acceptance": "Exact candidate passes login, matching, race, results, repeat and reconnect; a #206 endurance result must exceed its reported 4-5-race failure window. Dashboard entry alone does not pass.",
       "checkpoint": "docs/MAINTENANCE-BOARD.md",
-      "priority_reason": "Stable supported online play is the primary product objective after launch/data prerequisites."
+      "priority_reason": "Network-dependent endurance remains open; use the existing requested comparison while locally actionable performance and geometry work proceeds."
     },
     {
       "id": "adreno-geometry",
@@ -86,11 +87,11 @@
         193,
         211
       ],
-      "state": "awaiting-owner",
-      "next_action": "After adreno-diagnostic-preparation, arrange an approved private transfer and a matched affected-device tester for the dynamic-to-literal-to-dynamic character-draw comparison. Keep this hardware gate parked while local preparation proceeds; preserve data and do not reuse overwritten/scratch candidates.",
+      "state": "ready-local",
+      "next_action": "Recover the retained actual-draw/PNMTX experiment into a clean current-code83 worktree, preserving draw identity and disabling diagnostic draw merging as already reviewed. Compile generated vertex shaders and prepare a compatible-signer dynamic/literal/dynamic comparison for an affected device. Passing synthetic probes are not gameplay acceptance.",
       "dependency": {
-        "owner": "Android release/signing operator and affected-device reporter",
-        "needs": "A matching-signer private handoff with confirmed S24/Adreno or Adreno 8xx target, current build/profile and permission to run the bounded three-phase comparison"
+        "owner": "renderer worker and affected-device tester",
+        "needs": "Current immutable diagnostic and concrete delivery; signer location is known. Affected S24/Adreno or 840 test of the actual selected failing draw still required."
       },
       "acceptance": "A correlated actual bad draw discriminates the hypothesis; a subsequent narrow correction removes the reported corruption on the affected GPU with a matched baseline and no relevant regression.",
       "checkpoint": "docs/MAINTENANCE-BOARD.md",
@@ -98,7 +99,7 @@
     },
     {
       "id": "warmed-performance",
-      "priority": 4,
+      "priority": 2,
       "issues": [
         198,
         167,
@@ -109,14 +110,14 @@
         207,
         135
       ],
-      "state": "awaiting-owner",
-      "next_action": "After warmed-profiler-preparation, obtain the approved private transfer route and deliver an audited compatible-signer candidate to the already willing #198 reporter for the documented warmed Helio G85 capture. Do not repeat willingness requests, uninstall or clear data.",
+      "state": "ready-local",
+      "next_action": "Refresh the nondebuggable shell-profileable diagnostic on current public code83 with exact symbols and compatible signer. Existing #198 captures and willingness are sufficient. Collect one bounded warmed driven-scene CPU profile; separate guest execution, GX preparation, waits and thermal effects before changing runtime source. Do not repeat the completed aspect/validation sweeps.",
       "acceptance": "A matched warmed affected-device comparison shows a useful frame-time improvement with guest semantics and stability preserved. No FPS claim from a host microbenchmark.",
       "checkpoint": "docs/MAINTENANCE-BOARD.md",
-      "priority_reason": "Measure a slow warmed scene before optimizing; do not generalize one device to all GPUs.",
+      "priority_reason": "Owner explicitly prioritizes slowdowns. Sustained low FPS after shader queues empty is the strongest measured opportunity; a local diagnostic can progress now.",
       "dependency": {
-        "owner": "Christopher/release operator for private transfer; then issue-198 reporter for capture",
-        "needs": "A compatible signed candidate or approved data-preserving test route, plus an approved private transfer channel, followed by the matched warmed-scene profile."
+        "owner": "performance worker and release operator",
+        "needs": "Current-baseline diagnostic package and private delivery route; Community signer is located. Owner Pixel can establish local measurement, while Helio G85 needs its affected-device result."
       }
     },
     {
