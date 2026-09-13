@@ -35,6 +35,19 @@ archive is available for rebuilding and modification.
    newer incompatible profile, wait for a matching KartPad update. Never bypass
    the checks or replace executable files manually.
 
+## Preferred Game (source candidate)
+
+The next-build source adds **Preferred Game…** to the game selector and paused
+KartPad menu. **Ask Every Time** is the default; you can choose Original or
+Retro Rewind for the next fresh launch. Changing it leaves the current game
+paused and does not start a game immediately. This is not in public code 80.
+
+The chooser still validates game data before starting. Missing or incompatible
+content leaves you at the selector, and an explicit next-launch game choice
+takes precedence. **Return to KartPad Menu** and **Restart to Selector** remain
+ways to reach the menu without automatically launching again. This preference
+does not check for or install online updates.
+
 ## Updating safely
 
 Install future public APKs over the existing public app. Keep the same signing

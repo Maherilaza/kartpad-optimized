@@ -34,9 +34,14 @@ open class KartPadLaunchActivity : Activity() {
     private var retroInstalled = false
     private var gameDataReady = false
     private var pendingProfile: String? = null
+    private lateinit var preferredLaunch: KartPadPreferredLaunch
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        preferredLaunch = KartPadPreferredLaunch(
+            savedInstanceState?.getBoolean(STATE_PREFERRED_CONSUMED) == true ||
+                intent.getBooleanExtra(EXTRA_SKIP_PREFERRED_GAME, false) || pausedProfile() != null,
+        )
         KartPadExitDiagnostics.mark(this, pausedProfile() ?: "chooser")
         setContentView(buildContent())
         original.setOnClickListener { selectMode("base") }
@@ -58,6 +63,17 @@ open class KartPadLaunchActivity : Activity() {
                 ?.takeIf { it == "base" || it == "retro_rewind" }
         }
         validateRetroRewind()
+    }
+
+    override fun onPause() {
+        // Do not launch over another app or a setup/help screen after validation.
+        preferredLaunch.consumed = true
+        super.onPause()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(STATE_PREFERRED_CONSUMED, preferredLaunch.consumed)
+        super.onSaveInstanceState(outState)
     }
 
     override fun onDestroy() {
@@ -121,15 +137,19 @@ open class KartPadLaunchActivity : Activity() {
                     hideStatus("Original is ready; Retro Rewind is optional")
                 }
                 Log.i(LOG_TAG, "A3 mode chooser retro-installed=$valid")
+                val automaticProfile = preferredLaunch.choose(
+                    KartPadPreferredGame.read(filesDir), gameDataReady, retroInstalled, pendingProfile,
+                )
                 pendingProfile?.takeIf { gameDataReady }?.let { profile ->
                     pendingProfile = null
                     continueSelectedMode(profile)
-                }
+                } ?: automaticProfile?.let { launch(it) }
             }
         }
     }
 
     private fun selectMode(profile: String) {
+        preferredLaunch.consumed = true
         pausedProfile()?.let { current ->
             if (profile == current) {
                 finish()
@@ -305,6 +325,7 @@ open class KartPadLaunchActivity : Activity() {
             accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
         }
         column.addView(status, layout())
+        column.addView(link("Preferred Game…") { showPreferredGame() }, layout())
         if (!compact) {
             column.addView(label("A little help getting started", 18f), layout(dp(8)))
             column.addView(link("Setup guide") { openGuide("INSTALL_ANDROID.md") }, layout())
@@ -323,6 +344,26 @@ open class KartPadLaunchActivity : Activity() {
             addView(scroll, FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
         }
+    }
+
+    private fun showPreferredGame() {
+        preferredLaunch.consumed = true
+        AlertDialog.Builder(this)
+            .setTitle("Preferred Game on Next Launch")
+            .setSingleChoiceItems(KartPadPreferredGame.labels,
+                KartPadPreferredGame.values.indexOf(KartPadPreferredGame.read(filesDir))) { dialog, which ->
+                runCatching { KartPadPreferredGame.write(filesDir, KartPadPreferredGame.values[which]) }
+                    .onSuccess {
+                        dialog.dismiss()
+                        showStatus("Saved for next launch. Game data will be checked before starting.")
+                    }
+                    .onFailure {
+                        dialog.dismiss()
+                        showStatus("The preferred game could not be saved. Please try again.")
+                    }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun showSetupHelp() {
@@ -443,6 +484,8 @@ open class KartPadLaunchActivity : Activity() {
     }
 
     companion object {
+        const val EXTRA_SKIP_PREFERRED_GAME = "dev.kartpad.android.SKIP_PREFERRED_GAME"
+        private const val STATE_PREFERRED_CONSUMED = "preferred_launch_consumed"
         private const val LOG_TAG = "KartPadLauncher"
         private const val EXTRA_DEBUG_RETRO_NOT_INSTALLED =
             "dev.kartpad.android.TEST_MODE_CHOOSER_RETRO_NOT_INSTALLED"
