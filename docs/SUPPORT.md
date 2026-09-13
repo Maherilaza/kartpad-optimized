@@ -90,6 +90,12 @@ Android's save-picker instructions do not imply the same UI exists on Apple.
 
 ## Display and performance
 
+**Mac VSync:** public 0.4.17/build 39 has no VSync switch. The experimental,
+restart-required option is merged in [PR #255](https://github.com/chrissotraidis/kartpad/pull/255)
+and has passed local build/package and native settings checks, but is not in a
+new public Mac download. Physical tearing and pacing acceptance for
+[#250](https://github.com/chrissotraidis/kartpad/issues/250) remain open.
+
 **Original 4:3** and **Widescreen 16:9 (Experimental)** fit the selected aspect
 inside the display; black bars can be expected. **Fill Screen (Experimental)**
 uses the actual surface aspect and dynamic game projection. It is intended to
@@ -166,6 +172,12 @@ or app storage before collecting them. No USB debugging or root is needed.
 
 **iPhone/iPad:** After reproducing the problem, open **••• → Report a
 Problem…** and describe what happened. If the app crashed, reopen it first.
+
+**iPhone 17 Pro Max / iOS 27 startup report:** the [#196 retest](https://github.com/chrissotraidis/kartpad/issues/196#issuecomment-5651820707)
+still fails on 0.4.17/build 39: Retro crashes roughly two seconds after its
+KartPad screen and Original still fails. The earlier iPhone 14 test does not
+resolve this device-specific result. The next evidence is the promised new crash
+analytics labelled by mode; preserve the installation and data.
 
 1. Choose **Share Report…** to save or share the diagnostic `.log` file. It
    includes device/settings details and current/previous session logs.
