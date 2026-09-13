@@ -53,10 +53,13 @@ Root access is not needed:
 **Older public build:** `0.4.10-android.1` always targets the Original PAL save,
 even when opened while playing Retro Rewind. It does not export or restore Retro
 Rewind saves. Update to the current public build for that transfer; keep the PC copy and
-verify the resulting progress offline. The reporter's PC WiiCompiled → Android
-Retro Rewind/PAL test restored the license, but its online rating showed 5000;
-complete migration acceptance remains open in
-[#105](https://github.com/chrissotraidis/kartpad/issues/105).
+verify the resulting progress offline. In the PC WiiCompiled → Android Retro
+Rewind/PAL case, the initial save-only restore left ratings at 5000. After the
+matching rating companion was imported, the reporter confirmed that ratings
+and offline progress transferred correctly in
+[#105](https://github.com/chrissotraidis/kartpad/issues/105). This confirms that
+manual handoff; whole-Mii-database import and automatic two-way synchronization
+remain separate requests.
 
 **Profile selection:** Choose **Original Mario Kart Wii**, **Retro Rewind**, or
 **Retro Rewind (Separate Save)** to match the source. The third profile is for
