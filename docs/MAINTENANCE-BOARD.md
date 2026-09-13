@@ -144,3 +144,7 @@ Ownership audit: [46/46 open tickets assigned and replied to](artifacts/2026-09-
 ## Concrete source corrections after deeper review
 
 [Local failure review](artifacts/2026-09-13/android-source-failure-review.md): Original startup now skips unrelated Retro recovery, and recovery defers to an active cross-process Retro install transaction. Real filesystem/process tests reproduce and cover both boundaries. A shared packed-vertex helper also reads only its required three bytes. These changes need a new candidate to reach users; public83 is unchanged, and no broad launch/geometry issue is closed on this evidence.
+
+## Published Android 0.4.19 / code85
+
+[Code85 is public](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.19-android.1), delivering the PR271 Original-startup isolation, active-install recovery protection and packed-vertex read correction. APK, corresponding source, notices and checksums were uploaded and independently downloaded/verified. See the [release receipt](artifacts/2026-09-13/android-code85-public-release.md). Earlier entries saying these changes need a new APK are superseded. No fresh physical gameplay or broad issue closure is inferred; the release posts request focused affected-path comparisons.
