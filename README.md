@@ -44,24 +44,19 @@ chooser, game-data management, packaging, and release workflows.
 
 | Platform | Download | Setup |
 | --- | --- | --- |
-| Android ARM64 | [0.4.16 Android 2 · code 65](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.16-android.2) | [Android 9+ with Vulkan](docs/INSTALL_ANDROID.md) |
+| Android ARM64 | [0.4.17 Android 1 · code 80](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.17-android.1) | [Android 9+ with Vulkan](docs/INSTALL_ANDROID.md) |
 | iPhone / iPad | [0.4.17 · build 39](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.17-ios.1) | [iOS/iPadOS 16+; re-sign the IPA](docs/INSTALL_IPA.md) |
 | Apple Silicon Mac | [0.4.17 · build 39](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.17-macos.1) | [macOS 14+](docs/INSTALL_MACOS.md) |
 | Apple TV experimental preview | [0.4.11 · build 9](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11-tvos.1) | [tvOS 17+; re-sign the IPA](docs/INSTALL_TVOS.md) |
 
-**Android 0.4.16 Android 2 is now available.** It refreshes the translated
-Retro Rewind 6.12.8 graph and retains the console-serial correction required by
-Retro WFC profiles. Physical Pixel 9 Pro XL acceptance confirmed launch,
-touch controls, Retro WFC login and worldwide lobby entry. Frame drops and
-stutter during online connection and gameplay remain known issues; sustained
-60 FPS is not claimed. It adds the refreshed game chooser,
-reviewed-log reporting, Retro pack-update save protection and native rendering
-improvements. Local Pixel 9 Pro XL tests at 2x/Fill measured about **58 FPS versus
-40–50 FPS** in the warm Grand Prix menu with the change enabled versus disabled;
-race gains were smaller. The owner accepted the final payload on hardware.
-These local mode comparisons are not an across-device or old-public-versus-new-public
-benchmark. Menu delays and device-specific graphics issues remain open. See the
-[measurements and release notes](docs/releases/v0.4.16-android.2.md).
+**Android 0.4.17 Android 1** adds **Display → FPS Counter Size…** with saved
+Small, Medium and Large text sizes, keeps the touch editor's Show/Hide button
+reachable on narrow landscape screens, and delivers shoulder-to-D-pad remapping.
+It retains Retro Rewind 6.12.8 and the console-serial correction. The owner
+accepted Retro single-player racing and touch on the preceding device candidate;
+the new sizing and editor controls passed physical Pixel checks. Online-menu
+stalls, device-specific graphics issues and controller-specific reports remain
+open. See the [release notes](docs/releases/v0.4.17-android.1.md).
 
 **iPhone/iPad 0.4.17** supports Retro Rewind 6.12.8 and includes the corrected
 compiled REL-report guard. The owner accepted the bounded iPhone 14 trial;
@@ -74,7 +69,7 @@ and keyboard smoke checks passed; the reported two-player scene remains a
 separate test. See the [Mac notes](docs/releases/v0.4.17-macos.1.md).
 
 Download the checksums and accompanying notices with each package. The releases
-also include the [source bundle and rebuild instructions](docs/artifacts/2026-09-10/android-source-delivery.md). **Update in
+also include the [source bundle and rebuild instructions](docs/artifacts/2026-09-13/android-source-delivery.md). **Update in
 place using the same signing identity; do not uninstall or clear app data.**
 Private Android previews use a different signer and need a backed-up migration.
 
@@ -95,7 +90,7 @@ Private Android previews use a different signer and need a backed-up migration.
   [support guide](docs/SUPPORT.md) and [known issues](docs/KNOWN-ISSUES.md).
 
 Android Original gameplay with a Razer Kishi was accepted on Pixel 9 Pro XL;
-the current Android release adds owner-confirmed Retro WFC login and worldwide
+earlier Android testing confirmed Retro WFC login and worldwide
 lobby entry on that device. Frame drops, stutter, complete results and reconnect
 remain open.
 The iPad release candidate has owner-accepted controller gameplay and menu

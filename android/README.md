@@ -1,17 +1,15 @@
 # KartPad Android
 
-Android is now a supported community platform. The current release is
-[`v0.4.16-android.2`](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.16-android.2),
-based on the physically tested 6.12.8 runtime: Original gameplay with touch
-controls and owner-confirmed Retro WFC login/lobby entry on Pixel 9 Pro XL. Read
-[installation, update safety and known limits](../docs/INSTALL_ANDROID.md).
+Android is a supported community platform. The current release is
+[`v0.4.17-android.1`](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.17-android.1),
+with Retro Rewind 6.12.8, saved FPS counter sizes, a responsive touch editor and
+shoulder-to-D-pad remapping. Read
+[installation, update safety and known limits](../docs/INSTALL_ANDROID.md) and
+[exact release testing](../docs/releases/v0.4.17-android.1.md).
 Sustained 60 FPS and complete device/controller coverage are not claimed.
 
-[Android 0.4.16 Android 2](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.16-android.2)
-is the current owner-accepted community update. Its refreshed chooser, reporting,
-Retro save protection and rendering changes have bounded measurements and tests
-in the release notes. The source archive and
-[reconstruction instructions](../docs/artifacts/2026-09-10/android-source-delivery.md)
+The source archive and
+[reconstruction instructions](../docs/artifacts/2026-09-13/android-source-delivery.md)
 supply the dependency/runtime source and exact partition metadata for this build.
 
 ## Build the full playable app on an Apple Silicon Mac
@@ -24,7 +22,7 @@ private translated graph; the installed app's size is not the build-space cost.
 ```sh
 git clone https://github.com/chrissotraidis/kartpad.git
 cd kartpad
-git checkout v0.4.16-android.2
+git checkout v0.4.17-android.1
 ./scripts/build-user-ipa.sh bootstrap
 ./scripts/bootstrap-android-host.sh
 ./scripts/check-android-host.sh
@@ -47,13 +45,13 @@ cp tools/android63-base-common-shards.json \
   --retro-root private/builder/retro-rewind-downloads/6.12.8-extracted/RetroRewind6 \
   --payload private/builder/retro-rewind-downloads/payload.RMCPD00.bin
 
-KARTPAD_ANDROID_VERSION_NAME=0.4.16-android.2 \
-KARTPAD_ANDROID_VERSION_CODE=65 \
+KARTPAD_ANDROID_VERSION_NAME=0.4.17-android.1 \
+KARTPAD_ANDROID_VERSION_CODE=80 \
 KARTPAD_ANDROID_PACKAGE_FORMAT=aab \
   ./scripts/build-android-game-app.sh private/self-build/retro-rewind/translation
 
-KARTPAD_ANDROID_EXPECTED_VERSION_NAME=0.4.16-android.2 \
-KARTPAD_ANDROID_EXPECTED_VERSION_CODE=65 \
+KARTPAD_ANDROID_EXPECTED_VERSION_NAME=0.4.17-android.1 \
+KARTPAD_ANDROID_EXPECTED_VERSION_CODE=80 \
   ./scripts/audit-android-bundle.sh android/app/build/outputs/bundle/release/app-release.aab
 ```
 
@@ -66,7 +64,7 @@ patches: the wrapper reuses an existing prepared source directory.
 For a locally installable debug-signed APK, use the same build command with
 `KARTPAD_ANDROID_PACKAGE_FORMAT=apk`; it writes
 `android/app/build/outputs/apk/debug/app-debug.apk`. Audit it with
-`KARTPAD_ANDROID_EXPECTED_VERSION_NAME=0.4.16-android.2 ./scripts/audit-android-package.sh PATH.apk`.
+`KARTPAD_ANDROID_EXPECTED_VERSION_NAME=0.4.17-android.1 ./scripts/audit-android-package.sh PATH.apk`.
 That debug build is for personal testing, not public distribution, and cannot
 update a differently signed public app. A source-only fixture is not the game.
 
@@ -78,14 +76,14 @@ Keep signing keys backed up securely outside Git: future in-place updates need
 the same key. The unsigned AAB stays local; this is not a Google Play release.
 
 ```sh
-KARTPAD_ANDROID_EXPECTED_VERSION_NAME=0.4.16-android.2 \
-KARTPAD_ANDROID_EXPECTED_VERSION_CODE=65 \
+KARTPAD_ANDROID_EXPECTED_VERSION_NAME=0.4.17-android.1 \
+KARTPAD_ANDROID_EXPECTED_VERSION_CODE=80 \
 KARTPAD_ANDROID_KEYSTORE=/absolute/private/path/kartpad-release.p12 \
 KARTPAD_ANDROID_KEY_ALIAS=kartpad-release \
 KARTPAD_ANDROID_PASSWORD_FILE=/absolute/private/path/password.txt \
   ./scripts/derive-android-release-apk.sh \
     android/app/build/outputs/bundle/release/app-release.aab \
-    artifacts/KartPad-v0.4.16-android.2-arm64.apk
+    artifacts/KartPad-v0.4.17-android.1-arm64.apk
 ```
 
 The keystore and key must use the same password for this simple PKCS12 flow.

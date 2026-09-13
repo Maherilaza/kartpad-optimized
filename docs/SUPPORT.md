@@ -12,7 +12,7 @@ backup instructions before changing saves or signing identities.
 
 KartPad stores saves in Android's **internal app-private storage**, so its save
 folder is not exposed through a normal file manager under `Android/data`.
-The [Android testing preview](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.13-android-preview.1)
+The [current Android release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.17-android.1)
 includes transfers for Original, Retro Rewind and Retro Rewind (Separate Save).
 Root access is not needed:
 
@@ -32,7 +32,7 @@ Root access is not needed:
 
 **Older public build:** `0.4.10-android.1` always targets the Original PAL save,
 even when opened while playing Retro Rewind. It does not export or restore Retro
-Rewind saves. Update to the testing build for that transfer; keep the PC copy and
+Rewind saves. Update to the current public build for that transfer; keep the PC copy and
 verify the resulting progress offline. The reporter's PC WiiCompiled → Android
 Retro Rewind/PAL test restored the license, but its online rating showed 5000;
 complete migration acceptance remains open in
@@ -52,6 +52,14 @@ identity compatibility. A save transfer does not transfer the Mii database or
 console identity. If the source is Dolphin, another WiiCompiled build, or
 Retro Rewind, name it and the game region when asking for migration help.
 Never post the save or NAND publicly.
+
+**Restoring a backup from the same phone:** the backup's contents still matter.
+Importing a raw save and its matching rating companion does not restore the Mii
+names/appearance, console identity or country configuration. The same-phone
+Wheel Witch backup case in [#234](https://github.com/chrissotraidis/kartpad/issues/234)
+remains unresolved; code 80 does not add a complete identity/NAND migration.
+If an identity or country warning appears, preserve the existing profiles and
+backup rather than creating new data or resetting identity to get past it.
 
 **Retro Rewind ratings:** Raw `rksys.dat` transfer does not include
 `RRRating.pul`, Miis or console identity. In a shared Dolphin NAND, the rating

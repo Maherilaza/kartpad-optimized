@@ -87,7 +87,7 @@
         211
       ],
       "state": "awaiting-owner",
-      "next_action": "The established Community Release key is available and its certificate matches. Prepare and audit the retained diagnostic candidate for a compatible signed private handoff, then run the affected-device dynamic-to-literal-to-dynamic comparison. Do not treat ordinary code78 race acceptance as an Adreno graphics fix or reuse overwritten/scratch candidates.",
+      "next_action": "After adreno-diagnostic-preparation, arrange an approved private transfer and a matched affected-device tester for the dynamic-to-literal-to-dynamic character-draw comparison. Keep this hardware gate parked while local preparation proceeds; preserve data and do not reuse overwritten/scratch candidates.",
       "dependency": {
         "owner": "Android release/signing operator and affected-device reporter",
         "needs": "A matching-signer private handoff with confirmed S24/Adreno or Adreno 8xx target, current build/profile and permission to run the bounded three-phase comparison"
@@ -110,7 +110,7 @@
         135
       ],
       "state": "awaiting-owner",
-      "next_action": "The established Community Release key is available and verified. Derive an audited compatible-signer profiler candidate and arrange the approved private handoff before the already willing #198 reporter performs the documented warmed Helio G85 capture. The retained debug APK itself is not a public-app update; no uninstall, data clear or repeated willingness request.",
+      "next_action": "After warmed-profiler-preparation, obtain the approved private transfer route and deliver an audited compatible-signer candidate to the already willing #198 reporter for the documented warmed Helio G85 capture. Do not repeat willingness requests, uninstall or clear data.",
       "acceptance": "A matched warmed affected-device comparison shows a useful frame-time improvement with guest semantics and stability preserved. No FPS claim from a host microbenchmark.",
       "checkpoint": "docs/MAINTENANCE-BOARD.md",
       "priority_reason": "Measure a slow warmed scene before optimizing; do not generalize one device to all GPUs.",
@@ -118,11 +118,65 @@
         "owner": "Christopher/release operator for private transfer; then issue-198 reporter for capture",
         "needs": "A compatible signed candidate or approved data-preserving test route, plus an approved private transfer channel, followed by the matched warmed-scene profile."
       }
+    },
+    {
+      "id": "kamek-continuations",
+      "priority": 1,
+      "issues": [
+        248
+      ],
+      "state": "ready-local",
+      "next_action": "Continue the existing issue-248 investigator owned by the active release task; reconcile that owner before acting and do not spawn a competing worker. Review its narrow upstream PR182 backport and old-fail/new-pass synthetic continuation regression, then assess generated-graph coverage and code growth. The exact 0x807EF16C abort remains unproven in KartPad; do not broadly bump the upstream pin or merge on translator output alone.",
+      "acceptance": "A reviewed narrow source change passes the discriminating continuation regression and generated-graph checks. Native compilation and actual item-change/Item Rain acceptance remain subsequent gates before claiming the reported game failure fixed.",
+      "checkpoint": "docs/artifacts/2026-09-13/maintenance-ready-actions.md",
+      "priority_reason": "Concrete translator evidence and a confirmed skip-return control-flow defect provide a locally actionable crash investigation."
+    },
+    {
+      "id": "android-menu-handoff",
+      "priority": 2,
+      "issues": [
+        197
+      ],
+      "state": "ready-local",
+      "next_action": "Use the documented held-versus-released focus-loss and detach matrix to distinguish touch acceleration lock from stale SDL cached A. Shared held-A suppression is established at source level, but the reported cause is not reproduced. Prepare a discriminator with ordinary press/release and true detach controls; preserve valid held input on resume. The fresh offline touch-only reporter question is already outstanding; do not repeat it or change live device state without ownership.",
+      "acceptance": "A source-level discriminator either demonstrates stale input across handoff or rejects that hypothesis and records the next narrow path. Default-mode A/B mapping, auto-acceleration and affected moto g200 hardware acceptance remain separate; #184 remapping is not acceptance for #197.",
+      "checkpoint": "docs/ANDROID-INPUT-197.md",
+      "priority_reason": "Both touch and controller fail after controller use; shared input state can be inspected while the requested reporter comparison is pending."
+    },
+    {
+      "id": "adreno-diagnostic-preparation",
+      "priority": 3,
+      "issues": [
+        102,
+        104,
+        120,
+        137,
+        166,
+        193,
+        211
+      ],
+      "state": "ready-local",
+      "next_action": "Inventory the retained diagnostic source, APK and symbols and prove their immutable identities before reuse. Compare prepared source to the intended dynamic/literal/dynamic experiment; use the verified Community Release signing capability only through the authorized operator. Prepare the exact compatible-candidate build/audit recipe and redacted test card. Rebuild only if inspection establishes it is necessary and host build ownership is available. Do not assume an existing scratch artifact is valid.",
+      "acceptance": "A reviewed source/artifact inventory, compatible signing plan, exact build/audit recipe and three-phase test card are ready. If a candidate is produced, retain its source/hash/symbol identity. Then park delivery and affected-GPU execution on adreno-geometry; no graphics fix or hardware acceptance is implied.",
+      "checkpoint": "docs/artifacts/2026-09-13/maintenance-ready-actions.md",
+      "priority_reason": "Local identity and delivery preparation is executable before an affected reporter or private transfer channel is available."
+    },
+    {
+      "id": "warmed-profiler-preparation",
+      "priority": 4,
+      "issues": [
+        198
+      ],
+      "state": "ready-local",
+      "next_action": "Inspect the retained profiler source, APK, symbols and capture recipe before reuse; verify profileable/release settings and compatibility with the public signer. Prepare the minimal reproducible build/audit/signing handoff for the authorized operator and the existing approximately 20-second 99-Hz warmed Helio G85 capture. Do not publish a diagnostic, assume the old debug APK is a compatible update, ask willingness again or access a device.",
+      "acceptance": "The exact profiler source, settings, symbols, compatible signing/build recipe and capture instructions are reviewed and retained; any produced candidate is audited and immutable. Private transfer authorization and the actual reporter capture remain on warmed-performance; no measured improvement is claimed.",
+      "checkpoint": "docs/artifacts/2026-09-13/maintenance-ready-actions.md",
+      "priority_reason": "The reporter is already willing and signing capability exists; local preparation should not wait for the external transfer/capture gate."
     }
   ],
   "priority_review": {
     "date": "2026-09-13",
-    "reason": "Reflect published corrected Apple builds, restored Android signing capability and closed duplicates. Owner code78 offline acceptance does not resolve online latency, other GPU reports or affected iOS27 acceptance.",
-    "evidence": "docs/MAINTENANCE-BOARD.md"
+    "reason": "Separate locally executable investigation/preparation from reporter, transfer and hardware gates. The active issue-248 investigator retains ownership. Android code80 materials are prepared; publication must be verified separately. No new device or gameplay acceptance is asserted.",
+    "evidence": "docs/artifacts/2026-09-13/maintenance-ready-actions.md"
   }
 }

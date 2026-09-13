@@ -8,8 +8,8 @@ pass.
 ## Android D-pad and shoulder remapping
 
 **Status:** Implemented in [PR #219](https://github.com/chrissotraidis/kartpad/pull/219)
-and included in the current device candidate; public delivery and the affected
-AYN Thor/Odin controller trial remain separate gates.
+and delivered in Android 0.4.17/code 80. The affected AYN Thor/Odin controller
+trial remains open.
 
 R and D-pad Up are configurable in Android Controller Button Mapping. Assigning
 Right Shoulder to D-pad Up swaps the old R assignment so actions remain distinct.
