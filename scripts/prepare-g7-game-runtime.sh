@@ -68,6 +68,7 @@ patch --batch -p1 -d "${runtime_source}/aurora-main" < \
   "${repo_root}/patches/aurora-macos-trigger-bindings.patch"
 patch --batch -p1 -d "${runtime_source}/aurora-main" < \
   "${repo_root}/patches/aurora-macos-trigger-axis-isolation.patch"
+patch --batch -p1 -d "${runtime_source}/aurora-main" < \
   "${repo_root}/patches/aurora-viewport-interpolation.patch"
 patch -p1 -d "${runtime_source}" < "${repo_root}/patches/wiicompiled-apple-runtime.patch"
 patch -p1 -d "${runtime_source}" < \

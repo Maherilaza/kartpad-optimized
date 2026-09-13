@@ -76,7 +76,7 @@
  }
  
  void ApplyConfiguredMappings() {
-@@ -596,159 +565,6 @@
+@@ -596,163 +565,10 @@
      DrawGameCubeAdapterInfo();
  }
  
@@ -233,6 +233,10 @@
 -    ImGui::Text("Graphics API: %s", GraphicsApiDisplayName());
 -}
 -
+ #if defined(__ANDROID__)
+ float g_androidFpsOverlayScale = 1.0f;
+ #endif
+ 
  void DrawFpsOverlay() {
      static uint64_t lastTelemetryPresentCount = 0;
      AuroraPresentTiming presentTiming{};
