@@ -145,3 +145,7 @@ reporter controller/device acceptance remains open. See the
 ### Code 82 owner acceptance
 
 The Pixel was updated in place to private code 82 after a complete verified backup, with all 6,319 protected files unchanged before launch. Preferred Game startup/return checks passed for Original and Retro. The owner then reported “the game works”; record general gameplay acceptance without inferring Item Rain, completed-race counts or online coverage. #252 is merged; #248’s specific affected-path report stays open. Public 0.4.18/code 83 preparation uses the tested wrapper/runtime, pending signed artifact and hosted download verification.
+
+### Published Android 0.4.18 / code 83
+
+[Public code 83](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.18-android.1) is published with APK, source, notices and checksums. All four anonymous downloads match expected hashes/sizes and the hosted APK passes the release audit. Preferred Game and continuation handling are now delivered; the D-pad/FPS fixes were already delivered in code 80. General owner gameplay acceptance came from private code 82, which remains on the Pixel. Specific Item Rain/online and reporter-device outcomes remain open. See the [release evidence](artifacts/2026-09-13/android-code83-public-release.md).
