@@ -65,7 +65,7 @@ evidence for a Helio G85 race.
 
 ## Failure families and the smallest useful experiment
 
-The public Android baseline is **0.4.18/code 83**. Older report rows retain their
+The public Android baseline is **0.4.19/code 85**. Older report rows retain their
 actual tested builds; release availability is not an affected-device retest.
 GPU names are reported evidence, not deductions from a marketing model name.
 Only #166 currently supplies driver branches in this table; unknown driver
