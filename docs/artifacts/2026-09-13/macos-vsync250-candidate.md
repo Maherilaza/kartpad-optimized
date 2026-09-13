@@ -38,11 +38,14 @@ The restart boundary avoids additional presenter synchronization work. It does n
 - `KartPadMacShell.mm`, including the actual native settings page, passed Objective-C++ syntax checking against the prepared headers and SDL headers (one existing nullability warning at `windowWillClose:nil`).
 - `git diff --check` passed. No device or game data was read or changed.
 
+## Follow-up validation
+
+[Full builds and actual native settings verification](macos-vsync255-build-native-ui.md) subsequently passed for source correction `cdeb4a4`, including a compact-window scroll fix and all three local package audits. The dedicated native settings harness bypasses game startup and Mii handling; it does not prove integrated game launch or applied Metal presentation mode.
+
 ## Validation still required before release
 
-- Full native compilation of both base and Retro Rewind against the integrated PR #254 base and actual Dawn headers, rebuilding all AuroraConfig consumers together. Source preparation and the focused native tests above are already complete; they are not full game-build evidence.
-- Native settings interaction: save, reopen panel, quit/relaunch; display/interpolation/volume controls continue to work; writable-error feedback and layout remain correct.
+- Independently proven isolated full-app startup and confirmation of requested-versus-selected Metal mode after restart. The normal Mii-manager path must not reach owner data during that test; see the follow-up isolation finding.
 - Physical Mac comparison with the same build, course/camera, monitor and window mode: off/on, interpolation off first, then 120/180 where supported; 60 Hz and high refresh if available. Compare game time to wall time, audio continuity, queue-drop/presentation timing logs, resize, minimize/restore, fullscreen transitions and monitor changes.
 - Use a phone-camera clip to assess physical tearing; software capture alone is insufficient. Keep #250 open until this evidence supports the outcome. If FIFO causes pacing regressions, keep the candidate unreleased and investigate the producer/presenter interaction before release.
 
-Next action is review of this isolated candidate and full native build/UI interaction validation, followed by physical pacing and tearing comparison. Reporter details already requested remain useful for matching the eventual physical comparison, not a reason to repeat an unanswered comment.
+Next action is review of the built candidate, then an independently isolated full-app launch and physical pacing/tearing comparison. Reporter details already requested remain useful for matching the eventual physical comparison, not a reason to repeat an unanswered comment.
