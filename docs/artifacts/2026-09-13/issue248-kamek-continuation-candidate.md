@@ -1,6 +1,6 @@
 # Issue 248: isolated Kamek continuation candidate
 
-Status: **624 translator tests, exact-profile generation, focused Android compilation, and the complete incremental native runtime link pass.** Packaging and actual item-change/Item Rain gameplay remain open. No dependency pin bump, device operation, public artifact replacement, or merge was performed. Earlier sections preserve the evidence and corrections that led to this candidate; the current native result is recorded at the end.
+Status: **624 translator tests, exact-profile generation, focused Android compilation, and the complete incremental native runtime link pass.** Private code-81 packaging and APK audit also pass. Actual item-change/Item Rain gameplay remains open. The owner disconnected the phone before installation; no candidate install, public artifact replacement, or merge was performed. Earlier sections preserve the evidence and corrections that led to this candidate; the current native result is recorded at the end.
 
 ## Evidence
 
@@ -98,3 +98,11 @@ Integration inspection found the earlier isolated graph's `--mod-root .../input`
 Shared-tail control flow was reviewed during compilation: callee-state reload and normal-return guards remain at each call; the common switch sits outside block-local scopes and after an explicit return. Jumps target the same pre-block labels, so no local initialization is bypassed. External continuation fallback and return behavior are unchanged. No target filtering or new flush behavior was introduced. The full actual C++ compilation additionally checks label-scope validity across the changed graph.
 
 Free disk was about 15.9 GiB before compilation and remains approximately 15 GiB. Original sources, objects, PCH, app artifacts, and devices were unchanged. Next acceptance gate is candidate packaging and actual item-change/Item Rain gameplay; no runtime acceptance is claimed.
+
+## Private package follow-up
+
+The newly linked runtime was stripped and packaged through the retained Android wrapper using isolated JNI inputs and explicit private version overrides (`0.4.17-issue248.1`, code 81). Embedded provenance records source `19e2d78`, the native build manifest and both runtime hashes. This is a debug-signed private candidate; public code 80 remains unchanged.
+
+The standard APK audit and signature verification passed. APK SHA-256 is `56b43e305b54aecfd89f542ca12784a3bd7b7878673557c219e1ba081b0e105a`; packaged native SHA-256 is `d4f0281b7d9b1b9761492fd3a5f735769c70c7fbb1829969e46fa5a729ba10be`. Its signer matches the installed private code-79 APK on the Pixel. The owner disconnected the phone during backup before any install. A fresh, fully verified backup and pre/post protected-data comparison are required when it returns; the interrupted archive is not valid restoration evidence.
+
+The remaining gate is exact-candidate device installation, affected item/Item Rain gameplay, race and relaunch acceptance. Keep this PR draft until that outcome supports merging the runtime change.
