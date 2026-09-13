@@ -54,6 +54,8 @@ cp -R "${repo_root}/ref/upstream/Wiicompiled/aurora-main" \
 PYTHONPATH="${repo_root}/builder" python3 -m kartpad_builder.release_header \
   "${repo_root}/builder/profiles/mkwii-rmcp01-rev0.json" \
   "${runtime_source}/third_party/kartpad-profile/kartpad_retro_rewind_release.h"
+patch --batch --fuzz=0 -p1 -d "${runtime_source}" < \
+  "${repo_root}/patches/aurora-packed-vertex-read-width.patch"
 patch --batch -p1 -d "${runtime_source}/aurora-main" < \
   "${repo_root}/patches/aurora-present-telemetry.patch"
 patch --batch -p1 -d "${runtime_source}/aurora-main" < \
