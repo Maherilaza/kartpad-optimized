@@ -12,19 +12,19 @@ import subprocess
 import tarfile
 import zipfile
 
-TAG = "v0.4.14-android-preview.1"
-VERSION = "0.4.14-android-preview.1"
-CODE = 63
+TAG = "v0.4.17-android.1"
+VERSION = "0.4.17-android.1"
+CODE = 80
 # Exact candidate; changing notes must not relabel its compiled source as HEAD.
-APPROVED_SOURCE = "6a2dffc30f8f0d55a7eb928c614c88e054240d14"
-APPROVED_APK = "4e27897b9bb89e7b24fbe0b2e3dc66fae4efd549edaadf2f748ca22f376d87ff"
-APPROVED_AAB = "7d49f7dd7706b1b1f89fbaa4933f7ae4ac4a79c42ab96c567023b5646238f273"
-APPROVED_SOURCE_ARCHIVE = "555b840673d06d8db0aae3e02faebc854cc7e9a37286567963bbfa1587613a9d"
+APPROVED_SOURCE = "615225b3f0e0507ca76d4c715c921d0a1caa9956"
+APPROVED_APK = "13b68c84a0a52960007fda5e3d33eafad1c1d9d567d7544586ced2ce23c1e833"
+APPROVED_AAB = "e8c3dac4777cb48bb5057e0857e1401aae8bb2e1c4d1bd1caaa4f3953b47a575"
+APPROVED_SOURCE_ARCHIVE = "57be7d71dc5c6683c4000ca858030b5ab5a0b2c60f718a58a1b921a965627c5e"
 APPROVED_NATIVE = {
-    "lib/arm64-v8a/libmain.so": "1502c10b591809d3117b1e057d2273b53ec81fe76bf87d06d31dd1114286cf42",
-    "lib/arm64-v8a/libkartpad_discio.so": "0e5bd27501b1aee71db63364f0673682e0cca3c0234d560d4c54ac87e01c0d0b",
     "lib/arm64-v8a/libSDL3.so": "d7a17c375adcb71818210581b885f59832d5f95b663aa7a7d493484a00a94753",
     "lib/arm64-v8a/libc++_shared.so": "c4c2fe5cbcb1fba0003a31fc7ab29a9bb12df6cc187ec45a806462540e83d93b",
+    "lib/arm64-v8a/libkartpad_discio.so": "1d6c9fde69a3e4117987422bb6f0ebf41a40ec2de4945ebb7539b8a4b8e89207",
+    "lib/arm64-v8a/libmain.so": "acae9e4a0459aaad4108d4280c608d1902c0da930819ba83bfe15a2d51ccab4a"
 }
 REPO = Path(__file__).resolve().parents[1]
 
@@ -85,8 +85,8 @@ def main() -> None:
         "INSTALL_ANDROID.md": REPO / "docs/INSTALL_ANDROID.md",
         "BUILD_ANDROID.md": REPO / "android/README.md",
         "RELEASE_NOTES.md": REPO / f"docs/releases/{TAG}.md",
-        "SOURCE_DELIVERY.md": REPO / "docs/artifacts/2026-09-10/android-source-delivery.md",
-        "SOURCE_RECONSTRUCTION.md": REPO / "docs/artifacts/2026-09-10/android-source-reconstruction.md",
+        "SOURCE_DELIVERY.md": REPO / "docs/artifacts/2026-09-13/android-source-delivery.md",
+        "SOURCE_RECONSTRUCTION.md": REPO / "docs/artifacts/2026-09-13/android-source-reconstruction.md",
         "RIGHTS_AND_LICENSES.md": REPO / "RIGHTS_AND_LICENSES.md",
         "THIRD_PARTY_NOTICES.md": REPO / "THIRD_PARTY_NOTICES.md",
         "dependencies.lock.json": REPO / "dependencies.lock.json",
@@ -140,7 +140,8 @@ def main() -> None:
                                       cwd=REPO, text=True).splitlines()
     packaging_files = ("README.md", "android/README.md", "scripts/package-android-release-notices.py",
                        "scripts/package-release-source.py", "scripts/restore-source-git.py",
-                       "tools/android63-base-common-shards.json")
+                       "tools/android63-base-common-shards.json",
+                       "tests/test_android_public_release_contract.py")
     if any(not name.startswith("docs/") and name not in packaging_files
            for name in changed):
         parser.error("packaging source differs from candidate beyond documentation/packager")
@@ -154,11 +155,11 @@ def main() -> None:
         "containsTranslatedGameCode": True, "containsGameData": False,
         "containsPrivateSigningMaterial": False, "maintainerAuthorizedFreeCommunityRelease": True,
         "upstreamRightsConfirmed": False, "profileableByShell": False, "debuggable": False,
-        "physicalAcceptance": "Owner confirmed Android hardware checks complete and authorized release on 2026-09-10. Installed non-debuggable code63 private-signer variant has all155 ZIP payload entries byte-identical to public APK; signing block differs. This is owner acceptance, not a controlled previous-public versus final-public performance benchmark or an affected-Adreno/cup/audio-specific test claim",
+        "physicalAcceptance": "Owner accepted Retro single-player racing and touch on private code78; private code79 passed physical Large HUD, saved-size persistence and D-pad Show/Hide checks. Final code80 was not installed on hardware because the phone disconnected. Its debug-signed release twin has 155 ZIP entries identical to the public APK. The owner explicitly authorized publication after this boundary was disclosed. No completed-race, online fix or affected-controller acceptance inferred.",
         "sourceArchive": {"filename": args.source_archive.name, "bytes": args.source_archive.stat().st_size,
                           "sha256": sha(args.source_archive.read_bytes()),
-                          "reconstruction": "Fresh runtime877/877 and translator1105/1105 source files,29637/29637 base functions, Retro translated source and initialization match; generated shard sources match with documented path relocation and delivered partition metadata. Private game inputs are regenerated locally using delivered translator and recipes"},
-        "emulatorAcceptance": "API 36 ARM64 software GPU, audio disabled: premerge release candidate with identical game payload passed public28 update preserving19 fixture files; Original and Retro race startup, acceleration/steering and Home return; Original report return and live resize; Retro fixture license reloaded after restart. Final merged-source APK update preserved25 fixture files. No completed race/cup, full import, audio, online, physical performance or affected-Adreno acceptance claimed",
+                          "reconstruction": "Exact current Git snapshots, prepared Android runtime and pinned dependency source archives are supplied. Private translated game functions are regenerated from user-supplied inputs using delivered emitters and recipes. No new independent second-host or bit-identical rebuild claim."},
+        "emulatorAcceptance": "The code80 debug-signed release twin installed and launched its non-debuggable selector on the API 36 ARM64 emulator: Original Import Game and Retro Rewind Base Game Required, pinned to 6.12.8. No game runtime or race was tested without private game data. The separate debug menu fixture aborted in Dawn Vulkan setup and is not counted as passing. Emulator and focused source checks remain separate from gameplay, online, physical performance and affected-controller acceptance.",
         "noticesSHA256": {n: sha(b) for n, b in sorted(data.items())},
     }
     data["PROVENANCE.json"] = (json.dumps(provenance, indent=2, sort_keys=True) + "\n").encode()

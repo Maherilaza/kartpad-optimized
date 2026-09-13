@@ -8,9 +8,9 @@ not a measured regression or online race/results/reconnect acceptance.
 
 | Request | Actual state and next action |
 | --- | --- |
-| #184 shoulder to D-pad Up | PR219 merged; code78 includes it, public code65 does not. General race acceptance is not a physical remapping test. |
-| #238 Show D-pad control | Latest reporter sees dim D-pad but only Back, no Show. Editor has fixed800dp children plus padding. Responsive editor correction and small-landscape verification are next; instructions alone are not a solution. |
-| FPS size | New owner request: existing Show FPS boolean is insufficient. Add persistent size submenu without changing render resolution or touch scale. |
+| #184 shoulder to D-pad Up | PR219 merged and delivered in public code80. General race acceptance is not a physical remapping test. |
+| #238 Show D-pad control | PR245 replaces the fixed-width editor. Physical code79 D-pad Hide/Show passed with both actions visible; delivered in public code80, affected reporter trial remains open. |
+| FPS size | PR245 adds Small/Medium/Large. Physical code79 Large display and restart persistence passed, without changing render resolution or touch scale; delivered in public code80. |
 | #119 notification/navigation bars | Correction shipped since build23, reporter acceptance pending. Verify launch/menu/resume; do not advertise as newly implemented. |
 | #202 Thor fullscreen | Surface/inset boundary remains unresolved, distinct from transient bars. No projection change without reproduction. |
 | #197 ipega menu input | Touch/controller failure after controller use remains open. Needs touch-only to controller-use/disconnect to touch handoff test. |

@@ -11,7 +11,7 @@ next actions, and [known issues](KNOWN-ISSUES.md) for current reports.
 
 | Platform | Package | Acceptance boundary |
 | --- | --- | --- |
-| Android | [0.4.16 Android 2, code 65](releases/v0.4.16-android.2.md) | Physical Pixel launch, touch, Retro WFC login and worldwide lobby entry; complete race/results/reconnect, broader GPU/performance and cup behavior remain open |
+| Android | [0.4.17 Android 1, code 80](releases/v0.4.17-android.1.md) | Owner accepted preceding candidate Retro single-player/touch; new FPS sizing and D-pad editor passed physical Pixel UI checks. Exact release-payload checks are recorded in release provenance; online and affected-controller acceptance remain open |
 | iPhone / iPad | [0.4.17, build 39](releases/v0.4.17-ios.1.md) | Corrected compiled REL guard, owner-accepted bounded iPhone 14 trial and preserved saves/configuration; iPhone 17 Pro Max/iOS 27 and online acceptance remain open |
 | Apple Silicon Mac | [0.4.17, build 39](releases/v0.4.17-macos.1.md) | Fresh build, viewport/REL checks and isolated Original/Retro rendering, audio and keyboard smoke; exact reporter two-player scene, full races and controller overhaul remain unaccepted |
 | Apple TV experimental | [0.4.11, build 9](releases/v0.4.11-tvos.1.md) | Published identity-fix and compiler-hardened package; exact-build hardware acceptance remains open |
@@ -34,8 +34,10 @@ manifest retained. This does not close the iPhone 17 Pro Max/iOS 27 report. See 
 The owner also considers iPad and Mac good to release. That is owner acceptance;
 this pass's recorded physical Apple trial was on iPhone 14. Android code 78
 passed the owner's random Retro single-player race and touch-settings trial.
-A later candidate adds FPS text sizing and a responsive touch editor, which
-need their own UI checks. Two Android licenses are being preserved as requested;
+Code 79 adds FPS text sizing and a responsive touch editor; Large persistence
+and D-pad Hide/Show passed physical Pixel UI checks. Save and identity file
+hashes were unchanged during that trial; only the new FPS preference changed
+among touch settings. Two Android licenses are being preserved as requested;
 their presence does not prove that an update created an identity. Possible
 Retro WFC menu slowdown remains under investigation. See the
 [controls and acceptance audit](artifacts/2026-09-13/android-controls-request-audit.md).
