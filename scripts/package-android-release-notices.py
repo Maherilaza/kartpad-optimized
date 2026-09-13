@@ -142,7 +142,8 @@ def main() -> None:
                        "scripts/package-release-source.py", "scripts/restore-source-git.py",
                        "tools/android63-base-common-shards.json",
                        "tests/test_android_public_release_contract.py",
-                       "scripts/audit-android-bundle.sh", "tests/test_android_bundle_audit_contract.py")
+                       "scripts/audit-android-bundle.sh", "tests/test_android_bundle_audit_contract.py",
+                       "tests/test_android_update_in_place_contract.py")
     if any(not name.startswith("docs/") and name not in packaging_files
            for name in changed):
         parser.error("packaging source differs from candidate beyond documentation/packager")
