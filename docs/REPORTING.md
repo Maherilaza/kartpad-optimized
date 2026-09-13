@@ -65,20 +65,61 @@ The immediate changes make the relationship and destinations visible and carry
 more existing report context through GitHub. They do not change who accepts
 reports upstream, and require a new tested build to reach installed apps.
 
-Next, improve the existing exporters to select one identifiable game session,
-preserve its version header and failure tail, and label the report as KartPad.
-Use the packaged source revision and recorded WiiCompiled baseline when
-available; explicitly show unknown for older builds. Keep the same report ID
-and session evidence across save/share/GitHub. Do not add automatic uploads or
-a second ticket database.
+### 1. Finish one reusable runtime report
 
-Before enabling a dedicated upstream-submission flow, coordinate with patchzyy
-on whether to accept derivative reports, which evidence is useful, and whether
-to add a form that does not require a stock/latest WiiCompiled build. KartPad
-can maintain the platform-specific log collection instructions. Reproduction
-on an unmodified upstream build must remain an explicit yes/no/not-tested fact.
+Improve the existing exporters rather than add a new reporting system. Offer
+the most recent game session with its start time and profile visible; let the
+player choose an earlier session when that is the one that failed. A new app
+launch or recent file modification must not silently replace the failed run.
 
-Acceptance for reporting changes: check report preparation, review, save/share,
-browser handoff and cancellation on Android, iPhone/iPad and Mac; verify report
-ID, build/profile metadata and attachment instructions remain consistent.
-Check tvOS collection separately. Host tests do not prove those device flows.
+The reviewed export should contain a short cover sheet and that session's
+runtime console/crash text when available. Preserve startup/version information
+and a bounded failure tail; clearly mark omissions or truncation. Keep OS exit
+records separate and include only a matching record when one can be identified.
+Missing crash text is not evidence that the run did not crash.
+
+Record KartPad build/source revision, WiiCompiled baseline, device/OS and game
+profile from that session's recorded build information. New builds should stamp
+the verified upstream baseline during preparation/build. For older logs, show
+unknown rather than substitute today's checkout or currently installed build.
+Reproduction on unmodified WiiCompiled is **yes / no / not tested**.
+
+Use this same report for saving, attaching to an existing issue, or preparing a
+new issue. Opening GitHub never uploads it. Keep the report ID stable, keep raw
+logs out of URL parameters, and require review before public sharing.
+
+### 2. Agree on the destination, without blocking the exporter
+
+Ask patchzyy one question: direct user reports clearly labelled KartPad, or
+linked reports brought upstream after KartPad investigation? Until answered,
+keep the visible upstream links and existing KartPad reporting destination.
+Do not assume that every gameplay or rendering symptom belongs upstream.
+
+If direct reports are preferred, agree on the existing form and truthful build
+labelling first, then add a WiiCompiled destination to the same reviewed-report
+flow. A separate derivative form is optional. If maintainer handoffs are
+preferred, link the original KartPad evidence instead of asking the player to
+collect it again. In either case KartPad retains its app/platform support and
+tells its users when an upstream fix reaches a KartPad release.
+
+### 3. Validate and ship in small steps
+
+The attribution, chooser links and reporting improvements already prepared in
+source can be reviewed independently of the exporter work. Publish only checked
+documentation; links in packaged apps must resolve when those apps ship.
+
+Implement session selection on Android first, where the existing multi-session
+ZIP causes confusion, then use the same report fields in the existing Mac and
+iPhone/iPad exporters. Keep platform-specific collection code. tvOS remains a
+separate script-based collection path with the same origin/session labels.
+
+For each platform test a normal run, a failed run followed by relaunch, missing
+logs, and an older session from a different build. Verify the report keeps the
+correct session/build and does not include unrelated sessions or private files.
+Then check review, save/share, browser handoff and cancellation on the actual
+platform. These reporting tests do not establish gameplay stability.
+
+After release, review the next ten reports that use the new flow: could the
+maintainer identify the build and relevant session without another generic log
+request, and did related upstream evidence reach the agreed destination? Use
+the existing issues for this check; no analytics service or extra ticket store.

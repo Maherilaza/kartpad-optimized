@@ -3,21 +3,25 @@
 Discussion draft for the maintainer to adapt personally. This is not an
 agreement with WiiCompiled or a message posted to its issue tracker.
 
-I'd like to coordinate this properly. KartPad should make WiiCompiled much
-more visible, and useful runtime reports should reach your project. I'm adding
-clearer attribution and a direct link to your project/issues in the reporting
-entry points, while keeping KartPad-specific app and platform problems here.
+Hey, fair question. KartPad is set up as a separate integration repo that
+applies patches to WiiCompiled, so it doesn't have GitHub's fork connection.
+I can see how that makes your project and issue tracker less obvious to people
+using it, even with the README credit.
 
-I'm also improving our report flow so shared evidence clearly identifies the
-KartPad build, WiiCompiled baseline when recorded, device, game profile and
-matching runtime log. It won't imply that a modified build is stock WiiCompiled.
+I've started adding more visible credit to you and WiiCompiled, plus links to
+your project and issues from the reporting flow. I'm also working on exporting
+the relevant runtime session with the KartPad build, upstream revision when
+recorded, and reproduction details, clearly marked as a modified build.
 
-Would a separate derivative-runtime form work for you, or would you prefer
-linked reports that we triage first? Your current forms ask for the latest
-WiiCompiled release and Windows log paths, so I don't want to send mobile users
-through instructions they can't accurately follow. We can own the KartPad log
-collection guidance and keep our users updated when a shared fix ships.
+For shared runtime problems, would you prefer users to submit those reports
+directly to your tracker, or for me to investigate and bring you linked reports?
+I'll keep KartPad-specific support on my side either way. I want useful logs
+to reach you without sending you unrelated mobile-app problems.
 
-The aim is for you to receive useful evidence and visible credit without
-inheriting all of KartPad's support work. I'd like to agree on that boundary
-before adding a dedicated upstream-submit action.
+## Follow-up only if direct reports are preferred
+
+Ask which existing form to use and how to identify a KartPad build without
+claiming it is the latest stock WiiCompiled release. Offer to maintain the
+mobile/Mac collection instructions. A new upstream form is optional, not a
+prerequisite imposed on the creator. Do not promise a delivery date before
+the new reporting flow is tested in a packaged build.
