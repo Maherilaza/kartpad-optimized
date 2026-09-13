@@ -776,6 +776,7 @@ class KartPadActivity : SDLActivity() {
     private fun restartToGameSelector() {
         kartPadOverlay.clearTouchInput()
         val chooser = Intent(this, KartPadLaunchActivity::class.java).apply {
+            putExtra(KartPadLaunchActivity.EXTRA_SKIP_PREFERRED_GAME, true)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }
         startActivity(chooser)
