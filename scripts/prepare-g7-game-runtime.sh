@@ -63,6 +63,12 @@ patch --batch -p1 -d "${runtime_source}/aurora-main" < \
 patch --batch -p1 -d "${runtime_source}/aurora-main" < \
   "${repo_root}/patches/aurora-viewport-policy-window-guard.patch"
 patch --batch -p1 -d "${runtime_source}/aurora-main" < \
+  "${repo_root}/patches/aurora-macos-controller-assignment.patch"
+patch --batch -p1 -d "${runtime_source}/aurora-main" < \
+  "${repo_root}/patches/aurora-macos-trigger-bindings.patch"
+patch --batch -p1 -d "${runtime_source}/aurora-main" < \
+  "${repo_root}/patches/aurora-macos-trigger-axis-isolation.patch"
+patch --batch -p1 -d "${runtime_source}/aurora-main" < \
   "${repo_root}/patches/aurora-viewport-interpolation.patch"
 patch -p1 -d "${runtime_source}" < "${repo_root}/patches/wiicompiled-apple-runtime.patch"
 patch -p1 -d "${runtime_source}" < \
@@ -96,6 +102,12 @@ done
 patch --batch -p1 -d "${runtime_source}" < \
   "${repo_root}/patches/wiicompiled-present-telemetry.patch"
 
+patch --batch -p1 -d "${runtime_source}" < \
+  "${repo_root}/patches/wiicompiled-macos-controller-settings.patch"
+patch --batch -p1 -d "${runtime_source}" < \
+  "${repo_root}/patches/wiicompiled-macos-unified-settings.patch"
+patch --batch -p1 -d "${runtime_source}" < \
+  "${repo_root}/patches/wiicompiled-macos-settings-shortcut.patch"
 # Guard the translated REL diagnostic path on every product sharing this runtime.
 patch --batch --fuzz=0 -p2 -d "${runtime_source}" < \
   "${repo_root}/patches/wiicompiled-retro-rel-report-guard.patch"
