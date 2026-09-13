@@ -1,5 +1,5 @@
-name: Bug report
-description: Report a crash, display, input, import, or performance problem.
+name: KartPad app or platform problem
+description: KartPad installation, app UI, platform integration, or a problem whose owner is unclear.
 title: "[Bug]: "
 labels: [bug]
 body:
@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         Thanks for helping improve KartPad. Please check [where to report and follow up](https://github.com/chrissotraidis/kartpad/blob/main/docs/REPORTING.md) and the [support guide](https://github.com/chrissotraidis/kartpad/blob/main/docs/SUPPORT.md) first. If this is an existing report, add your results there.
-        If you use KartPad, report here even if you are unsure which component is responsible. Maintainers investigate and coordinate confirmed shared problems with WiiCompiled.
+        For a suspected WiiCompiled runtime problem, you can [report directly upstream](https://github.com/patchzyy/Wiicompiled/issues/new/choose). Identify your modified KartPad build and follow that form honestly. Keep app/platform problems and uncertain cases here.
         Reports are public. Attach only reviewed diagnostic text and screenshots; never game data, saves, NAND, identities, keys, or a raw private diagnostics ZIP.
   - type: input
     id: revision

@@ -88,26 +88,25 @@ Use this same report for saving, attaching to an existing issue, or preparing a
 new issue. Opening GitHub never uploads it. Keep the report ID stable, keep raw
 logs out of URL parameters, and require review before public sharing.
 
-### 2. Agree on the destination, without blocking the exporter
+### 2. Direct destinations, no mandatory maintainer relay
 
 The selected direction is direct user submission of suspected WiiCompiled
-runtime problems, with explicit KartPad origin. Do not require a KartPad
-maintainer to investigate or forward every report. Retain KartPad as the
-app/platform destination and fallback when the reporter cannot choose.
+runtime problems, with explicit KartPad origin. The repository issue chooser
+links directly to WiiCompiled's existing forms. This needs no fork conversion,
+new upstream form, or mandatory coordination conversation.
 
-Coordinate only the receiving form and truthful build labelling with patchzyy;
-do not ask him to choose between direct reporting and a relay service again.
-His current forms assume stock/latest WiiCompiled and Windows log paths. A
-separate derivative form is optional. The next implementation should offer
-both destinations using the same reviewed report, explain that a runtime
-symptom does not prove upstream fault, and never check stock-build claims on
-the user's behalf. Until implemented and validated, existing app buttons
-still target KartPad. The currently prepared branch adds visibility and
-metadata but does not yet implement this direct upstream destination.
+Keep KartPad as the app/platform destination and fallback for uncertainty.
+Do not assume every gameplay or rendering symptom proves an upstream defect.
+Users must follow the receiving form honestly: never auto-check latest/stock
+WiiCompiled or reproduction claims. The creator still controls his tracker and
+can redirect or close reports; a direct link is not a support guarantee.
 
-Keep existing conversations where they are unless a specific move is useful;
-do not bulk-copy issues, auto-post logs, or make the reporter collect the same
-session twice. Fork migration is a separate decision; see
+The app implementation still needs to carry its prepared report to a choice
+of destination. The current branch improves context and project visibility;
+its app submission buttons still create KartPad drafts. Finish that destination
+selection without auto-posting, copying old issues, or uploading raw logs.
+Users should review and submit once to their selected tracker, with the same
+session evidence. Repository migration remains separate; see
 [Fork connection options](FORK-OPTIONS.md).
 
 ### 3. Validate and ship in small steps
