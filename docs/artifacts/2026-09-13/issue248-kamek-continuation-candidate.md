@@ -1,6 +1,6 @@
 # Issue 248: isolated Kamek continuation candidate
 
-Status: source-tested candidate only; not release-ready. No upstream dependency pin bump, runtime build, hardware run, or public issue response.
+Status: **624 translator tests, exact-profile generation, focused Android compilation, and the complete incremental native runtime link pass.** Packaging and actual item-change/Item Rain gameplay remain open. No dependency pin bump, device operation, public artifact replacement, or merge was performed. Earlier sections preserve the evidence and corrections that led to this candidate; the current native result is recorded at the end.
 
 ## Evidence
 
@@ -39,7 +39,7 @@ The biggest individual overlay, `rr_overlay_8062C3A4`, expands from 25,675 to 15
 
 Reproduction uses the fresh CLI's `translate-mod` with the frozen release base manifest/metadata, exact Code.pul, saved local payload, `--emit-cpp --threads 2`, then `emit-build-shards` with the frozen base functions and selected runtime native sources. The private project file, complete commands' outputs, and numeric comparisons are at `/private/tmp/kartpad-issue248-graph/{project.yml,translate.log,shards.log,released-stats.json,candidate-stats.json,function-growth.json}`. Generated sources and game-derived inputs must remain private.
 
-## Required next gate
+## Gate after the unmitigated backport (historical)
 
 Do not merge or release this candidate based on unit tests alone. Upstream [PR 218](https://github.com/patchzyy/Wiicompiled/pull/218) reports PR 182 increases Retro Rewind generated mod size by roughly 42%, with pathological compilation in an aggregate shard. PR 218 is open, and the issue 83 commenter reports its filtering removes the `0x807EF16C` resume point. Neither a broad pin bump nor unexamined adoption of PR 218 is justified.
 
@@ -67,7 +67,7 @@ Two new binary-free regression cases exercise 2 and 20 continuation calls: both 
 
 The generated two-call synthetic function was also compiled with Clang C++17 at both `-O0` and `-O2`, using `-Wall -Wextra -Werror` and minimal runtime stubs. Each binary executed nine scenarios covering normal return, skipping at the first or second call, local resumption, registered external dispatch, and an unregistered external return. Assertions checked call counts and final register state. Both binaries passed. Synthetic harness and logs remain in the isolated graph directory; no real game code was compiled in this check.
 
-Next gate: focused native compilation of the largest changed generated overlays and their actual runtime headers, followed by the full candidate native build if bounded compiler behavior holds. Actual item-change/Item Rain gameplay remains necessary. No full native build, device operation, or merge was performed in this mitigation pass.
+At this mitigation stage, focused native compilation was next. Its results and the completed native link follow below. Actual item-change/Item Rain gameplay remains necessary.
 
 
 ## Focused Android native compilation
@@ -82,4 +82,19 @@ The largest shard from each graph was compiled serially with the retained Androi
 
 These are single serial probes on a machine doing other build work, with different shard membership, not controlled performance benchmarks. They show the real worst-shard compile completes and materially improves over the unmitigated candidate; they do not establish runtime performance or full-link success. Original source, objects, PCH, and released artifacts were read only. Probe command arrays, timing logs, and isolated objects are at `/private/tmp/kartpad-issue248-shared-graph/native-probe`.
 
-The focused native gate passes. The full candidate runtime build, link, packaging, and item-change/Item Rain gameplay gates remain open.
+The focused native gate passed. The subsequent full native link result follows; packaging and gameplay are still open.
+
+
+## Complete incremental Android native build and link
+
+The final candidate native runtime linked successfully at `/private/tmp/kartpad-issue248-shared-graph/full-native/libmain.so`. It is an **ELF64 AArch64 shared object**, SONAME `libmain.so`, **863,123,344 bytes** including retained debug information, SHA-256 `4524a4d84e9db364b3e8ebbe8f9b54dc32a285976ae1fcaf19ed077b329a55a5`. This private native artifact is not an APK, installed build, or gameplay result.
+
+The build used the retained Android 80 `RelWithDebInfo` command database: NDK `29.0.14206865`, `aarch64-none-linux-android28`, `-O2`, `-g`, `-DNDEBUG`, `-fno-fast-math`, `-ffp-contract=off`, and `-fno-slp-vectorize`. Actual runtime include paths, definitions, language mode, ABI, PCH, and full original linker flags were retained; only changed generated-source and output-object paths were substituted. Two compiler jobs ran concurrently. All **65 changed mod/registration/dispatch objects** compiled and the complete runtime link passed.
+
+For safe cache reuse, the original frozen base-common boundary map was supplied to shard generation: **all 72 common-base sources became byte-identical**, allowing the original shared archive to remain read only. Another **65 linked generated objects** had byte-identical source and were reused. The **167 cached link inputs** were hashed before compilation and verified unchanged after linking. The actual PCH and wrapper hashes, every compile argument array, link argument array, source/object identities, and results are recorded under the private `full-native` directory. This was a complete incremental runtime build and link, not a clean rebuild of third-party dependencies.
+
+Integration inspection found the earlier isolated graph's `--mod-root .../input` produced a DVD-root registration named `input`. Before native linking, mod generation was repeated with an isolated root named `RetroRewind6`, retaining the exact frozen Code.pul and WFC payload. The corrected generated data-initializer wrapper and both data blobs are byte-identical to the released inputs. The package-name correction does not change the function-count, dispatch, or code-growth findings. Final mod/shard inputs are `native-mod` and `native-shards` within the isolated graph directory.
+
+Shared-tail control flow was reviewed during compilation: callee-state reload and normal-return guards remain at each call; the common switch sits outside block-local scopes and after an explicit return. Jumps target the same pre-block labels, so no local initialization is bypassed. External continuation fallback and return behavior are unchanged. No target filtering or new flush behavior was introduced. The full actual C++ compilation additionally checks label-scope validity across the changed graph.
+
+Free disk was about 15.9 GiB before compilation and remains approximately 15 GiB. Original sources, objects, PCH, app artifacts, and devices were unchanged. Next acceptance gate is candidate packaging and actual item-change/Item Rain gameplay; no runtime acceptance is claimed.
