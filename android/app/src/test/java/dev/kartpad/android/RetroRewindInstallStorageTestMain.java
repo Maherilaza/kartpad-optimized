@@ -17,6 +17,7 @@ public final class RetroRewindInstallStorageTestMain {
             testLaunchIsolation(temporary.resolve("invalid-install"), "RetroRewind");
             testLaunchIsolation(temporary.resolve("invalid-rollback"), "RetroRewind.rollback-broken");
             testOriginalLeavesPendingRecovery(temporary.resolve("launch-pending"));
+            testLockFailureCleanup(temporary.resolve("lock-failure"));
             testRecovery(temporary.resolve("recovery"));
             testAmbiguousRecovery(temporary.resolve("ambiguous"));
             testActivation(temporary.resolve("activation"));
@@ -28,9 +29,32 @@ public final class RetroRewindInstallStorageTestMain {
             testScopeChecks(temporary.resolve("scope"));
             testSymlinkBoundary(temporary.resolve("symlink"));
             testRollbackSymlinkBoundary(temporary.resolve("rollback-symlink"));
-            System.out.println("Retro install storage: 16 cases passed");
+            System.out.println("Retro install storage: 17 cases passed");
         } finally {
             deleteTree(temporary);
+        }
+    }
+
+    private static void testLockFailureCleanup(Path root) throws Exception {
+        File files = Files.createDirectories(root).toFile();
+        Path support = Files.createDirectories(RetroRewindInstallStorage.supportRoot(files));
+        Path outside = Files.writeString(root.resolve("outside"), "untouched");
+        Path lockPath = support.resolve("RetroRewind.transaction.lock");
+        Files.createSymbolicLink(lockPath, outside);
+        boolean rejected = false;
+        try (var lock = RetroRewindInstallStorage.tryInstallLock(files)) {
+            expect(lock == null, "symlink lock was acquired");
+        } catch (IOException expected) {
+            rejected = true;
+        }
+        expect(rejected, "symlink lock was not rejected");
+        expect(Files.readString(outside).equals("untouched"), "lock followed symlink");
+        Files.delete(lockPath);
+        try (var lock = RetroRewindInstallStorage.tryInstallLock(files)) {
+            expect(lock != null, "failed acquisition leaked process guard");
+        }
+        try (var lock = RetroRewindInstallStorage.tryInstallLock(files)) {
+            expect(lock != null, "closing lock leaked process guard");
         }
     }
 
