@@ -1,4 +1,4 @@
-# Reconstruct the Android 0.4.17 source inputs
+# Reconstruct the Android 0.4.18 source inputs
 
 Start with the checksum-verified source delivery. Restore the inner Git snapshots
 with their included `restore-source-git.py` and metadata. Preserve the exact
@@ -11,7 +11,10 @@ archive audit is not a claim that every dependency was rebuilt on a second host.
 
 Use the delivered profile for the supported RMCP01 revision-0 game image,
 Retro Rewind 6.12.8 and its exact WFC payload. Supply those inputs independently.
-Run the current translation workflow and verify both the standalone REL guard
+Run `scripts/prepare-patched-translator.sh` before the current translation
+workflow. This release includes the Kamek continuation and shared LR dispatch
+patches from PR #252; reusing an older translator omits those corrections.
+Verify both the standalone REL guard
 and the compiled aggregate shards. Do not reuse the historical Android63 shard
 partition map as evidence for the current graph.
 
