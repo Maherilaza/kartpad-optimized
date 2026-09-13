@@ -95,7 +95,7 @@ class KartPadActivity : SDLActivity() {
         Os.setenv("KARTPAD_ANDROID_CACHE_DIR", cacheDir.absolutePath, true)
         KartPadRendererDiagnostics.configure(this)
         if (BuildConfig.GAME_RUNTIME) {
-            RetroRewindInstallStorage.recover(filesDir)
+            RetroRewindInstallStorage.recoverForLaunch(filesDir, requestedRuntimeProfile())
             if (!identityStartupChecked) {
                 saveRestoreStartupError = KartPadSaveStorage.applyPending(filesDir)
                 KartPadMiiStorage.applyPending(filesDir)?.let { error -> Log.e(TAG, error) }
@@ -1974,13 +1974,17 @@ class KartPadActivity : SDLActivity() {
             sources and InputDevice.SOURCE_JOYSTICK == InputDevice.SOURCE_JOYSTICK
     }
 
-    private fun configureRuntimeProfile() {
+    private fun requestedRuntimeProfile(): String {
         val debugRequested = if (BuildConfig.DEBUG) {
             intent.getStringExtra(DEBUG_EXTRA_RUNTIME_PROFILE)
         } else {
             null
         }
-        val requested = debugRequested ?: intent.getStringExtra(EXTRA_RUNTIME_PROFILE) ?: "base"
+        return debugRequested ?: intent.getStringExtra(EXTRA_RUNTIME_PROFILE) ?: "base"
+    }
+
+    private fun configureRuntimeProfile() {
+        val requested = requestedRuntimeProfile()
         runtimeProfile = requested
 
         when (requested) {

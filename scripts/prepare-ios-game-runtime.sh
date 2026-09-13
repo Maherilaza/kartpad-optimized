@@ -78,6 +78,8 @@ PYTHONPATH="${repo_root}/builder" python3 -m kartpad_builder.release_header \
 # against this disposable copy so its opaque letterbox fix is reproducible.
 cp -R "${repo_root}/ref/upstream/Wiicompiled/aurora-main" \
   "${runtime_source}/aurora-main"
+patch --batch --fuzz=0 -p1 -d "${runtime_source}" < \
+  "${repo_root}/patches/aurora-packed-vertex-read-width.patch"
 patch --batch -p1 -d "${runtime_source}/aurora-main" < \
   "${repo_root}/patches/aurora-present-telemetry.patch"
 patch --batch -p1 -d "${runtime_source}/aurora-main" < \
