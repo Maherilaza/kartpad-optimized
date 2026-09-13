@@ -44,19 +44,18 @@ chooser, game-data management, packaging, and release workflows.
 
 | Platform | Download | Setup |
 | --- | --- | --- |
-| Android ARM64 | [0.4.17 Android 1 · code 80](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.17-android.1) | [Android 9+ with Vulkan](docs/INSTALL_ANDROID.md) |
+| Android ARM64 | [0.4.18 Android 1 · code 83](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.18-android.1) | [Android 9+ with Vulkan](docs/INSTALL_ANDROID.md) |
 | iPhone / iPad | [0.4.17 · build 39](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.17-ios.1) | [iOS/iPadOS 16+; re-sign the IPA](docs/INSTALL_IPA.md) |
 | Apple Silicon Mac | [0.4.17 · build 39](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.17-macos.1) | [macOS 14+](docs/INSTALL_MACOS.md) |
 | Apple TV experimental preview | [0.4.11 · build 9](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11-tvos.1) | [tvOS 17+; re-sign the IPA](docs/INSTALL_TVOS.md) |
 
-**Android 0.4.17 Android 1** adds **Display → FPS Counter Size…** with saved
-Small, Medium and Large text sizes, keeps the touch editor's Show/Hide button
-reachable on narrow landscape screens, and delivers shoulder-to-D-pad remapping.
-It retains Retro Rewind 6.12.8 and the console-serial correction. The owner
-accepted Retro single-player racing and touch on the preceding device candidate;
-the new sizing and editor controls passed physical Pixel checks. Online-menu
-stalls, device-specific graphics issues and controller-specific reports remain
-open. See the [release notes](docs/releases/v0.4.17-android.1.md).
+**Android 0.4.18 Android 1** adds **Preferred Game…** for validated Original or
+Retro startup and corrects generated Kamek continuation handling. It retains
+the FPS sizing, narrow-screen touch editor and controller remapping shipped in
+code 80. The owner accepted gameplay on private code 82; both preferred-game
+startup/menu-return paths passed physical Pixel checks with saves and identities
+preserved. Item Rain-specific, online and device-specific graphics reports
+remain open. See the [release notes](docs/releases/v0.4.18-android.1.md).
 
 **iPhone/iPad 0.4.17** supports Retro Rewind 6.12.8 and includes the corrected
 compiled REL-report guard. The owner accepted the bounded iPhone 14 trial;

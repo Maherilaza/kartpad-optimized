@@ -32,7 +32,7 @@ still needs a verified translation profile before a playable candidate exists.
 
 KartPad stores saves in Android's **internal app-private storage**, so its save
 folder is not exposed through a normal file manager under `Android/data`.
-The [current Android release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.17-android.1)
+The [current Android release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.18-android.1)
 includes transfers for Original, Retro Rewind and Retro Rewind (Separate Save).
 Root access is not needed:
 

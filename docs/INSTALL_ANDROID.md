@@ -2,19 +2,19 @@
 
 ## Current update
 
-[**0.4.17 Android 1 / code 80**](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.17-android.1)
-adds saved FPS counter sizes, a touch editor whose Show/Hide action stays
-reachable in narrow landscape, and shoulder-to-D-pad remapping. It retains
-Retro Rewind 6.12.8 and the console-serial correction. See the
-[release notes](releases/v0.4.17-android.1.md) for exact testing and artifact provenance.
+[**0.4.18 Android 1 / code 83**](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.18-android.1)
+adds Preferred Game startup and generated Kamek continuation handling. It retains
+the FPS sizing, narrow-screen touch editor and controller mapping improvements
+from code 80, and supports Retro Rewind 6.12.8. See the
+[release notes](releases/v0.4.18-android.1.md) for exact testing and artifact provenance.
 Menu transitions, graphics corruption on some GPUs, online stalls and cup crashes
 are not declared resolved. Download the APK, notices and checksums; the source
 archive is available for rebuilding and modification.
 
 ## Download and first launch
 
-1. Open the [current Android release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.17-android.1).
-   Download `KartPad-v0.4.17-android.1-arm64.apk`, `SHA256SUMS`, and the companion
+1. Open the [current Android release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.18-android.1).
+   Download `KartPad-v0.4.18-android.1-arm64.apk`, `SHA256SUMS`, and the companion
    notices ZIP. APK is Android's installable format; IPA is Apple-only. The AAB
    is a developer bundle and is not needed for installation (it is not published).
 2. Use an ARM64 phone/tablet with Vulkan and Android 9/API 28 or newer. The
@@ -35,12 +35,12 @@ archive is available for rebuilding and modification.
    newer incompatible profile, wait for a matching KartPad update. Never bypass
    the checks or replace executable files manually.
 
-## Preferred Game (source candidate)
+## Preferred Game
 
-The next-build source adds **Preferred Game…** to the game selector and paused
+Code 83 adds **Preferred Game…** to the game selector and paused
 KartPad menu. **Ask Every Time** is the default; you can choose Original or
 Retro Rewind for the next fresh launch. Changing it leaves the current game
-paused and does not start a game immediately. This is not in public code 80.
+paused and does not start a game immediately. Earlier code 80 does not include this preference.
 
 The chooser still validates game data before starting. Missing or incompatible
 content leaves you at the selector, and an explicit next-launch game choice
@@ -66,7 +66,7 @@ debug certificate. Android will reject the public release as an in-place update
 over those previews. Do not uninstall to force it through: preserve the working
 preview and its app data, and plan a deliberate backed-up migration separately.
 The first public package was code 21; the testing preview was code 28. The
-current public package is code 80.
+current public package is code 83.
 Changing a package signature is not a save migration.
 Self-built APKs similarly cannot update public builds unless the signer matches.
 
