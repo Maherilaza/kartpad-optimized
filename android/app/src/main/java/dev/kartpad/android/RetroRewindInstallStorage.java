@@ -27,6 +27,13 @@ final class RetroRewindInstallStorage {
 
     private RetroRewindInstallStorage() {}
 
+    /** Original startup must not depend on the state of an optional Retro install. */
+    static void recoverForLaunch(File filesDirectory, String runtimeProfile) throws IOException {
+        if ("retro_rewind".equals(runtimeProfile)) {
+            recover(filesDirectory);
+        }
+    }
+
     static void recover(File filesDirectory) throws IOException {
         Path support = supportRoot(filesDirectory);
         if (!exists(support)) {
