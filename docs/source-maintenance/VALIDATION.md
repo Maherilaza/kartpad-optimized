@@ -67,11 +67,55 @@ Paths are relative to the isolated checkout's `build/source-migration/` director
 
 ## Open gates
 
-- Physical macOS/iOS/iPadOS/Android gameplay and data-preserving installation.
-  The iPad was unavailable and no Android device was attached at the last check.
+- iPad gameplay and the remaining macOS interactive acceptance checks.
+  Android and iPad candidates are now installed in place; see the device pass below.
 - Experimental tvOS native/device acceptance is not established.
 - Publish the reusable other-project plan only from accepted KartPad results.
 
 Local evidence is under the isolated checkout's ignored
 `build/source-migration/` directory. Private inputs and device identifiers are not
 part of the public source or this ledger.
+
+## September 15 physical-device pass
+
+- Pixel 9 Pro XL (Android 17/API 37): installed private
+  `0.4.19-source-migration` code 92 from clean source `a37e605`.
+  APK SHA-256 `31e6e4abc6c3cdf27fa46be49c16827ae8532db452e86ea319f2204ec2ac69a7`.
+  Signing identity matches the prior app. All four native libraries match the
+  earlier migration APK; the private version label was clarified through the
+  existing build override. Verified a full non-cache backup (6,522 entries) and
+  413 unchanged durable file hashes immediately after installation.
+- Android hands-on result: the user reported “android version works”; an actual
+  Original Luigi Circuit race was observed. Retro title/connection screens were
+  seen, but a complete Retro race, online match, and save/relaunch cycle are not
+  separately accepted by that observation.
+- iPad Pro (iPad14,5, iPadOS 26.6.2): installed private build 42 / 0.4.19 using
+  the existing app identity and authorized development profile. Native code is
+  the audited migration candidate; only private installation metadata/signing
+  differs. All 32 selected save/settings hashes matched before/after installation.
+- The iPad had a pre-existing Retro 6.12.7 content pack, incompatible with the
+  compiled 6.12.8 runtime. Staged 3,643 matching content files separately,
+  compared every file size and the required Code.pul/XML hashes, retained the
+  complete old content directory, and preserved the sibling Retro save directory.
+  Both Retro save files matched before/after content activation. The chooser now
+  displays 6.12.8. This prerequisite content update is separate from source migration.
+- macOS on-machine smoke reached an actual Original Luigi Circuit race; pause
+  and resume responded after focusing the game canvas. A fresh 25-file data
+  backup was verified; after a clean quit only three log files changed. Sustained
+  driving, a completed race, audio, Retro and multiplayer remain unverified.
+- iPad interactive gameplay is still awaiting user testing. Installation,
+  chooser rendering and content validation do not close that gate.
+
+Private backups, signing receipts, logs and artifact records remain under ignored
+`build/source-migration/device-validation/20260915/`; they must not be published.
+
+### File-sharing verification
+
+Both iOS source plists and the exact installed iPad build 42 have
+`UIFileSharingEnabled=true` and `LSSupportsOpeningDocumentsInPlace=true`.
+The existing iOS package audit enforces both keys. Documents is created at
+first-launch and exposed through the Files/Finder sharing feature. This does not
+expose live saves or Miis under Application Support. See the Files access section
+in `docs/INSTALL_IPA.md`. Android uses its existing system document pickers;
+macOS exposes Application Support through its data menu. These iOS keys are not
+an Android/macOS file-access implementation, nor a tvOS Files browser.

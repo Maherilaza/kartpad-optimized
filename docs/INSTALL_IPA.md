@@ -69,6 +69,20 @@ the signer created a different app container, KartPad opens the normal Files
 picker automatically. Select the visible WBFS/ISO there; the app still validates
 the exact supported game before importing it.
 
+## Files access
+
+KartPad already enables `UIFileSharingEnabled` and
+`LSSupportsOpeningDocumentsInPlace` for iPhone and iPad. In Apple's Files app,
+open **Browse → On My iPhone/iPad → KartPad** to manage its Documents folder.
+Finder's device file-sharing view exposes the same folder on a connected Mac.
+You can copy your ISO/WBFS into that folder and select it with KartPad's import
+picker. Files may also be selected directly from another Files provider.
+
+This folder is not the entire app container. Live saves, installed Retro content,
+and the Mii database currently remain under Application Support. The sharing
+flags do not expose those directories or add save/Mii export controls. Use the
+existing **Player Identity → Import Mii Appearance…** action for `.mii` imports.
+
 ## Content and updates
 
 The IPA includes KartPad's ARM64 app and ahead-of-time translated executable
