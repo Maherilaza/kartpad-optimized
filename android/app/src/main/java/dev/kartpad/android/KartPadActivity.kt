@@ -1587,6 +1587,7 @@ class KartPadActivity : SDLActivity() {
         val performance = buildString {
             appendLine("Configured render resolution: ${KartPadTouchSettings.resolutionScale(this@KartPadActivity)}x")
             appendLine("Configured aspect: $aspect")
+            appendLine("Active character graphics test: ${KartPadCharacterGraphicsTest.active.label}")
             append("Active renderer validation: ${if (KartPadRendererDiagnostics.active) "On" else "Off"}")
         }
         val context = KartPadReportContext.snapshot(this, runtimeProfile, KartPadRendererDiagnostics.active)

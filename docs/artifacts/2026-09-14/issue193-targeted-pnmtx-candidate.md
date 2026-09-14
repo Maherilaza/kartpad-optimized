@@ -42,10 +42,8 @@ normal caches or any user data.
 - NDK29 compiles the changed shader and command-processor translation units.
 - Native relink succeeds after verifying every inherited code85 link-input hash.
 
-Private local build records and generated shaders are retained at
-`/private/tmp/kartpad-issue193-native`. Its `build_native.py` and
-`native-build-receipt.json` record the inputs and link command. JNI is under
-`jni/arm64-v8a`; stripped `libmain.so` SHA256 is
+Local build records retain generated shaders, the build recipe, and a native
+receipt recording input hashes and the link command. Stripped `libmain.so` SHA256 is
 `8611660ddae96cc33748b15938be1bad4c52f383d2d2f76b827a1408ea208347`.
 
 No local SPIR-V CLI was available, so retention of literal accesses in Vulkan
