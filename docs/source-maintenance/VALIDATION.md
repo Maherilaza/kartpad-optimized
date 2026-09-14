@@ -25,6 +25,11 @@ physical device/gameplay acceptance remain open. Existing releases are unchanged
 - macOS controller, VSync/config and Apple guest-memory checks passed.
 - Translator consumer revert, synthetic subtree update and focused upstream
   contribution rehearsal passed in disposable worktrees.
+- Runtime integration commit `6b034975dd4191c1bcec313bbf137018fd67e7a2`
+  reverted cleanly in a disposable worktree; all four old preparers matched exactly.
+- The real 61,378,201-byte candidate source archive restored offline to that
+  exact KartPad commit and all four exact runtime commits. Archive SHA-256:
+  `3d1559416378374151fb596551e26029c332cc2764d717da5be7fe8a5f464d4e`.
 - macOS native dual build and package audit passed. The audit's stale log-size
   expectation was corrected to match the unchanged baseline implementation.
   This was an evolving candidate build, not final clean-commit acceptance.
@@ -32,8 +37,6 @@ physical device/gameplay acceptance remain open. Existing releases are unchanged
 ## Open gates
 
 - Finish Android and iOS native builds and exact candidate artifact accounting.
-- Real candidate recursive source archive and offline restoration; runtime
-  consumer rollback rehearsal after its integration commit.
 - Remaining product preparation combinations and any build-profile discrepancy
   must be resolved against baseline, without changing runtime behavior silently.
 - Physical macOS/iOS/iPadOS/Android gameplay and data-preserving installation.
