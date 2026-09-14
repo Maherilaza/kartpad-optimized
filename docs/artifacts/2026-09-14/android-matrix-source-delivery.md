@@ -62,3 +62,13 @@ changing the selection requires fully closing and reopening KartPad. The two
 comparison modes share bounded diagnostics and draw behavior. They are not FPS
 benchmarks, and package/source validation does not establish a graphics fix on
 an affected device.
+
+## Fresh preparation verification
+
+A fresh full ordered Android preparation passed after packaging. All three
+modified renderer files match the compiled runtime exactly. The whole-tree
+fingerprint differs because current preparation also carries Apple-only
+SafariServices link entries in `cmake/PublicProducts.cmake` and patch `.orig`
+backup files. Those are not compiled Android changes. The delivered prepared
+runtime remains the exact reference used for code91; an arbitrary fresh tree
+is not claimed to have the same all-file fingerprint.

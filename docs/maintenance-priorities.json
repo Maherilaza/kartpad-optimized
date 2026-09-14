@@ -50,7 +50,7 @@
         196
       ],
       "state": "awaiting-reporter",
-      "next_action": "The new #196 microstackshot matches build39 and symbolizes through func_8000A3F8 to FatalMissingGuestTarget. Obtain only the missing target address/Caller LR from an existing fatal text log, as requested. Disk-write Action none is not a termination cause. Build42 is a reporting aid, not a confirmed crash correction; source ancestry does not prove regenerated translation.",
+      "next_action": "The new #196 microstackshot matches build39 and symbolizes through func_8000A3F8 to FatalMissingGuestTarget. Obtain only the missing target address/Caller LR from an existing fatal text log, as requested. Disk-write Action none is not a termination cause. Build42 is a reporting aid, not a confirmed crash correction; source ancestry does not prove regenerated translation. Independently, anonymous guest RAM is merged and local build43 is audited; it removes temporary-file backing but does not fix the missing target. Signed-device launch/race/relaunch and complete source delivery remain before publishing that candidate.",
       "dependency": {
         "owner": "issue196 reporter",
         "needs": "Existing fatal text record containing missing_target/not translated and Caller LR; no repeated crashes or generic analytics request."
@@ -87,14 +87,14 @@
         193,
         211
       ],
-      "state": "ready-local",
-      "next_action": "Code85 failed fresh retests in #102/#104/#166/#193. The two #193 recipes 58866e32bada1f83 and 33c5ff18d5c180e0 were recovered from the shipped seed DB and their actual WGSL generated locally. Generate/validate a selected-draw literal matrix-index variant while retaining other state, then prepare bound-pipeline evidence and draw-merge protection. Code90 has identical native libraries: no code90 graphics retest or settings sweep.",
+      "state": "awaiting-reporter",
+      "next_action": "Code91 supplies the reviewed actual-shader original/literal/original comparison for the two #193 pipelines, with durable restart-only selection, equal merge guard and bounded pipeline logs. Code91 is published; use the existing #193 three-phase handoff and await same-scene results. Keep code85 negative results; code90 was not a graphics fix. Do not repeat generic settings sweeps or claim a fix before matching target logs and affected-device comparison.",
       "dependency": {
         "owner": "renderer worker and affected-device tester",
-        "needs": "Current immutable diagnostic and concrete delivery; signer location is known. Affected S24/Adreno or 840 test of the actual selected failing draw still required."
+        "needs": "Code91 same-character original/compatibility/original comparison with matching KartPadPNMTX draw_binding evidence on an affected device. Host shader validation and package audit are complete."
       },
       "acceptance": "A correlated actual bad draw discriminates the hypothesis; a subsequent narrow correction removes the reported corruption on the affected GPU with a matched baseline and no relevant regression.",
-      "checkpoint": "docs/MAINTENANCE-BOARD.md",
+      "checkpoint": "docs/artifacts/2026-09-14/issue193-targeted-pnmtx-candidate.md",
       "priority_reason": "Multiple independent reports show real-game corruption; complete a controlled affected-draw experiment."
     },
     {
@@ -156,10 +156,10 @@
         193,
         211
       ],
-      "state": "ready-local",
-      "next_action": "Inventory the retained diagnostic source, APK and symbols and prove their immutable identities before reuse. Compare prepared source to the intended dynamic/literal/dynamic experiment; use the verified Community Release signing capability only through the authorized operator. Prepare the exact compatible-candidate build/audit recipe and redacted test card. Rebuild only if inspection establishes it is necessary and host build ownership is available. Do not assume an existing scratch artifact is valid.",
+      "state": "accepted",
+      "next_action": "Local preparation completed: reviewed native/UI change, exact rebuilt library, Community Release APK91, corresponding source, notices, audits and three-phase test card. Affected-device graphics acceptance remains on adreno-geometry; do not rebuild the same candidate without new evidence.",
       "acceptance": "A reviewed source/artifact inventory, compatible signing plan, exact build/audit recipe and three-phase test card are ready. If a candidate is produced, retain its source/hash/symbol identity. Then park delivery and affected-GPU execution on adreno-geometry; no graphics fix or hardware acceptance is implied.",
-      "checkpoint": "docs/artifacts/2026-09-13/maintenance-ready-actions.md",
+      "checkpoint": "docs/releases/v0.4.21-android-matrix.1.md",
       "priority_reason": "Local identity and delivery preparation is executable before an affected reporter or private transfer channel is available."
     },
     {
