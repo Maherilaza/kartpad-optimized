@@ -52,6 +52,31 @@ fun main() {
     try {
         val chooser = Context(manager, root)
         val game = Context(manager, root)
+        check(KartPadCharacterGraphicsTest.mode(game) == KartPadCharacterGraphicsTest.Mode.NORMAL)
+        for (mode in KartPadCharacterGraphicsTest.Mode.entries) {
+            check(KartPadCharacterGraphicsTest.setMode(chooser, mode))
+            check(KartPadCharacterGraphicsTest.mode(game) == mode)
+            KartPadCharacterGraphicsTest.configure(game)
+            check(android.system.Os.getenv("KARTPAD_RENDERER_CONST_PNMTX") == mode.environment)
+        }
+        check(KartPadCharacterGraphicsTest.setMode(chooser, KartPadCharacterGraphicsTest.Mode.ORIGINAL))
+        check(KartPadCharacterGraphicsTest.active == KartPadCharacterGraphicsTest.Mode.COMPATIBILITY)
+        check(android.system.Os.getenv("KARTPAD_RENDERER_CONST_PNMTX") == "1")
+        check(KartPadCharacterGraphicsTest.setMode(chooser, KartPadCharacterGraphicsTest.Mode.COMPATIBILITY))
+        android.util.AtomicFile.failSuffix = "CharacterGraphicsTest"
+        check(!KartPadCharacterGraphicsTest.setMode(chooser, KartPadCharacterGraphicsTest.Mode.NORMAL))
+        check(KartPadCharacterGraphicsTest.mode(game) == KartPadCharacterGraphicsTest.Mode.COMPATIBILITY)
+        android.util.AtomicFile.failSuffix = null
+        android.util.AtomicFile.silentFailSuffix = "CharacterGraphicsTest"
+        check(!KartPadCharacterGraphicsTest.setMode(chooser, KartPadCharacterGraphicsTest.Mode.NORMAL))
+        check(KartPadCharacterGraphicsTest.mode(game) == KartPadCharacterGraphicsTest.Mode.COMPATIBILITY)
+        android.util.AtomicFile.silentFailSuffix = null
+        for (invalid in listOf("compatibility\n", "1", "unknown", "x".repeat(100))) {
+            java.io.File(root, "KartPad/CharacterGraphicsTest").writeText(invalid)
+            KartPadCharacterGraphicsTest.configure(game)
+            check(KartPadCharacterGraphicsTest.active == KartPadCharacterGraphicsTest.Mode.NORMAL)
+            check(android.system.Os.getenv("KARTPAD_RENDERER_CONST_PNMTX") == null)
+        }
         check(!KartPadRendererDiagnostics.enabled(game))
         check(KartPadRendererDiagnostics.setEnabled(chooser, true))
         KartPadRendererDiagnostics.configure(game)

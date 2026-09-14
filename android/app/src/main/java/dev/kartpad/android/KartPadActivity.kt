@@ -94,6 +94,7 @@ class KartPadActivity : SDLActivity() {
         Os.setenv("KARTPAD_ANDROID_FILES_DIR", filesDir.absolutePath, true)
         Os.setenv("KARTPAD_ANDROID_CACHE_DIR", cacheDir.absolutePath, true)
         KartPadRendererDiagnostics.configure(this)
+        KartPadCharacterGraphicsTest.configure(this)
         if (BuildConfig.GAME_RUNTIME) {
             RetroRewindInstallStorage.recoverForLaunch(filesDir, requestedRuntimeProfile())
             if (!identityStartupChecked) {
@@ -574,6 +575,9 @@ class KartPadActivity : SDLActivity() {
     private fun showDisplayMenu() = showKartPadMenuPage(
         "Display",
         listOf(
+            MenuRow("Character Graphics Test…", R.drawable.ic_kartpad_display) {
+                closeKartPadMenu { KartPadCharacterGraphicsTestDialog.show(this) }
+            },
             MenuRow("FPS Counter Size…", R.drawable.ic_kartpad_speedometer) {
                 closeKartPadMenu(::showFpsSizeSettings)
             },

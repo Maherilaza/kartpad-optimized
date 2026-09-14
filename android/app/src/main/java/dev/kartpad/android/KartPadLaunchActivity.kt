@@ -458,6 +458,14 @@ open class KartPadLaunchActivity : Activity() {
         }, layout(0))
 
 
+        column.addView(Button(this).apply {
+            text = "Character Graphics Test…"
+            isAllCaps = false
+            setTextColor(Color.argb(184, 255, 255, 255))
+            setBackgroundColor(Color.TRANSPARENT)
+            setOnClickListener { KartPadCharacterGraphicsTestDialog.show(this@KartPadLaunchActivity) }
+        }, layout(0))
+
         val scroll = ScrollView(this).apply { addView(column) }
         AlertDialog.Builder(this).setTitle("Getting Started").setView(scroll)
             .setPositiveButton("Done", null).show()
