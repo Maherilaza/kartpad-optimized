@@ -37,8 +37,8 @@ if [[ "$(file -b "${binary}")" != *"Mach-O 64-bit executable arm64"* ]]; then
   exit 65
 fi
 build_metadata="$(vtool -show-build "${binary}")"
-if [[ "$(awk '/platform/{print $2; exit}' <<<"${build_metadata}")" != "${expected_platform}" ]] ||
-   [[ "$(awk '/minos/{print $2; exit}' <<<"${build_metadata}")" != "16.0" ]]; then
+if [[ "$(awk '$1 == "platform" {print $2; exit}' <<<"${build_metadata}")" != "${expected_platform}" ]] ||
+   [[ "$(awk '$1 == "minos" {print $2; exit}' <<<"${build_metadata}")" != "16.0" ]]; then
   echo "binary is not an ${expected_platform} 16.0 artifact" >&2
   exit 65
 fi
