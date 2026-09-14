@@ -97,6 +97,11 @@ patch --batch -p1 -d "${runtime_source}/aurora-main" < \
 patch --batch -p1 -d "${runtime_source}/aurora-main" < \
   "${repo_root}/patches/aurora-ios-native-text-focus.patch"
 patch --batch -p1 -d "${runtime_source}" < "${repo_root}/patches/wiicompiled-apple-runtime.patch"
+# Android layers its own shared-memory allocator onto the common Apple source.
+if [[ "${KARTPAD_PREPARE_PLATFORM:-apple}" != android ]]; then
+  patch --batch -p1 -d "${runtime_source}" < \
+    "${repo_root}/patches/wiicompiled-ios-anonymous-memory.patch"
+fi
 patch --batch -p1 -d "${runtime_source}" < \
   "${repo_root}/patches/wiicompiled-rfl-alarm-context.patch"
 patch --batch -p1 -d "${runtime_source}" < \

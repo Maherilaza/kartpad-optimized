@@ -30,7 +30,7 @@ fi
 # The existing Apple preparation command owns the common, ordered runtime
 # patch stack. KARTPAD_PREPARE_ONLY stops before any platform configure/build;
 # this Android command then layers only the ELF/NDK delta onto that fresh copy.
-KARTPAD_PREPARE_ONLY=1 "$repo_root/scripts/prepare-ios-game-runtime.sh" \
+KARTPAD_PREPARE_PLATFORM=android KARTPAD_PREPARE_ONLY=1 "$repo_root/scripts/prepare-ios-game-runtime.sh" \
   "$translation_root" "$runtime_source" "$runtime_build" "$product"
 patch --batch -p1 -d "$runtime_source/aurora-main" < \
   "$repo_root/patches/aurora-android-public-sdl-surface-lock.patch"
