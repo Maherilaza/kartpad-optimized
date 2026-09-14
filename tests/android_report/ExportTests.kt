@@ -56,6 +56,17 @@ fun main() {
             check(zip.getEntry("Logs/session/console.log") == null)
         }
         check(runCatching { KartPadDiagnosticExport.write(Context(files), Uri(zipFile), "../NAND") }.isFailure)
+        val textFile = File(root, "diagnostics.txt")
+        KartPadDiagnosticExport.writeText(Context(files), Uri(textFile), "session")
+        val text = textFile.readText()
+        check(text.contains("VERSION_HEADER_MUST_REMAIN") && text.contains("middle omitted"))
+        check(text.contains("[runtime] WiiCompiled vTEST"))
+        check(textFile.length() < 4L * 1024 * 1024)
+        check(listOf("PRIVATE_NAND", "PRIVATE_MEMORY", "OTHER_SESSION", "UNRELATED_HEALTH").none { it in text })
+        KartPadDiagnosticExport.writeText(Context(files), Uri(textFile), "older")
+        check(textFile.readText().contains("OTHER_SESSION"))
+        check(!textFile.readText().contains("VERSION_HEADER_MUST_REMAIN"))
+        check(runCatching { KartPadDiagnosticExport.writeText(Context(files), Uri(textFile), "../NAND") }.isFailure)
         val emptyFiles = File(root, "empty").apply { mkdirs() }
         KartPadDiagnosticExport.write(Context(emptyFiles), Uri(zipFile))
         ZipFile(zipFile).use { check(it.size() == 2) }

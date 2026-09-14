@@ -137,16 +137,30 @@ static void BeginSession() {
 }
 
 static NSString *RedactedSessionTail(NSURL *url) {
-  static constexpr NSUInteger kMaximumTailBytes = 4096;
-  NSData *data = [NSData dataWithContentsOfURL:url
-                                      options:NSDataReadingMappedIfSafe
-                                        error:nil];
-  if (data == nil) return @"unavailable";
-  const NSUInteger offset = data.length > kMaximumTailBytes
-      ? data.length - kMaximumTailBytes : 0;
-  NSData *tailData = [data subdataWithRange:NSMakeRange(offset, data.length - offset)];
-  NSString *tail = [[NSString alloc] initWithData:tailData
-                                         encoding:NSUTF8StringEncoding];
+  static constexpr NSUInteger kMaximumHeaderBytes = 16384;
+  static constexpr NSUInteger kMaximumTailBytes = 65536;
+  NSFileHandle *handle = [NSFileHandle fileHandleForReadingFromURL:url error:nil];
+  if (handle == nil) return @"unavailable";
+  NSMutableData *selected = [NSMutableData data];
+  @try {
+    unsigned long long size = [handle seekToEndOfFile];
+    [handle seekToFileOffset:0];
+    if (size <= kMaximumHeaderBytes + kMaximumTailBytes) {
+      [selected appendData:[handle readDataOfLength:(NSUInteger)size]];
+    } else {
+      [selected appendData:[handle readDataOfLength:kMaximumHeaderBytes]];
+      [selected appendData:[@"\n[... middle of session omitted ...]\n" dataUsingEncoding:NSUTF8StringEncoding]];
+      [handle seekToFileOffset:size - kMaximumTailBytes];
+      [selected appendData:[handle readDataOfLength:kMaximumTailBytes]];
+    }
+  } @catch (NSException *exception) {
+    return @"unavailable";
+  } @finally {
+    [handle closeFile];
+  }
+  // Decode bounded chunks lossily so a truncated UTF-8 character cannot hide a log.
+  NSString *tail = [[NSString alloc] initWithData:selected encoding:NSUTF8StringEncoding];
+  if (tail == nil) tail = [[NSString alloc] initWithData:selected encoding:NSISOLatin1StringEncoding];
   if (tail == nil) return @"unreadable";
 
   NSMutableString *redacted = [tail mutableCopy];
@@ -463,7 +477,8 @@ static NSString *DiagnosticsReport() {
        "logsExist=%@\n"
        "saveExists=%@\n"
        "currentSessionActive=%@\n"
-       "sessionTailLimitBytes=4096\n"
+       "sessionHeaderLimitBytes=16384\n"
+       "sessionTailLimitBytes=65536\n"
        "currentSessionTailBegin\n%@\ncurrentSessionTailEnd\n"
        "previousSessionTailBegin\n%@\npreviousSessionTailEnd\n"
        "reviewWarning=Review this report before sharing. Arbitrary runtime text may still require review.\n"
@@ -1018,26 +1033,18 @@ static bool KPFullscreenAcrossNotch() {
   ];
   NSAlert *choice = [NSAlert new];
   choice.messageText = @"Where should this report go?";
-  choice.informativeText = @"Choose KartPad if unsure. WiiCompiled receives a draft identifying your modified KartPad build. Do not confirm stock WiiCompiled checks unless tested. Save and review diagnostics, then attach manually; nothing is uploaded automatically.";
+  choice.informativeText = @"KartPad: device, controls, setup, or unsure. WiiCompiled: a known shared runtime issue. Search both trackers for existing reports. Save and review diagnostics before attaching them. Only confirm upstream checks you have tested.";
   [choice addButtonWithTitle:@"KartPad"];
   [choice addButtonWithTitle:@"WiiCompiled"];
   [choice addButtonWithTitle:@"Cancel"];
+  [choice addButtonWithTitle:@"Search Both Trackers"];
   NSModalResponse response = [choice runModal];
   if (response == NSAlertThirdButtonReturn) return;
   if (response == NSAlertSecondButtonReturn) {
-    NSMutableDictionary<NSString *, NSString *> *fields = [NSMutableDictionary dictionary];
-    for (NSURLQueryItem *item in draft.queryItems) fields[item.name] = item.value;
-    draft = [NSURLComponents componentsWithString:@"https://github.com/patchzyy/Wiicompiled/issues/new"];
-    draft.queryItems = @[
-      [NSURLQueryItem queryItemWithName:@"template" value:@"2-bug-report.yml"],
-      [NSURLQueryItem queryItemWithName:@"title" value:@"[Bug] [KartPad] "],
-      [NSURLQueryItem queryItemWithName:@"version" value:[NSString stringWithFormat:
-          @"KartPad %@, modified WiiCompiled integration; not verified on latest stock WiiCompiled", fields[@"revision"]]],
-      [NSURLQueryItem queryItemWithName:@"doing" value:@"Report origin: KartPad on macOS. Add reproduction steps and a related KartPad issue link if available."],
-      [NSURLQueryItem queryItemWithName:@"os" value:fields[@"platform"]],
-      [NSURLQueryItem queryItemWithName:@"gpu" value:@"Apple Silicon, Metal; exact GPU not collected"],
-      [NSURLQueryItem queryItemWithName:@"logs" value:fields[@"diagnostics"]],
-    ];
+    draft = [NSURLComponents componentsWithString:@"https://github.com/patchzyy/Wiicompiled/issues/new/choose"];
+  }
+  if (response == NSAlertFirstButtonReturn + 3) {
+    draft = [NSURLComponents componentsWithString:@"https://github.com/search?q=is%3Aissue+repo%3Achrissotraidis%2Fkartpad+repo%3Apatchzyy%2FWiicompiled&type=issues"];
   }
   if (draft.URL != nil) [NSWorkspace.sharedWorkspace openURL:draft.URL];
 }
@@ -1324,7 +1331,7 @@ static void InstallMenu() {
       keyEquivalent:@""];
   diagnostics.target = Controller();
   [helpMenu addItem:diagnostics];
-  NSMenuItem *report = [helpMenu addItemWithTitle:@"Report a KartPad Problem…"
+  NSMenuItem *report = [helpMenu addItemWithTitle:@"Report a Problem…"
       action:@selector(reportProblem:) keyEquivalent:@""];
   report.target = Controller();
   NSMenuItem *guide = [helpMenu addItemWithTitle:@"Reporting and Existing Issues"

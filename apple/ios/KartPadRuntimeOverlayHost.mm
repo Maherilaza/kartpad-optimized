@@ -2430,7 +2430,7 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
 - (void)chooseReportDestinationWithID:(NSString *)reportID
                                answers:(NSDictionary<NSString *, NSString *> *)answers {
   UIAlertController *choice = [UIAlertController alertControllerWithTitle:@"Where should this report go?"
-      message:@"Choose KartPad for app problems or when unsure. Choose WiiCompiled for shared game/runtime problems. Your draft identifies your KartPad build and keeps your reviewed-log choice. Attach the file in the browser."
+      message:@"KartPad: device, controls, setup, or unsure. WiiCompiled: a known shared runtime issue. Search both trackers to find an existing report. Your description and reviewed log stay available."
       preferredStyle:UIAlertControllerStyleAlert];
   [choice addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
   __weak KartPadGameOverlay *weakSelf = self;
@@ -2441,10 +2441,34 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   }]];
   [choice addAction:[UIAlertAction actionWithTitle:@"WiiCompiled" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
     [choice dismissViewControllerAnimated:YES completion:^{
-      [weakSelf openGitHubReportWithID:reportID answers:answers upstream:YES];
+      UIAlertController *kind = [UIAlertController alertControllerWithTitle:@"WiiCompiled Report"
+          message:@"Choose a report type. Only confirm upstream checks you have actually tested."
+          preferredStyle:UIAlertControllerStyleAlert];
+      NSArray<NSString *> *titles = @[@"Crash or Freeze", @"Other Bug", @"Performance"];
+      NSArray<NSString *> *templates = @[@"1-crash-report.yml", @"2-bug-report.yml", @"4-performance.yml"];
+      for (NSUInteger index = 0; index < titles.count; ++index) {
+        NSString *reportTemplate = templates[index];
+        [kind addAction:[UIAlertAction actionWithTitle:titles[index] style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+          NSMutableDictionary *typedAnswers = [answers mutableCopy];
+          typedAnswers[@"upstreamTemplate"] = reportTemplate;
+          [kind dismissViewControllerAnimated:YES completion:^{
+            [weakSelf openGitHubReportWithID:reportID answers:typedAnswers upstream:YES];
+          }];
+        }]];
+      }
+      [kind addAction:[UIAlertAction actionWithTitle:@"Back" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        [kind dismissViewControllerAnimated:YES completion:^{
+          [weakSelf chooseReportDestinationWithID:reportID answers:answers];
+        }];
+      }]];
+      [KartPadVisibleViewController(weakSelf.window) presentViewController:kind animated:YES completion:nil];
     }];
   }]];
-  choice.preferredAction = choice.actions[1];
+  [choice addAction:[UIAlertAction actionWithTitle:@"Search Both Trackers" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+    [choice dismissViewControllerAnimated:YES completion:^{
+      [weakSelf presentReportBrowserURL:[NSURL URLWithString:@"https://github.com/search?q=is%3Aissue+repo%3Achrissotraidis%2Fkartpad+repo%3Apatchzyy%2FWiicompiled&type=issues"]];
+    }];
+  }]];
   [KartPadVisibleViewController(self.window) presentViewController:choice animated:YES completion:nil];
 }
 
@@ -2484,15 +2508,18 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
     [NSURLQueryItem queryItemWithName:@"diagnostics" value:answers[@"diagnostics"] ?: @"Diagnostic log not attached."],
   ];
   if (upstream) {
+    NSString *reportTemplate = answers[@"upstreamTemplate"] ?: @"2-bug-report.yml";
+    NSString *prefix = [reportTemplate isEqualToString:@"1-crash-report.yml"] ? @"Crash"
+        : ([reportTemplate isEqualToString:@"4-performance.yml"] ? @"Perf" : @"Bug");
     components = [NSURLComponents componentsWithString:@"https://github.com/patchzyy/Wiicompiled/issues/new"];
     components.queryItems = @[
-      [NSURLQueryItem queryItemWithName:@"template" value:@"2-bug-report.yml"],
-      [NSURLQueryItem queryItemWithName:@"title" value:[NSString stringWithFormat:@"[Bug] [KartPad] %@", problem]],
+      [NSURLQueryItem queryItemWithName:@"template" value:reportTemplate],
+      [NSURLQueryItem queryItemWithName:@"title" value:[NSString stringWithFormat:@"[%@] [KartPad] %@", prefix, problem]],
       [NSURLQueryItem queryItemWithName:@"version" value:[NSString stringWithFormat:
           @"KartPad %@ (build %@), modified WiiCompiled integration; not verified on latest stock WiiCompiled", version, build]],
       [NSURLQueryItem queryItemWithName:@"what" value:answers[@"problem"] ?: @""],
       [NSURLQueryItem queryItemWithName:@"doing" value:[NSString stringWithFormat:
-          @"KartPad report %@. Frequency: %@\n%@\nRelated KartPad issue: add link if available.", reportID, answers[@"frequency"] ?: @"", answers[@"context"] ?: @""]],
+          @"KartPad report %@. %@\nFrequency: %@\n%@", reportID, answers[@"problem"] ?: @"", answers[@"frequency"] ?: @"", answers[@"context"] ?: @""]],
       [NSURLQueryItem queryItemWithName:@"os" value:platform],
       [NSURLQueryItem queryItemWithName:@"gpu" value:@"Apple device, Metal; exact GPU not collected"],
       [NSURLQueryItem queryItemWithName:@"logs" value:answers[@"diagnostics"] ?: @"Diagnostic log not attached."],

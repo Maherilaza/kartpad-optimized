@@ -29,6 +29,54 @@ internal object KartPadDiagnosticExport {
             .sortedByDescending { it.modified }
     }
 
+    /** One attachable text file; only the selected runtime session, never saves or identity files. */
+    fun writeText(context: Context, destination: Uri, sessionId: String) {
+        val root = logsRoot(context)
+        val session = sessions(context).firstOrNull { it.id == sessionId }
+            ?: error("The selected game session is no longer available. Choose it again.")
+        val directory = File(root, session.id)
+        val files = directory.listFiles().orEmpty().filter {
+            it.isFile && it.absoluteFile == it.canonicalFile &&
+                (it.name == "console.log" || (it.name.startsWith("crash_") && it.extension == "txt"))
+        }.sortedWith(compareByDescending<File> { it.name == "console.log" }.thenByDescending { it.lastModified() })
+            .take(MAX_FILES)
+        val output = context.contentResolver.openOutputStream(destination, "w")
+            ?: error("The chosen destination could not be opened.")
+        output.buffered().use { out ->
+            out.write(buildString {
+                appendLine("KartPad diagnostic log — modified WiiCompiled build")
+                appendLine("Review before attaching on GitHub. Nothing was uploaded.")
+                appendLine("Export-time app: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
+                appendLine("Export-time device: ${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}; API ${android.os.Build.VERSION.SDK_INT}")
+                appendLine("Selected session: ${session.id}; console last written (Unix ms): ${session.modified}")
+                appendLine("Older session version must be read from its console header; otherwise unknown.")
+                appendLine("Only console.log and crash text from this session follow. Each is capped at 256 KiB.")
+            }.toByteArray())
+            for (file in files) {
+                out.write("\n--- ${file.name} ---\n".toByteArray())
+                RandomAccessFile(file, "r").use { input ->
+                    val size = input.length()
+                    val cap = 256 * 1024
+                    if (size <= cap) {
+                        val bytes = ByteArray(size.toInt())
+                        input.readFully(bytes)
+                        out.write(bytes)
+                    } else {
+                        val header = ByteArray(16 * 1024)
+                        input.readFully(header)
+                        out.write(header)
+                        val marker = "\n[KartPad: middle omitted; recent tail follows]\n".toByteArray()
+                        out.write(marker)
+                        val tail = ByteArray(cap - header.size - marker.size)
+                        input.seek(size - tail.size)
+                        input.readFully(tail)
+                        out.write(tail)
+                    }
+                }
+            }
+        }
+    }
+
     fun write(context: Context, destination: Uri, sessionId: String? = null) {
         val root = logsRoot(context)
         val available = sessions(context)

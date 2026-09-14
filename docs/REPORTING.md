@@ -16,8 +16,8 @@ are independently maintained.
   Clearly identify the modified KartPad build and whether the problem has also
   been reproduced on unmodified WiiCompiled. **Not tested** is a valid answer.
 
-Search the chosen tracker first and add evidence to a matching issue instead
-of creating another. If reports already exist in both projects, cross-link
+[Search reports in both projects](https://github.com/search?q=is%3Aissue+repo%3Achrissotraidis%2Fkartpad+repo%3Apatchzyy%2FWiicompiled&type=issues)
+and add evidence to a matching issue instead of creating another. If reports already exist in both projects, cross-link
 them. You do not need to open one in each project.
 
 A race crash or graphics problem can involve KartPad changes too; the symptom
@@ -67,15 +67,20 @@ may open only a KartPad draft. You can open either tracker using the links above
 and attach the same reviewed evidence yourself.
 
 In the **Android private candidate**, describe the problem, choose the visible
-KartPad/WiiCompiled destination, then tap **Open GitHub Draft**. You do not need
+KartPad/WiiCompiled destination, then tap **Open GitHub Draft**. Both projects remain visible, and
+**Search reports in both projects** opens a combined issue search. You do not need
 to select a local file or explain missing logs first. Attach reviewed evidence
 on GitHub. **Share Report…** is separate and still checks any selected file
-before sharing it. Optional log export lets you choose the failed session.
+before sharing it. **Save Diagnostic Log…** lets you choose the failed session and saves one
+attachable text file. The saved file is selected automatically for review;
+there is no archive to unpack.
 
 In the **iPhone/iPad private candidate**, **Continue to GitHub…** shows
 **Preparing Report…**, then a review screen. Choose **Choose Project — I’ll
 Attach the Log** after review, or **Continue Without a Log**, then select
-KartPad or WiiCompiled. The draft opens in an embedded Safari view. Returning
+KartPad or WiiCompiled; the chooser also offers **Search Both Trackers**.
+WiiCompiled reports have explicit Crash, Bug and Performance choices instead
+of sending every report to the non-crash form. The draft opens in an embedded Safari view. Returning
 from the destination choice or browser preserves the review; a loading failure
 offers retry, copying the draft link, or returning to the report. Nothing is
 submitted automatically. Apple still uses the existing current/previous-session
@@ -87,3 +92,8 @@ a public release.
 
 Repository migration is a separate decision; see
 [Fork connection options](FORK-OPTIONS.md).
+
+In macOS source, **Help → Report a Problem…** offers both destinations and
+combined search. The upstream option opens its issue-template chooser. Saved
+diagnostics preserve bounded runtime startup headers and failure tails. This
+is source availability, not an announcement of a new Mac download.
