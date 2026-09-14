@@ -130,7 +130,7 @@ public class BaseTranslationModAwarenessTests
         var chunkSize = KamekChunk.HeaderSize + code.Length + commands.Sum(command => command.Length);
         var data = new byte[chunkSize];
         BinaryPrimitives.WriteUInt32BigEndian(data.AsSpan(0x00), KamekChunk.Magic0);
-        BinaryPrimitives.WriteUInt32BigEndian(data.AsSpan(0x04), KamekChunk.Magic1);
+        BinaryPrimitives.WriteUInt32BigEndian(data.AsSpan(0x04), KamekChunk.MagicV3);
         BinaryPrimitives.WriteUInt32BigEndian(data.AsSpan(0x08), 0x10);
         BinaryPrimitives.WriteUInt32BigEndian(data.AsSpan(0x0C), (uint)code.Length);
         BinaryPrimitives.WriteUInt32BigEndian(data.AsSpan(0x18), (uint)chunkSize);

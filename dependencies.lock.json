@@ -10,7 +10,16 @@
       "path": "ref/upstream/Wiicompiled",
       "license": "GPL-3.0-only; upstream README specifies version 3",
       "role": "Primary static translator and runtime baseline",
-      "pushDisabled": true
+      "pushDisabled": true,
+      "maintainedSource": {
+        "path": "vendor/wiicompiled",
+        "method": "git-subtree-squash",
+        "upstreamBase": "1912292c804ff9b1b79938de89369ec4496f9fff",
+        "activeConsumers": [
+          "translator"
+        ],
+        "runtimeMigration": "pending platform parity and acceptance"
+      }
     },
     {
       "name": "SunPad",

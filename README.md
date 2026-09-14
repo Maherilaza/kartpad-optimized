@@ -253,6 +253,7 @@ ARM64 and renders through Vulkan on Android or Metal on Apple platforms.
 
 - [Apple builds](docs/BUILDING.md): prerequisites, Mac self-build and iOS workflows.
 - [Android builds](android/README.md): source-only shell and complete runtime.
+- [Source maintenance](docs/source-maintenance/README.md): editable WiiCompiled source, upstream comparison, and migration status.
 - [Documentation](docs/README.md): user guides, architecture and release evidence.
 - [Current status](docs/STATUS.md) and [maintenance board](docs/MAINTENANCE-BOARD.md):
   accepted results, active work and outstanding tests.

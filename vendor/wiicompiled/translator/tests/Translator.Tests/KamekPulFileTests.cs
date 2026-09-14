@@ -89,7 +89,7 @@ public class KamekPulFileTests
         var chunkSize = KamekChunk.HeaderSize + code.Length + commandSize;
         var data = new byte[chunkSize];
         WriteU32(data, 0x00, KamekChunk.Magic0);
-        WriteU32(data, 0x04, KamekChunk.Magic1);
+        WriteU32(data, 0x04, KamekChunk.MagicV3);
         WriteU32(data, 0x08, bssSize);
         WriteU32(data, 0x0C, (uint)code.Length);
         WriteU32(data, 0x10, 0);

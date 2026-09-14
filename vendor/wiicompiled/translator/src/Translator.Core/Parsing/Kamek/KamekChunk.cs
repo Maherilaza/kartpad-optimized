@@ -6,7 +6,8 @@ namespace Translator.Core.Parsing.Kamek;
 public sealed class KamekChunk
 {
     public const uint Magic0 = 0x4B616D65;
-    public const uint Magic1 = 0x6B000003;
+    public const uint MagicV2 = 0x6B000002;
+    public const uint MagicV3 = 0x6B000003;
     public const int HeaderSize = 0x20;
 
     public KamekChunk(
@@ -58,7 +59,8 @@ public sealed class KamekChunk
         }
 
         return BinaryPrimitives.ReadUInt32BigEndian(data.Slice(offset, 4)) == Magic0 &&
-            BinaryPrimitives.ReadUInt32BigEndian(data.Slice(offset + 4, 4)) == Magic1;
+            BinaryPrimitives.ReadUInt32BigEndian(data.Slice(offset + 4, 4)) is
+                MagicV2 or MagicV3;
     }
 
     public static KamekChunk Parse(byte[] data, int offset, int expectedSize, int index)
@@ -74,7 +76,7 @@ public sealed class KamekChunk
 
         var magic0 = reader.ReadUInt32();
         var magic1 = reader.ReadUInt32();
-        if (magic0 != Magic0 || magic1 != Magic1)
+        if (magic0 != Magic0 || magic1 is not (MagicV2 or MagicV3))
         {
             throw new InvalidDataException($"Kamek chunk {index} at 0x{offset:X} has invalid magic 0x{magic0:X8}/0x{magic1:X8}.");
         }
@@ -83,7 +85,12 @@ public sealed class KamekChunk
         var codeSize = reader.ReadUInt32();
         var ctorStart = reader.ReadUInt32();
         var ctorEnd = reader.ReadUInt32();
-        var chunkSize = reader.ReadUInt32();
+        var encodedChunkSize = reader.ReadUInt32();
+        // Kamek v2 leaves this field zero and relies on the combined file's
+        // regional size table (or the raw file boundary) just like its loader.
+        var chunkSize = magic1 == MagicV2 && encodedChunkSize == 0
+            ? checked((uint)(expectedSize != 0 ? expectedSize : data.Length - offset))
+            : encodedChunkSize;
         _ = reader.ReadUInt32(); // reserved
 
         if (chunkSize < HeaderSize + codeSize)
