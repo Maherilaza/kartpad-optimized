@@ -30,15 +30,43 @@ physical device/gameplay acceptance remain open. Existing releases are unchanged
 - The real 61,378,201-byte candidate source archive restored offline to that
   exact KartPad commit and all four exact runtime commits. Archive SHA-256:
   `3d1559416378374151fb596551e26029c332cc2764d717da5be7fe8a5f464d4e`.
-- macOS native dual build and package audit passed. The audit's stale log-size
-  expectation was corrected to match the unchanged baseline implementation.
-  This was an evolving candidate build, not final clean-commit acceptance.
+- macOS native dual build, final incremental build, staging verification and
+  final package audit passed. Runtime bytes stayed unchanged across the final
+  incremental build. The audit's stale log-size expectation was corrected to
+  match the unchanged baseline implementation.
+- iOS/iPadOS native dual build and full app audit passed. The audit parser was
+  corrected to read the platform field rather than matching the word in a path.
+  A private unsigned IPA was packaged and its ZIP integrity verified.
+- Android native dual build, final clean-source incremental build, APK package
+  audit and APK signature verification passed. Candidate version code is 92.
+- The old-preparer translator independently generated 4,101 Retro Rewind records;
+  its entire source bundle matches the migrated translator byte-for-byte
+  (`e9c09b39f3cf21b8fed8bbe578bd706244a77761bc04d4f2a091870aadbb264a`).
+  The stale 4,095 builder guard was corrected; 11 guard tests and validation of
+  the actual fresh graph passed. This changes validation, not generated code.
+- Retired all 99 migrated patches after source parity and native build checks.
+  No active script, test, builder or workflow references those patch filenames.
+  Builder (25, one existing skip) and maintenance tests (54) still pass.
+- A full rollback rehearsal through retirement commit `a938d8a` restored the
+  exact pre-runtime-integration tree, then reverted the translator consumer.
+  All 99 patch files and all five original preparers were restored exactly.
+- Source preparation's product selection only chooses the build target; it does
+  not select different runtime patches. Dual native candidates cover Original
+  and Retro Rewind code; per-product gameplay remains a separate hardware gate.
+
+## Private candidate artifacts
+
+These are development artifacts, not accepted public releases or installation proof.
+Paths are relative to the isolated checkout's `build/source-migration/` directory.
+
+| Platform | Artifact | SHA-256 / source evidence |
+|---|---|---|
+| Android | `KartPad-source-migration-android.apk` | `4ff90de21de40cfc237837b3cca9ab33f2baea0f9db607abe0ff50c5b036d547`; clean source `a938d8a` |
+| iOS/iPadOS | `KartPad-source-migration-ios-unsigned.ipa` | `858c8ff39809e6a7affe1a275846fceecdab110289f144b23cc2ddb158ddf321`; clean compiled source `43a1661` |
+| macOS | `final/KartPad.app` | unsigned runtime `c375c03a319d3076daaf32555fa853b63079753a6e4f402d53c09dbe3e5d1ef1`; final staging and package audit passed |
 
 ## Open gates
 
-- Finish Android and iOS native builds and exact candidate artifact accounting.
-- Remaining product preparation combinations and any build-profile discrepancy
-  must be resolved against baseline, without changing runtime behavior silently.
 - Physical macOS/iOS/iPadOS/Android gameplay and data-preserving installation.
   The iPad was unavailable and no Android device was attached at the last check.
 - Experimental tvOS native/device acceptance is not established.

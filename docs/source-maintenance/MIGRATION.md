@@ -67,6 +67,13 @@ unrelated concurrent work. For a published build regression, release a correctio
 with the same identity and a higher build/version code; do not uninstall or wipe
 user data to force a downgrade.
 
+The full rollback rehearsal used the candidate-only range
+`a3f90eb..a938d8a` with `git revert --no-commit`, followed by a normal commit.
+Its index tree exactly matched `a3f90eb`. Reverting `a3f90eb` afterward restored
+the translator preparer as well. This range is an evidence record: on a later
+shared branch, select only the migration commits after checking intervening work.
+Do not blindly revert an open-ended range containing unrelated changes.
+
 ## Acceptance status
 
 This document is the implementation plan, not a claim of completed migration.
