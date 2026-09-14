@@ -1,0 +1,207 @@
+--- a/src/apple/guest_flat_memory_apple.cpp
++++ b/src/apple/guest_flat_memory_apple.cpp
+@@ -12,6 +12,10 @@
+ #include <stdexcept>
+ #include <string>
+ #include <sys/mman.h>
++#if TARGET_OS_IPHONE
++#include <mach/mach.h>
++#include <mach/vm_map.h>
++#endif
+ #include <unistd.h>
+ #include <vector>
+ 
+@@ -88,31 +92,15 @@
+     throw std::runtime_error(message.str());
+ }
+ 
++#if !TARGET_OS_IPHONE
+ int CreateSharedSection(uint64_t size, unsigned ordinal)
+ {
+-#if TARGET_OS_IPHONE
+-    const char* temporaryRoot = std::getenv("TMPDIR");
+-    if (temporaryRoot == nullptr || *temporaryRoot == '\0') {
+-        errno = ENOENT;
+-        ThrowErrno("resolve iOS temporary directory");
+-    }
+-    std::string pattern = std::string(temporaryRoot) + "/kartpad-g7-" +
+-                          std::to_string(getpid()) + "-" +
+-                          std::to_string(ordinal) + "-XXXXXX";
+-    std::vector<char> writablePattern(pattern.begin(), pattern.end());
+-    writablePattern.push_back('\0');
+-    const int fd = mkstemp(writablePattern.data());
+-    if (fd < 0)
+-        ThrowErrno("mkstemp shared guest-memory backing");
+-    unlink(writablePattern.data());
+-#else
+     const std::string name = "/kartpad-g7-" + std::to_string(getpid()) + "-" +
+                              std::to_string(ordinal);
+     const int fd = shm_open(name.c_str(), O_RDWR | O_CREAT | O_EXCL, 0600);
+     if (fd < 0)
+         ThrowErrno("shm_open");
+     shm_unlink(name.c_str());
+-#endif
+     if (ftruncate(fd, static_cast<off_t>(size)) != 0) {
+         const int saved = errno;
+         close(fd);
+@@ -121,6 +109,7 @@
+     }
+     return fd;
+ }
++#endif
+ 
+ void SetProtection(uint32_t address, size_t length, int protection)
+ {
+@@ -148,6 +137,21 @@
+     }
+ 
+     const uint64_t pageSize = static_cast<uint64_t>(getpagesize());
++    // Validate before any fixed overwrite; a bad layout must never map outside
++    // our reservation or replace another guest region.
++    for (size_t i = 0; i < regions.size(); ++i) {
++        const auto& region = regions[i];
++        if (region.size == 0 || region.size > kGuestSpaceSize - region.base ||
++            region.base % pageSize != 0 || OffsetFor(region) % pageSize != 0)
++            throw std::runtime_error("Invalid flat guest memory region");
++        const uint64_t end = static_cast<uint64_t>(region.base) + RoundUp(region.size, pageSize);
++        for (size_t j = 0; j < i; ++j) {
++            const auto& prior = regions[j];
++            const uint64_t priorEnd = static_cast<uint64_t>(prior.base) + RoundUp(prior.size, pageSize);
++            if (region.base < priorEnd && prior.base < end)
++                throw std::runtime_error("Overlapping flat guest memory regions");
++        }
++    }
+     const uint64_t reservationSize = kGuestSpaceSize + pageSize;
+ #if TARGET_OS_IPHONE
+     void* reserved = mmap(nullptr, static_cast<size_t>(reservationSize), PROT_NONE,
+@@ -169,48 +173,88 @@
+     g_base = static_cast<uint8_t*>(reserved);
+ #endif
+ 
+-    g_sections.reserve(regions.size());
+-    for (const auto& region : regions) {
+-        auto it = std::find_if(g_sections.begin(), g_sections.end(),
+-                               [&](const Section& value) { return SameKey(value, region); });
+-        if (it == g_sections.end()) {
+-            g_sections.push_back(Section{region.backing,
+-                                         region.backing == Backing::Owned ? region.base : 0});
+-            it = std::prev(g_sections.end());
+-        }
+-        it->size = std::max(it->size, RoundUp(OffsetFor(region) + region.size, pageSize));
+-    }
+-
+-    for (size_t i = 0; i < g_sections.size(); ++i) {
+-        auto& section = g_sections[i];
+-        section.fd = CreateSharedSection(section.size, static_cast<unsigned>(i));
+-        void* host = mmap(nullptr, static_cast<size_t>(section.size), PROT_READ | PROT_WRITE,
+-                          MAP_SHARED, section.fd, 0);
+-        if (host == MAP_FAILED)
+-            ThrowErrno("mmap host guest-memory alias");
+-        section.host = static_cast<uint8_t*>(host);
+-    }
+-
+-    g_mappings.reserve(regions.size());
+-    for (const auto& region : regions) {
+-        auto section = std::find_if(g_sections.begin(), g_sections.end(),
+-                                    [&](const Section& value) { return SameKey(value, region); });
+-        const uint64_t offset = OffsetFor(region);
+-        const uint64_t mappedSize = RoundUp(region.size, pageSize);
+-        void* view = mmap(g_base + region.base, static_cast<size_t>(mappedSize),
+-                          PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED,
+-                          section->fd, static_cast<off_t>(offset));
+-        if (view == MAP_FAILED || view != g_base + region.base)
+-            ThrowErrno("mmap fixed guest-memory alias");
+-        g_mappings.push_back(Mapping{region.base, region.size, offset, &*section});
+-    }
+-
+-    for (auto& section : g_sections) {
+-        close(section.fd);
+-        section.fd = -1;
+-    }
+-    g_layout = regions;
+-    g_initialized = true;
++    try {
++        g_sections.reserve(regions.size());
++        for (const auto& region : regions) {
++            auto it = std::find_if(g_sections.begin(), g_sections.end(),
++                                   [&](const Section& value) { return SameKey(value, region); });
++            if (it == g_sections.end()) {
++                g_sections.push_back(Section{region.backing,
++                                             region.backing == Backing::Owned ? region.base : 0});
++                it = std::prev(g_sections.end());
++            }
++            it->size = std::max(it->size, RoundUp(OffsetFor(region) + region.size, pageSize));
++        }
++
++        for (size_t i = 0; i < g_sections.size(); ++i) {
++            auto& section = g_sections[i];
++#if TARGET_OS_IPHONE
++            // Anonymous pages avoid sending repeated guest RAM writes to a temporary file.
++            void* host = mmap(nullptr, static_cast<size_t>(section.size), PROT_READ | PROT_WRITE,
++                              MAP_PRIVATE | MAP_ANON, -1, 0);
++#else
++            section.fd = CreateSharedSection(section.size, static_cast<unsigned>(i));
++            void* host = mmap(nullptr, static_cast<size_t>(section.size), PROT_READ | PROT_WRITE,
++                              MAP_SHARED, section.fd, 0);
++#endif
++            if (host == MAP_FAILED)
++                ThrowErrno("mmap host guest-memory alias");
++            section.host = static_cast<uint8_t*>(host);
++        }
++
++        g_mappings.reserve(regions.size());
++        for (const auto& region : regions) {
++            auto section = std::find_if(g_sections.begin(), g_sections.end(),
++                                        [&](const Section& value) { return SameKey(value, region); });
++            const uint64_t offset = OffsetFor(region);
++            const uint64_t mappedSize = RoundUp(region.size, pageSize);
++#if TARGET_OS_IPHONE
++            // copy=FALSE is essential: host and all guest mirrors must share writes.
++            // OVERWRITE is restricted to the PROT_NONE reservation owned above.
++            vm_address_t target = reinterpret_cast<vm_address_t>(g_base + region.base);
++            vm_prot_t currentProtection = VM_PROT_NONE;
++            vm_prot_t maximumProtection = VM_PROT_NONE;
++            const kern_return_t result = vm_remap(
++                mach_task_self(), &target, mappedSize, 0, VM_FLAGS_FIXED | VM_FLAGS_OVERWRITE,
++                mach_task_self(), reinterpret_cast<vm_address_t>(section->host + offset),
++                FALSE, &currentProtection, &maximumProtection, VM_INHERIT_NONE);
++            if (result != KERN_SUCCESS)
++                throw std::runtime_error(std::string("vm_remap guest-memory alias failed: ") +
++                                         mach_error_string(result));
++#else
++            void* view = mmap(g_base + region.base, static_cast<size_t>(mappedSize),
++                              PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED,
++                              section->fd, static_cast<off_t>(offset));
++            if (view == MAP_FAILED || view != g_base + region.base)
++                ThrowErrno("mmap fixed guest-memory alias");
++#endif
++            g_mappings.push_back(Mapping{region.base, region.size, offset, &*section});
++        }
++
++        for (auto& section : g_sections) {
++            close(section.fd);
++            section.fd = -1;
++        }
++        g_layout = regions;
++        g_initialized = true;
++    } catch (...) {
++        // A failed allocation/remap must not leave stale aliases or backing pages.
++        munmap(g_base, static_cast<size_t>(reservationSize));
++        for (auto& section : g_sections) {
++            if (section.host)
++                munmap(section.host, static_cast<size_t>(section.size));
++            if (section.fd >= 0)
++                close(section.fd);
++        }
++        g_mappings.clear();
++        g_sections.clear();
++        g_layout.clear();
++        g_base = nullptr;
++#if TARGET_OS_IPHONE
++        gFlatGuestBase = nullptr;
++#endif
++        throw;
++    }
+ }
+ 
+ uint8_t* HostPointer(uint32_t guestAddress)
