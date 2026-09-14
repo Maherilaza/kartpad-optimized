@@ -16,6 +16,8 @@ internal object KartPadCharacterGraphicsTest {
     @Volatile var active = Mode.NORMAL
         private set
 
+    private var configured = false
+
     private fun setting(context: Context) = AtomicFile(File(context.filesDir, "KartPad/CharacterGraphicsTest"))
 
     fun mode(context: Context): Mode = runCatching {
@@ -43,10 +45,13 @@ internal object KartPadCharacterGraphicsTest {
         }
     }.isSuccess
 
+    @Synchronized
     fun configure(context: Context) {
+        if (configured) return
         active = mode(context)
         val value = active.environment
         if (value == null) Os.unsetenv("KARTPAD_RENDERER_CONST_PNMTX")
         else Os.setenv("KARTPAD_RENDERER_CONST_PNMTX", value, true)
+        configured = true
     }
 }
