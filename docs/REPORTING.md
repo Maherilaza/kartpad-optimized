@@ -58,15 +58,20 @@ identities, personal paths and network/account identifiers. The private Android
 archive is for local inspection, not automatic public upload. Keep your
 installation and saves intact while troubleshooting.
 
-## Reporting changes in development
+## Reporting test builds
 
-The repository links above work independently of the installed app. Direct
-in-app destination selection and Android session selection are prepared in source;
-this guide does not announce a released build containing them. Older builds
-may open only a KartPad draft. You can open either tracker using the links above
-and attach the same reviewed evidence yourself.
+Direct reporting changes are available as prereleases:
 
-In the **Android private candidate**, describe the problem, choose the visible
+- [Android code 90](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.20-android-reporting.1)
+- [iPhone/iPad build 42](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.20-ios-reporting.1)
+
+These leave stable downloads in place. Build/package checks passed; physical
+reporting-flow acceptance remains pending. Android retains the public code85
+runtime libraries; the Apple candidate was freshly prepared and compiled.
+macOS reporting source is merged, but no new Mac package is announced here.
+Older installed builds may still open only a KartPad draft.
+
+In the **Android reporting candidate**, describe the problem, choose the visible
 KartPad/WiiCompiled destination, then tap **Open GitHub Draft**. Both projects remain visible, and
 **Search reports in both projects** opens a combined issue search. You do not need
 to select a local file or explain missing logs first. Attach reviewed evidence
@@ -75,7 +80,7 @@ before sharing it. **Save Diagnostic Log…** lets you choose the failed session
 attachable text file. The saved file is selected automatically for review;
 there is no archive to unpack.
 
-In the **iPhone/iPad private candidate**, **Continue to GitHub…** shows
+In the **iPhone/iPad reporting candidate**, **Continue to GitHub…** shows
 **Preparing Report…**, then a review screen. Choose **Choose Project — I’ll
 Attach the Log** after review, or **Continue Without a Log**, then select
 KartPad or WiiCompiled; the chooser also offers **Search Both Trackers**.

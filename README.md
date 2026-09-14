@@ -77,6 +77,8 @@ Private Android previews use a different signer and need a backed-up migration.
 ## Playing
 
 **Need help or found a bug?** [Where to report and follow up](docs/REPORTING.md).
+[Reporting test builds for Android and iPhone/iPad](docs/REPORTING.md#reporting-test-builds)
+are available separately from the stable downloads.
 Suspected runtime bugs can go [directly to WiiCompiled](https://github.com/patchzyy/Wiicompiled/issues/new/choose); identify your KartPad build.
 Use KartPad for app/platform problems or when the cause is unclear.
 

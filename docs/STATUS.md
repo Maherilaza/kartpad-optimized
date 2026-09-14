@@ -7,11 +7,18 @@ Updated: 13 September 2026. This page summarizes acceptance, not a full test log
 Use the [maintenance board](MAINTENANCE-BOARD.md) for candidate ownership and
 next actions, and [known issues](KNOWN-ISSUES.md) for current reports.
 
+## Reporting prereleases — 14 September 2026
+
+[Android code90](releases/v0.4.20-android-reporting.1.md) and
+[iPhone/iPad build42](releases/v0.4.20-ios-reporting.1.md) are optional reporting
+test builds. Build/package checks passed; physical reporting-flow acceptance is
+pending. macOS changes are source-only. Stable downloads remain below.
+
 ## Published packages
 
 | Platform | Package | Acceptance boundary |
 | --- | --- | --- |
-| Android | [0.4.17 Android 1, code 80](releases/v0.4.17-android.1.md) | Owner accepted preceding candidate Retro single-player/touch; new FPS sizing and D-pad editor passed physical Pixel UI checks. Exact release-payload checks are recorded in release provenance; online and affected-controller acceptance remain open |
+| Android | [0.4.19 Android 1, code 85](releases/v0.4.19-android.1.md) | Native shader read correction and release-payload checks passed; affected-device graphics, gameplay and performance acceptance remain open |
 | iPhone / iPad | [0.4.17, build 39](releases/v0.4.17-ios.1.md) | Corrected compiled REL guard, owner-accepted bounded iPhone 14 trial and preserved saves/configuration; iPhone 17 Pro Max/iOS 27 and online acceptance remain open |
 | Apple Silicon Mac | [0.4.17, build 39](releases/v0.4.17-macos.1.md) | Fresh build, viewport/REL checks and isolated Original/Retro rendering, audio and keyboard smoke; exact reporter two-player scene, full races and controller overhaul remain unaccepted |
 | Apple TV experimental | [0.4.11, build 9](releases/v0.4.11-tvos.1.md) | Published identity-fix and compiler-hardened package; exact-build hardware acceptance remains open |
