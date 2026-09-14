@@ -56,6 +56,10 @@ immediately to the original working setup. Record import and migration commit ID
 in the local evidence ledger. Before merging, test reverting the consumer change
 in a disposable branch and confirm it selects the original source again.
 
+If patch retirement has landed, revert that cleanup commit first so the old
+preparers can find their inputs. Then revert runtime integration and, if needed,
+the translator consumer change. The source import itself may remain inert.
+
 After a shared-branch merge, revert the consumer commits normally; do not reset
 or force-push shared history. Revert a subtree merge with its correct mainline only
 if removal is necessary and all consumers have already been restored. Never delete

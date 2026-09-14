@@ -42,8 +42,7 @@ physical device/gameplay acceptance remain open. Existing releases are unchanged
 - Physical macOS/iOS/iPadOS/Android gameplay and data-preserving installation.
   The iPad was unavailable and no Android device was attached at the last check.
 - Experimental tvOS native/device acceptance is not established.
-- Retire retained migrated patches after acceptance; publish the reusable
-  other-project plan only from accepted KartPad results.
+- Publish the reusable other-project plan only from accepted KartPad results.
 
 Local evidence is under the isolated checkout's ignored
 `build/source-migration/` directory. Private inputs and device identifiers are not

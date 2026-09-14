@@ -47,9 +47,9 @@ patch replay. **Do not replace its native-registration source with a platform
 runtime:** that would change translator inputs. Translator fixes are edited and
 committed in KartPad's subtree, not in the runtime fork's upstream translator copy.
 
-Migration acceptance is tracked in [VALIDATION.md](VALIDATION.md). Retained patch
-files are migration history or separate dependency/test inputs, not a second
-editable authority for the migrated translator and runtime.
+Migration acceptance is tracked in [VALIDATION.md](VALIDATION.md). The 99 migrated
+patch files have been retired from this candidate; Git history and the rollback
+backup preserve them. Remaining patches serve separate dependencies or test inputs.
 
 ## Upstream comparison, updates and contributions
 
