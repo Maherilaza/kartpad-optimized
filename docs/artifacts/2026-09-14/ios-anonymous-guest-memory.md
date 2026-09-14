@@ -24,3 +24,16 @@ The harness extracts the actual implementation from the patch and uses the prepa
 The actual implementation also compiles and links for arm64 iOS 17 with the iPhoneOS 26.5 SDK, using its public `vm_remap` declaration/export. Its macOS branch compiles with warnings as errors. `mach_vm_remap` was deliberately not used: the iPhone SDK does not support its header.
 
 No hardware gameplay, speed improvement, reduced on-device write count, or correction of #196's missing indirect target is claimed. The remaining release check is launch/race/relaunch of an iOS candidate and confirmation that the new backing remains permitted in the signed device app. No saves, game assets or user identities are modified by this allocator change.
+
+## Actual unsigned candidate: 0.4.21 / build43
+
+A fresh runtime preparation and complete iPhoneOS arm64 app build passed on September14. It compiled clean source `91aaedc7cff6c4e801cfe0636d5c3a4aa3b9bc2d`; the following merge of main adds Android work only. The current Android preparation retains both its platform skip and the new targeted-PNMTX patch.
+
+- Prepared runtime: `9e82b15f855b7c2a6ff39b908f768a18a58e72a623bc8ddc3f7f8bb7b3f6f125`.
+- Retained translation: `f5b67171325d4b98ccee74752268d689952d054f78f001b9083e42507dff8e0b`, identical to reporting42; no regeneration claim.
+- App executable: `0d34245350df16ff73d3f1c56f967ac8f51dd758d1c4674d2a04e43f9cfeca17`; Mach-O UUID `C62D7453-7690-3A12-A6E2-EFC9A9B50E64`. The actual linked executable imports `_vm_remap`.
+- Unsigned IPA: `KartPad-v0.4.21-memory-candidate.1-ios-unsigned.ipa`, SHA256 `868ff74767a5f2fb071b6ba53258dc0fae32b60f0aa95a5f82a83ec5b116d168`.
+
+The full iOS app audit passed (platform, required native/UI symbols, game-data/signing-material exclusions). Packaging used the existing notice allowlist with candidate-specific notes and source guidance. Two package runs were byte-identical; ZIP integrity, embedded provenance, bundle version43 and unsigned/content checks passed. This candidate is local and not installed or published.
+
+For exact reproduction, preparation/build scripts use the retained reporting42 translation and pinned Dawn/DiscIO dependencies. Reporting42's public release itself supplies no generated translation source archive. Thus the app/patch source and input hashes are available, but complete self-contained corresponding-source delivery is not established by that older release. Preserve this limitation when deciding whether to publish43; the local IPA is not a complete reproducible-source distribution.
