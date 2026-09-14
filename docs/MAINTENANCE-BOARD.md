@@ -153,3 +153,9 @@ Ownership audit: [46/46 open tickets assigned and replied to](artifacts/2026-09-
 ## Published Android 0.4.19 / code85
 
 [Code85 is public](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.19-android.1), delivering the PR271 Original-startup isolation, active-install recovery protection and packed-vertex read correction. APK, corresponding source, notices and checksums were uploaded and independently downloaded/verified. See the [release receipt](artifacts/2026-09-13/android-code85-public-release.md). Earlier entries saying these changes need a new APK are superseded. No fresh physical gameplay or broad issue closure is inferred; the release posts request focused affected-path comparisons.
+
+## 14 September intake and changed evidence
+
+#277 was consolidated into #206 after matching the reporter, device and connection failure; its code80 evidence remains in the canonical thread. New #273/#275/#278 requests and graphics retests #102/#104/#166/#193 were answered. #250 now supplies60Hz with interpolation off. All open tickets were assigned to the owner at refresh.
+
+Code85 failed the four new graphics comparisons. Code90 uses identical native libraries, so it is offered only where its session-log export answers a missing-evidence problem. The next renderer action is reconstruction of #193's two exact shipped pipeline recipes. #196 now has symbolized native evidence and a targeted missing-address request; the separate iOS file-backed guest-memory behavior warrants local investigation. See the [intake receipt](artifacts/2026-09-14/intake-and-next-failures.md).
