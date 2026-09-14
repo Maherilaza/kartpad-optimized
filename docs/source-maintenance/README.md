@@ -1,28 +1,64 @@
 # Maintaining WiiCompiled source
 
 WiiCompiled is created by [patchzyy and contributors](https://github.com/patchzyy/wiicompiled).
-KartPad's editable translator is in [`vendor/wiicompiled/translator`](../../vendor/wiicompiled/translator).
-Edit those files directly. `scripts/prepare-patched-translator.sh` retains its
-historical name and output location but now stages source without applying patches.
-The staged `runtime/src` used for native registration remains the upstream baseline.
+KartPad keeps its existing product repository and attribution. Its maintained
+runtime source is in the [WiiCompiled fork](https://github.com/chrissotraidis/wiicompiled),
+which belongs to GitHub's upstream fork network.
 
-The subtree was imported from WiiCompiled commit
-`1912292c804ff9b1b79938de89369ec4496f9fff`, tree
-`34f9deda094915e12f47316059911b28c6812964`. Its original license, README and
-component notices remain inside the subtree; KartPad's top-level notices still
-apply. Upstream identity and the maintained source location are recorded in
-`dependencies.lock.json`. The subtree history records the upstream split commit.
+## Source locations
 
-**Migration is in progress.** Runtime/Aurora app preparation still uses the
-existing platform patch stacks. Their imported source is not yet the app build
-input. Do not edit that imported runtime and assume it affects shipped apps.
-The eight old translator patches are retained temporarily as migration evidence;
-normal translator preparation no longer reads them. They are not a second place
-to maintain translator fixes.
+| Consumer | Editable source | Maintained fork branch |
+|---|---|---|
+| Translator and native-registration baseline | `vendor/wiicompiled/translator` and `vendor/wiicompiled/runtime/src` | Git subtree in KartPad |
+| macOS runtime and Aurora | `vendor/runtimes/macos` | `kartpad-macos` |
+| iOS and iPadOS runtime and Aurora | `vendor/runtimes/ios` | `kartpad-ios` |
+| Android runtime and Aurora | `vendor/runtimes/android` | `kartpad-android` |
+| Experimental tvOS runtime and Aurora | `vendor/runtimes/tvos` | `kartpad-tvos` |
 
-## Upstream comparisons and contributions
+```sh
+git submodule update --init --recursive
+```
 
-Fetch the recorded upstream base before comparing source:
+Git submodule commits pin each runtime exactly; branch tips never select a build
+implicitly. All platform branches initially derive from WiiCompiled commit
+`1912292c804ff9b1b79938de89369ec4496f9fff`. The existing platform differences are
+preserved, including memory allocation, controller and renderer behavior. This
+migration does not update upstream or consolidate those differences.
+
+Edit the runtime source in the relevant submodule, on a local branch. Build
+preparation copies tracked source, including local tracked edits; add new source
+files in that submodule before testing. The builder fingerprints tracked edits
+inside submodules, and artifact provenance fingerprints the prepared runtime.
+Commit and push the reviewed source branch, then stage its gitlink in KartPad:
+
+```sh
+git add vendor/runtimes/ios
+```
+
+Preparation rejects a submodule HEAD that differs from KartPad's staged pin; it
+will not reset a developer's checkout automatically. Profile headers, sse2neon
+and KartPad's Android trace header remain explicit generated/copied inputs.
+Preparation scripts retain their arguments and output layout and no longer apply
+platform runtime patches. Source archives recursively include the pinned source.
+
+The translator helper retains its historical name
+`scripts/prepare-patched-translator.sh`, but copies the tracked subtree without
+patch replay. **Do not replace its native-registration source with a platform
+runtime:** that would change translator inputs. Translator fixes are edited and
+committed in KartPad's subtree, not in the runtime fork's upstream translator copy.
+
+Migration acceptance is tracked in [VALIDATION.md](VALIDATION.md). Retained patch
+files are migration history or separate dependency/test inputs, not a second
+editable authority for the migrated translator and runtime.
+
+## Upstream comparison, updates and contributions
+
+For a runtime change, use the relevant fork branch and ordinary Git comparison
+against the recorded upstream base. Preserve the upstream licenses, per-file
+notices, Aurora attribution and commit ancestry. The fork's `KARTPAD.md` records
+how the source was materialized and links back to KartPad.
+
+For the translator subtree:
 
 ```sh
 git fetch https://github.com/patchzyy/wiicompiled.git 1912292c804ff9b1b79938de89369ec4496f9fff
@@ -30,15 +66,12 @@ git subtree split --prefix=vendor/wiicompiled -b review/wiicompiled-source
 git diff 1912292c804ff9b1b79938de89369ec4496f9fff review/wiicompiled-source -- translator
 ```
 
-For a contribution, start a branch at the appropriate upstream revision in your
-actual GitHub fork of WiiCompiled. Transfer only the specific fix and its tests,
-then test that branch against upstream. Do not submit the whole KartPad port delta
-as one fix. The source subtree makes comparison possible; it does not attach
-KartPad itself to GitHub's fork network or create a contributor fork automatically.
+Prepare upstream contributions as focused fixes and tests on an upstream-based
+branch in the fork. Do not send the entire KartPad platform delta as a bug fix.
+For upstream updates, merge the reviewed revision into an isolated platform
+branch, test it, then update only the accepted KartPad gitlink. Shared fixes may
+be cherry-picked between affected platform branches. Translator updates use a
+reviewed subtree merge. Upstream upgrades remain separate from this migration.
 
-Rehearse upstream updates in a disposable checkout using `git subtree pull
---prefix=vendor/wiicompiled --squash <upstream-url> <reviewed-revision>`. Record and
-review the new pin only after resolving changes and validating affected consumers.
-Do not update upstream as part of the current layout migration.
-
-See [migration and rollback gates](MIGRATION.md) and [validation](VALIDATION.md).
+See [migration and rollback gates](MIGRATION.md). No new source pin establishes
+physical gameplay acceptance by itself.

@@ -118,8 +118,8 @@ class ProfileTests(unittest.TestCase):
 
     def test_retro_rewind_archive_path_policy_is_shared(self) -> None:
         installer = (REPO / "apple/ios/KartPadRetroRewindInstaller.mm").read_text()
-        ios_patch = (REPO / "patches/wiicompiled-ios-discio-import.patch").read_text()
-        tvos_patch = (REPO / "patches/wiicompiled-tvos-runtime.patch").read_text()
+        ios_source = (REPO / "vendor/runtimes/ios/runtime/cmake/PublicProducts.cmake").read_text()
+        tvos_source = (REPO / "vendor/runtimes/tvos/runtime/cmake/PublicProducts.cmake").read_text()
         shared_sources = (
             "runtime/src/retro_rewind/archive_path.cpp",
             "runtime/src/retro_rewind/archive_scan.cpp",
@@ -129,8 +129,8 @@ class ProfileTests(unittest.TestCase):
         self.assertIn("ValidateArchiveMemberPath", installer)
         self.assertIn("ArchiveScan", installer)
         for shared_source in shared_sources:
-            self.assertIn(shared_source, ios_patch)
-            self.assertIn(shared_source, tvos_patch)
+            self.assertIn(shared_source, ios_source)
+            self.assertIn(shared_source, tvos_source)
 
     def test_version_watch_opens_one_actionable_issue(self) -> None:
         workflow = (REPO / ".github/workflows/retro-rewind-version-watch.yml").read_text()

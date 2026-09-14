@@ -15,6 +15,14 @@ exact upstream base and preserving its notices. Convert translator changes first
 then compare runtime/Aurora preparations for macOS, iOS/iPadOS, Android and tvOS.
 Do not use one platform's prepared source as the others' source.
 
+Runtime review found 59 platform-dependent paths, including unguarded behavior
+changes. The runtime migration therefore uses one proper WiiCompiled fork with
+four source branches and ordinary pinned Git submodules at `vendor/runtimes/`.
+This replaces replay without unifying platform behavior in the same change.
+The existing translator subtree and its native-registration source stay separate.
+Gitlinks pin runtime revisions; branch names are development destinations, not
+floating build dependencies.
+
 ## Gates and sequence
 
 1. Preserve a full local checkout copy, Git history bundle, dirty/index diffs and

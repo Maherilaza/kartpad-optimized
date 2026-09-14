@@ -131,7 +131,7 @@ for shell_contract in \
   "showControllerSettings:" \
   "guestMemoryStrategy=flat-mach-vm" \
   "schema=3" \
-  "sessionTailLimitBytes=4096" \
+  "sessionTailLimitBytes=65536" \
   "currentSessionTailBegin" \
   "previousSessionTailBegin" \
   "reviewWarning=Review this report before sharing. Arbitrary runtime text may still require review." \

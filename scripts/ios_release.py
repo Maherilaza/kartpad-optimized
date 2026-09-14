@@ -17,7 +17,8 @@ TRANSLATION_SHA256 = "f5b67171325d4b98ccee74752268d689952d054f78f001b9083e42507d
 # Compare production inputs, excluding release notes and packaging-only changes.
 PRODUCTION_PATHS = (
     "apple/ios", "apple/mobile", "apple/shared", "apple/third_party",
-    "runtime", "builder", "vendor/wiicompiled", "CMakeLists.txt",
+    "runtime", "builder", "vendor/wiicompiled", "vendor/runtimes/ios", "CMakeLists.txt",
+    ".gitmodules", "dependencies.lock.json", "scripts/stage-maintained-runtime.py", "scripts/stage-maintained-translator.py",
     "scripts/prepare-patched-translator.sh",
     "scripts/prepare-ios-game-runtime.sh", "scripts/build-ios-device-game-app.sh",
     "scripts/inject-retro-rel-report-guard.py", "scripts/write-build-provenance.py",

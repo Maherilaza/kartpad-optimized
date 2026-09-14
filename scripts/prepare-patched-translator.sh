@@ -11,9 +11,7 @@ stage="$repo/build/wiicompiled-fpscr"
   print -u2 'ERROR: missing tracked WiiCompiled translator source'
   exit 1
 }
-mkdir -p "$stage"
-rsync -a --delete --exclude .git --exclude bin --exclude obj \
-  "$source/" "$stage/"
+python3 "$repo/scripts/stage-maintained-translator.py" "$stage"
 
 dotnet_bin=/opt/homebrew/opt/dotnet@8/bin/dotnet
 project="$stage/translator/src/Translator.Cli/Translator.Cli.csproj"

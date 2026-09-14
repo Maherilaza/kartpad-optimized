@@ -43,3 +43,13 @@ for the game-content boundary and complete Corresponding Source obligations.
 The CSNum runtime correction in `patches/wiicompiled-sc-serial.patch` is
 backported from [patchzyy/Wiicompiled commit e0e362b](https://github.com/patchzyy/Wiicompiled/commit/e0e362bd992e07784f8ce7fa795cdb496af7b075),
 by patchzyy, under the upstream GPLv3 license.
+
+## Maintained WiiCompiled source
+
+KartPad's platform runtime source is maintained in the actual
+[WiiCompiled fork](https://github.com/chrissotraidis/wiicompiled), derived from
+[patchzyy/WiiCompiled](https://github.com/patchzyy/wiicompiled). The pinned
+`vendor/runtimes/` submodules preserve the upstream runtime and vendored Aurora
+licenses and notices. KartPad's translator changes are maintained in the
+`vendor/wiicompiled/` subtree. See [source maintenance](docs/source-maintenance/README.md)
+for exact source ownership, upstream identity and contribution workflow.

@@ -1,5 +1,8 @@
 # Building KartPad on Apple platforms
 
+Initialize maintained runtime source with `git submodule update --init --recursive`.
+See [source maintenance](source-maintenance/README.md) for editable source, pins and upstream contributions.
+
 Run commands from the repository root. For downloads and first launch, use the
 [Mac](INSTALL_MACOS.md) or [iPhone/iPad](INSTALL_IPA.md) installation guide.
 Android has a separate [source-build guide](../android/README.md).
