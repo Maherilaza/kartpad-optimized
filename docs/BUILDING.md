@@ -62,10 +62,10 @@ Build from the pinned supported image in one fail-closed local workflow:
 ```
 
 The workflow bootstraps and verifies the pinned public sources plus the exact
-Retro Rewind 6.12.7 pack, verifies the complete supported image hash, extracts
+Retro Rewind pack pinned in the builder profile, verifies the complete supported image hash, extracts
 it read-only with pinned `nodtool`, validates `RMCP01` revision 0 plus the
 DOL/REL hashes, translates the dual private title graph with bounded
-parallelism, builds the patched Apple runtime, and audits the ad-hoc-signed
+parallelism, builds the maintained Apple runtime, and audits the ad-hoc-signed
 local app. All extracted and translated outputs stay under ignored `private/`;
 the app stays under ignored `build/`. Existing valid work can be resumed.
 
@@ -99,7 +99,7 @@ level steps directly:
 
 Prepare and build the dual-game iOS Simulator runtime from the same private
 translation graph. Bootstrap the pinned dependencies first, and use a fresh
-prepared runtime after source or patch changes:
+prepared runtime after maintained-source or generated-input changes:
 
 ```sh
 ./scripts/build-ios-discio-probe.sh \
