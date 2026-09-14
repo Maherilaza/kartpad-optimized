@@ -147,11 +147,11 @@ class RelReportGuardTests(unittest.TestCase):
         write_graph(shards, [compiled])
         graph = shards / 'shards.cmake'
         template = graph.read_text()
-        for count in (4188, 4094, 4095, 4096):
+        for count in (4188, 4095, 4100, 4101, 4102):
             with self.subTest(mod_functions=count):
                 graph.write_text(template.replace('MKW_RETRO_REWIND_FUNCTION_COUNT 1)',
                                                   f'MKW_RETRO_REWIND_FUNCTION_COUNT {count})'))
-                if count == 4095:
+                if count == 4101:
                     translate(profile, REPO, self.root, self.root, 1, None)
                 else:
                     with self.assertRaisesRegex(BuildError, 'cached translation failed profile validation'):
