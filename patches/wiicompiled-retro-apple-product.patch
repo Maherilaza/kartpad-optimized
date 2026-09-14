@@ -40,7 +40,7 @@ diff --git a/cmake/PublicProducts.cmake b/cmake/PublicProducts.cmake
 +            "-framework Metal" "-framework GameController"
 +            "-framework CoreMotion" "-framework UniformTypeIdentifiers"
 +            "-framework SystemConfiguration" "-framework CoreFoundation"
-+            "-framework CoreServices" "-framework Foundation"
++            "-framework CoreServices" "-framework Foundation" "-framework SafariServices"
 +            "-lcompression" "-lresolv")
 +        set_target_properties(RetroRewind PROPERTIES
 +            OUTPUT_NAME KartPad

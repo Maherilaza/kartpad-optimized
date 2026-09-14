@@ -87,7 +87,7 @@ index 111d354..366d43e 100644
 +            "-framework Metal" "-framework GameController"
 +            "-framework CoreMotion" "-framework UniformTypeIdentifiers"
 +            "-framework SystemConfiguration" "-framework CoreFoundation"
-+            "-framework CoreServices" "-framework Foundation"
++            "-framework CoreServices" "-framework Foundation" "-framework SafariServices"
 +            "-lcompression" "-lresolv")
 +        set_target_properties(KartPadDual PROPERTIES
 +            OUTPUT_NAME KartPad

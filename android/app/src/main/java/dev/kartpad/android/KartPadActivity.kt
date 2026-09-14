@@ -1585,6 +1585,8 @@ class KartPadActivity : SDLActivity() {
             appendLine("Configured aspect: $aspect")
             append("Active renderer validation: ${if (KartPadRendererDiagnostics.active) "On" else "Off"}")
         }
+        val context = KartPadReportContext.snapshot(this, runtimeProfile, KartPadRendererDiagnostics.active)
+        val provenance = context.optJSONObject("build_provenance")
         val technical = buildString {
             appendLine("Version: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
             appendLine("Android: ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})")
@@ -1592,8 +1594,11 @@ class KartPadActivity : SDLActivity() {
             appendLine("Runtime profile: $runtimeProfile")
             appendLine("Retro Rewind release: ${RetroRewindRelease.VERSION}")
             appendLine(performance)
-            appendLine("Technical context:")
-            appendLine(KartPadReportContext.snapshot(this@KartPadActivity, runtimeProfile, KartPadRendererDiagnostics.active).toString(2))
+            appendLine("Installed Retro version: ${context.opt("retro_installed_version")}")
+            appendLine("Retro version state: ${context.opt("retro_version_state")}")
+            appendLine("KartPad source revision: ${provenance?.optString("source_revision") ?: "unknown"}")
+            appendLine("Source dirty: ${provenance?.opt("source_dirty") ?: "unknown"}")
+            append("Source revision does not identify upstream dependencies or prove binary identity.")
         }
         startActivity(Intent(this, KartPadProblemReportActivity::class.java).apply {
             putExtra(KartPadProblemReportActivity.TECHNICAL_CONTEXT, technical)

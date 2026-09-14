@@ -90,7 +90,7 @@
 -        "-framework CoreMotion" "-framework UniformTypeIdentifiers")
 +        "-framework CoreMotion" "-framework UniformTypeIdentifiers"
 +        "-framework SystemConfiguration" "-framework CoreFoundation"
-+        "-framework CoreServices" "-framework Foundation"
++        "-framework CoreServices" "-framework Foundation" "-framework SafariServices"
 +        "-lcompression" "-lresolv")
      set_target_properties(WiiCompiled PROPERTIES
          OUTPUT_NAME KartPad

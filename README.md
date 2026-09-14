@@ -5,10 +5,12 @@
   Native static recompilation through Vulkan on Android and Metal on Apple platforms, with touch controls, motion steering, controllers, and optional Retro Rewind content. tvOS is currently an experimental preview.
 </p>
 
-KartPad is an Apple and Android fork and productization of
-[WiiCompiled](https://github.com/patchzyy/Wiicompiled), the original static
-recompilation project for Mario Kart Wii. It adds native controls, a dual-game
-chooser, game-data management, packaging, and release workflows.
+KartPad builds on [WiiCompiled](https://github.com/patchzyy/Wiicompiled), the
+original Mario Kart Wii static recompilation project created by
+[patchzyy](https://github.com/patchzyy). WiiCompiled provides the foundational
+translator and runtime; KartPad maintains the Apple and Android integration,
+native controls, game chooser, game-data management, packaging, and releases.
+The projects are independently maintained.
 
 <p align="center">
   <img alt="Apple Silicon" src="https://img.shields.io/badge/Apple%20Silicon-arm64-0A84FF?logo=apple">
@@ -73,6 +75,10 @@ place using the same signing identity; do not uninstall or clear app data.**
 Private Android previews use a different signer and need a backed-up migration.
 
 ## Playing
+
+**Need help or found a bug?** [Where to report and follow up](docs/REPORTING.md).
+Suspected runtime bugs can go [directly to WiiCompiled](https://github.com/patchzyy/Wiicompiled/issues/new/choose); identify your KartPad build.
+Use KartPad for app/platform problems or when the cause is unclear.
 
 [Frequently asked questions](#frequently-asked-questions) · [Controls](docs/MULTIPLAYER.md) · [Save transfer and troubleshooting](docs/SUPPORT.md)
 
@@ -230,7 +236,7 @@ Supported in-place updates preserve saves; **do not uninstall or clear app data*
 <details>
 <summary>Is everything finished? How do I report a problem?</summary>
 
-No. Check [current platform acceptance](docs/STATUS.md), [known issues](docs/KNOWN-ISSUES.md) and [technical debt](docs/TECH-DEBT.md). Report your exact build, device/OS, selected game, settings and reproducible steps using the [bug form](https://github.com/chrissotraidis/kartpad/issues/new?template=bug_report.yml). Export a problem report using the [support guide](docs/SUPPORT.md), review it before sharing, and keep saves, identities and game data private.
+No. Check [current platform acceptance](docs/STATUS.md), [known issues](docs/KNOWN-ISSUES.md) and [technical debt](docs/TECH-DEBT.md). Report your exact build, device/OS, selected game, settings and reproducible steps using the [reporting guide to choose KartPad or WiiCompiled](docs/REPORTING.md). Export a problem report using the [support guide](docs/SUPPORT.md), review it before sharing, and keep saves, identities and game data private.
 
 </details>
 
@@ -250,8 +256,8 @@ ARM64 and renders through Vulkan on Android or Metal on Apple platforms.
 
 For a bug report, include the exact app/build, device, OS, game, settings and
 reproduction steps. Review diagnostics before sharing; never attach game data,
-saves, account identifiers or signing material. Use the
-[report form](https://github.com/chrissotraidis/kartpad/issues/new?template=bug_report.yml).
+saves, account identifiers or signing material. Choose the relevant tracker in the
+[reporting guide](docs/REPORTING.md).
 
 ## Credits and license
 
