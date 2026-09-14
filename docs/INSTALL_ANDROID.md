@@ -12,6 +12,12 @@ Menu transitions, graphics corruption on some GPUs, online stalls and cup crashe
 are not declared resolved. Download the APK, notices and checksums; the source
 archive is available for rebuilding and modification.
 
+For the character corruption comparison in #193, use the separate
+[**experimental code 91 APK**](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.21-android-matrix.1).
+Its [three-phase test instructions](releases/v0.4.21-android-matrix.1.md) compare
+original and compatibility indexing. It is not a confirmed graphics or FPS fix;
+Normal remains the default and code 85 remains the general release.
+
 ## Download and first launch
 
 1. Open the [current Android release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.19-android.1).
