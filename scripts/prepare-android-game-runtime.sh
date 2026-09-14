@@ -89,6 +89,8 @@ cp "$repo_root/runtime/include/kartpad/diagnostics/draw_inputs.h" \
 patch --batch -p1 -d "$runtime_source" < \
   "$repo_root/patches/aurora-draw-input-diagnostics.patch"
 patch --batch -p1 -d "$runtime_source" < \
+  "$repo_root/patches/aurora-android-targeted-pnmtx.patch"
+patch --batch -p1 -d "$runtime_source" < \
   "$repo_root/patches/wiicompiled-android-scalar-ni-transition.patch"
 patch --batch -p1 -d "$runtime_source" < \
   "$repo_root/patches/wiicompiled-android-network-tls.patch"
