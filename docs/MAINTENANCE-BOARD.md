@@ -6,6 +6,11 @@ owns ordering, readiness, exact next actions and acceptance; this board records
 support decisions and evidence. Refresh GitHub and local ownership before acting.
 The [device matrix](COMPATIBILITY-MATRIX.md) preserves target-specific observations.
 
+Reporting update, 14 September: [Android90 and Apple42 test builds](REPORTING.md#reporting-test-builds)
+are published separately from stable downloads. Both trackers are accessible;
+Android-specific and uncertain port issues remain KartPad intake. Physical
+report-flow acceptance is pending; no gameplay issue is closed by this change.
+
 ## Current priorities and handoffs
 
 Counts below are distinct non-maintainer issue authors at this snapshot, excluding

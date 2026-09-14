@@ -60,8 +60,9 @@ its maintainer's agreement. Do not represent that agreement as obtained.
 | iPadOS | Same policy using Apple implementation | iPad sheet/popover presentation and actual log/browser round trip |
 | macOS | Same policy, Help menu and save/browser handoff | Desktop layout, saved log, actual draft opening and return |
 
-Private builds installed earlier do not contain the latest preview iteration.
-No public release or complete four-platform acceptance is established here.
+The reporting source changes are merged in PR #279. Android code90 and Apple
+build42 are separate reporting prereleases; physical flow acceptance remains
+pending. The browser prototype is exploratory and is not the native product.
 
 ## Implementation priorities from source review
 
