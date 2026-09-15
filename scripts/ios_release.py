@@ -66,7 +66,8 @@ def verify_source_equivalence(repo: Path, packaging_commit: str) -> None:
         new = json.loads(subprocess.check_output(
             ["git", "-C", str(repo), "show", f"{packaging_commit}:{profile}"], text=True))
         # This only corrects the validation count for the already-generated graph.
-        assert old['translation']["expectedRetroFunctions"] == 4095
+        if old['translation']["expectedRetroFunctions"] != 4095:
+            raise ValueError("unexpected original Retro function count")
         old['translation']["expectedRetroFunctions"] = 4101
         if old != new:
             raise ValueError("unexpected builder profile change")
