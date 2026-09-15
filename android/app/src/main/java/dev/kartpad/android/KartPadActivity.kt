@@ -826,7 +826,7 @@ class KartPadActivity : SDLActivity() {
         val scales = floatArrayOf(0.5f, 0.75f, 1f, 2f, 3f, 4f)
         val selected = scales.indexOfFirst {
             kotlin.math.abs(it - KartPadTouchSettings.resolutionScale(this)) < 0.01f
-        }.let { if (it >= 0) it else scales.indexOf(1f) }
+        }.let { if (it >= 0) it else scales.indexOfFirst { scale -> scale == 1f } }
         AlertDialog.Builder(this)
             .setTitle("Render Resolution")
             .setSingleChoiceItems(labels, selected) { dialog, which ->
