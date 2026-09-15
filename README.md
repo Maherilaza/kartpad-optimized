@@ -106,7 +106,7 @@ known issues. Android's suggested starting point is **1x Native**. Sustained
 <details>
 <summary>Can I download an IPA or playable app?</summary>
 
-Yes—use the [platform downloads above](#downloads). The current public iPhone/iPad build is **0.4.17 build 39**; Mac and Apple TV have separate packages. Apple IPAs need re-signing. Every package requires your own supported game data. A [Personal IPA Builder](docs/BUILDER.md) is also available.
+Yes—use the [platform downloads above](#downloads). The current public iPhone/iPad build is **0.4.22 build 43**; Mac and Apple TV have separate packages. Apple IPAs need re-signing. Every package requires your own supported game data. A [Personal IPA Builder](docs/BUILDER.md) is also available.
 
 </details>
 
@@ -121,12 +121,10 @@ Android has a playable ARM64/Vulkan APK for Android 9+, plus an explicitly unsta
 <summary>Does online multiplayer work?</summary>
 
 Earlier Android testing confirmed Retro WFC login and worldwide lobby entry on
-Pixel 9 Pro XL. The current Android 0.4.19 Android 1 release has no fresh physical
-Android gameplay acceptance. Separate isolated-server tests covered race results
-and lobby return, but complete production online behavior, reconnect and every
-device are not established. Native room hosting and Original Wiimmfi compatibility
-remain unfinished; entering a server address does not implement them. See [online
-status](docs/ONLINE.md) and [friend-room guidance](docs/MULTIPLAYER.md#private-friend-rooms).
+Pixel 9 Pro XL. The 0.4.22 migration candidate has owner acceptance for
+loading, running and starting games on the tested Pixel. This does not establish
+performance or compatibility across other Android GPUs; see the
+[validation ledger](docs/source-maintenance/VALIDATION.md).
 
 </details>
 

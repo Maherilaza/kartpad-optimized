@@ -18,8 +18,8 @@ Normal remains the default and code 93 is the general release.
 
 ## Download and first launch
 
-1. Open the [current Android release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.19-android.1).
-   Download `KartPad-v0.4.19-android.1-arm64.apk`, `SHA256SUMS`, and the companion
+1. Open the [current Android release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.22-android.1).
+   Download `KartPad-v0.4.22-android.1-arm64.apk`, `SHA256SUMS`, and the companion
    notices ZIP. APK is Android's installable format; IPA is Apple-only. The AAB
    is a developer bundle and is not needed for installation (it is not published).
 2. Use an ARM64 phone/tablet with Vulkan and Android 9/API 28 or newer. The
@@ -71,7 +71,7 @@ debug certificate. Android will reject the public release as an in-place update
 over those previews. Do not uninstall to force it through: preserve the working
 preview and its app data, and plan a deliberate backed-up migration separately.
 The first public package was code 21; the testing preview was code 28. The
-current public package is code 85.
+current public package is code 93.
 Changing a package signature is not a save migration.
 Self-built APKs similarly cannot update public builds unless the signer matches.
 
