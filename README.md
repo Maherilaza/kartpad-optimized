@@ -120,11 +120,13 @@ Android has a playable ARM64/Vulkan APK for Android 9+, plus an explicitly unsta
 <details>
 <summary>Does online multiplayer work?</summary>
 
-Earlier Android testing confirmed Retro WFC login and worldwide lobby entry on
-Pixel 9 Pro XL. The 0.4.22 migration candidate has owner acceptance for
-loading, running and starting games on the tested Pixel. This does not establish
-performance or compatibility across other Android GPUs; see the
-[validation ledger](docs/source-maintenance/VALIDATION.md).
+The tested iPad migration build reached Retro WFC with a new license. An existing
+license's serial mismatch reproduced on both old and new builds. Earlier Android
+tests reached Retro WFC and the worldwide lobby, but this release does not claim
+a newly verified complete online race/reconnect sequence or compatibility on
+every device. Native room hosting and Original Wiimmfi compatibility remain
+unfinished. See [online status](docs/ONLINE.md) and
+[friend-room guidance](docs/MULTIPLAYER.md#private-friend-rooms).
 
 </details>
 
