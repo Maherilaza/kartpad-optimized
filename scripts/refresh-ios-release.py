@@ -78,7 +78,7 @@ info=plistlib.loads((app/'Info.plist').read_bytes());info.update(plistlib.loads(
 # Hash every refreshed project input, including headers and assets. Cached objects
 # remain traceable to the verified base manifest, not claimed as a full rebuild.
 inputs={str(p.relative_to(repo)):sha(p) for folder in ['apple/ios','apple/mobile','apple/shared','apple/third_party','runtime/include'] for p in (repo/folder).rglob('*') if p.is_file()}
-record={'schema':1,'scope':'incremental launcher and identity refresh; cached runtime and translation unchanged','base_manifest':base_manifest,'refreshed_inputs':inputs,'refreshed_objects':{name:sha(out/name) for name in ['KartPadRuntimeOverlayHost.o','KartPadMiiManager.o']},'binary_sha256':sha(app/'KartPad'),'cached_objects':[{'name':pathlib.Path(p).name,'sha256':sha(p)} for p in objects if pathlib.Path(p).name not in ['KartPadRuntimeOverlayHost.o','KartPadMiiManager.o']]}
+record={'schema':1,'scope':'incremental launcher and identity refresh; cached runtime and translation unchanged','base_manifest':base_manifest,'refreshed_inputs':inputs,'refreshed_objects':{name:sha(out/name) for name in ['KartPadRuntimeOverlayHost.o','KartPadMiiManager.o']},'binary_sha256':sha(app/'KartPad'),'cached_libraries':[{'name':pathlib.Path(p).name,'sha256':sha(p)} for p in link if p.endswith('.a')], 'cached_objects':[{'name':pathlib.Path(p).name,'sha256':sha(p)} for p in objects if pathlib.Path(p).name not in ['KartPadRuntimeOverlayHost.o','KartPadMiiManager.o']]}
 (app/'kartpad-ui-composition.json').write_text(json.dumps(record,sort_keys=True,indent=2)+'\n')
 (out/'composition.json').write_text(json.dumps(record,sort_keys=True,indent=2)+'\n')
 print('READY:',app)
