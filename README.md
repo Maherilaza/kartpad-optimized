@@ -47,27 +47,19 @@ The projects are independently maintained.
 
 | Platform | Download | Setup |
 | --- | --- | --- |
-| Android ARM64 | [0.4.19 Android 1 · code 85](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.19-android.1) | [Android 9+ with Vulkan](docs/INSTALL_ANDROID.md) |
-| iPhone / iPad | [0.4.17 · build 39](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.17-ios.1) | [iOS/iPadOS 16+; re-sign the IPA](docs/INSTALL_IPA.md) |
-| Apple Silicon Mac | [0.4.17 · build 39](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.17-macos.1) | [macOS 14+](docs/INSTALL_MACOS.md) |
+| Android ARM64 | [0.4.22 Android 1 · code 93](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.22-android.1) | [Android 9+ with Vulkan](docs/INSTALL_ANDROID.md) |
+| iPhone / iPad | [0.4.22 · build 43](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.22-ios.1) | [iOS/iPadOS 16+; re-sign the IPA](docs/INSTALL_IPA.md) |
+| Apple Silicon Mac | [0.4.22 · build 43](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.22-macos.1) | [macOS 14+](docs/INSTALL_MACOS.md) |
 | Apple TV experimental preview | [0.4.11 · build 9](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11-tvos.1) | [tvOS 17+; re-sign the IPA](docs/INSTALL_TVOS.md) |
 
-**Android 0.4.19 Android 1** isolates Original startup from broken Retro install
-state, protects active Retro installations from recovery, and corrects packed
-vertex reads. Filesystem/process and shader checks pass; this release has no
-fresh physical Android gameplay acceptance or measured speedup claim. Earlier
-controls and Preferred Game changes remain included. See the
-[release notes](docs/releases/v0.4.19-android.1.md).
-
-**iPhone/iPad 0.4.17** supports Retro Rewind 6.12.8 and includes the corrected
-compiled REL-report guard. The owner accepted the bounded iPhone 14 trial;
-saves and configuration survived the in-place update. The affected iPhone 17
-Pro Max/iOS 27 test remains pending. See the
-[iPhone/iPad notes](docs/releases/v0.4.17-ios.1.md).
-**macOS 0.4.17** includes the viewport interpolation correction and compiled
-REL-report guard for Retro Rewind 6.12.8. Local Original/Retro rendering, audio
-and keyboard smoke checks passed; the reported two-player scene remains a
-separate test. See the [Mac notes](docs/releases/v0.4.17-macos.1.md).
+**0.4.22 moves KartPad to maintained WiiCompiled source** with pinned platform
+branches, preserving the existing game behavior and repository history. Source
+parity, rollback and build checks passed; the owner accepted loading, running
+and starting games on iPad and Android. macOS reached a race in the host smoke
+check. New-license Retro WFC login worked on iPad; an existing profile's serial
+mismatch reproduced on both builds and remains unresolved. Completed online
+races/reconnect and broader hardware coverage are not new claims.
+See the [migration validation](docs/source-maintenance/VALIDATION.md).
 
 Download the checksums and accompanying notices with each package. The releases
 also include the [source bundle and rebuild instructions](docs/artifacts/2026-09-13/android-source-delivery.md). **Update in
