@@ -35,7 +35,7 @@ class AndroidPublicReleaseTests(unittest.TestCase):
             "lib/arm64-v8a/libSDL3.so", "lib/arm64-v8a/libc++_shared.so",
         })
         self.assertEqual(native["lib/arm64-v8a/libmain.so"],
-                         "8611660ddae96cc33748b15938be1bad4c52f383d2d2f76b827a1408ea208347")
+                         "ebad797b6bd22898a968e4700fd54f3a795d234975846eaa21955638a34da7bb")
         for digest in native.values():
             self.assertRegex(digest, r"^[0-9a-f]{64}$")
         self.assertIn("native != APPROVED_NATIVE", source)

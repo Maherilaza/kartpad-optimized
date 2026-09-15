@@ -156,3 +156,9 @@ commits after isolating a clean Dolphin reference. Its supplied-WBFS container
 size fixture does not match the current local image container; that historical
 fixture was not weakened. The generated game-code parity and previously audited
 profile inputs remain the migration evidence, not a claim that this fixture passed.
+
+The final Android AAB and public APK audits passed after path normalization.
+Repeated release signing produced identical APK bytes, using the established
+certificate. Final core source 42122ce restored offline with all four maintained
+runtime gitlinks. The complete shared source delivery is 572,927,172 bytes,
+SHA-256 `9ec41dd5def8ba046ce6661f93ec1a51febd02625efeeb6f5c71c0a132d57e31`.
