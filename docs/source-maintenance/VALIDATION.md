@@ -1,7 +1,8 @@
 # Migration validation ledger
 
-Status: source migration implemented in an isolated candidate. Promotion and
-remaining physical gameplay checks remain open. Existing releases are unchanged.
+Status: source migration merged in PR #287. Public 0.4.22 packages use the
+owner-accepted gameplay scope and audited release inputs. See the publication
+[publication receipt](../artifacts/2026-09-15/source-migration-release-verification.md) for hosted-artifact verification.
 
 - Baseline main: `dd79c936e5f32dde2d5a003798163cf615935c0d`.
 - Upstream remains `1912292c804ff9b1b79938de89369ec4496f9fff`.
@@ -65,18 +66,18 @@ Paths are relative to the isolated checkout's `build/source-migration/` director
 | iOS/iPadOS | `KartPad-source-migration-ios-unsigned.ipa` | `858c8ff39809e6a7affe1a275846fceecdab110289f144b23cc2ddb158ddf321`; clean compiled source `43a1661` |
 | macOS | `final/KartPad.app` | unsigned runtime `c375c03a319d3076daaf32555fa853b63079753a6e4f402d53c09dbe3e5d1ef1`; final staging and package audit passed |
 
-## Open gates
+## Acceptance boundaries and follow-up
 
 - Owner accepted loading/running/game-start checks as the release gameplay scope.
   Completed races, save/relaunch and online race/reconnect remain unverified
   limitations rather than additional owner-required release gates.
-- Remaining macOS interactive acceptance checks. Android and iPad candidates
-  were installed in place; see the device pass below.
-- Prepare public version metadata and release packages from clean committed
-  source; verify native payload identity against these tested candidates.
-  Do not include the separate unfinished file-export feature changes.
+- Broader macOS interactive acceptance remains unverified. Android and iPad
+  candidates were installed in place; see the device pass below.
+- Public metadata and packages were prepared from clean committed source.
+  Unfinished file-export feature changes remain separate and are not included.
 - Experimental tvOS native/device acceptance is not established.
-- Publish the reusable other-project plan only from accepted KartPad results.
+- The [other-project procedure](OTHER_PROJECTS.md) is now available. Other
+  repositories have not been migrated by this release pass.
 
 Local evidence is under the isolated checkout's ignored
 `build/source-migration/` directory. Private inputs and device identifiers are not
