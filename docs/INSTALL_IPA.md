@@ -1,13 +1,13 @@
 # Install the KartPad unsigned IPA
 
-KartPad `v0.4.22-ios.1` (0.4.22, build 43) is the current unsigned ARM64 IPA
+KartPad `v0.4.23-ios.1` (0.4.23, build 46) is the current unsigned ARM64 IPA
 for iPhone and iPad, with the official Retro Rewind 6.12.8 profile. Re-sign it
 with your existing compatible Apple identity and update in place.
 
-This is the maintained-source migration release. The owner accepted loading,
-running and starting games on the iPad candidate. New-license Retro WFC login
-worked; completed online race/reconnect and broader hardware coverage remain
-unverified. See the [release notes](releases/v0.4.22-ios.1.md).
+This update adds the racing launcher, dark/light mode, preferred-game selection,
+and Choose Mii repair for licenses whose linked Mii is missing. The owner
+confirmed the repair and the interface on iPhone. See the
+[release notes](releases/v0.4.23-ios.1.md).
 
 The IPA declares **iOS/iPadOS 16 or newer** and an ARM64 device with Metal.
 The generic ARM64 startup correction is retained. The A10X reporter confirmed
@@ -21,9 +21,9 @@ Older IPAs should remain offline. This does not erase incorrect serial history
 already held by a server or clear bans; affected accounts may need service-admin
 help. Never reset identities or delete saves as a workaround.
 
-1. Download `KartPad-v0.4.22-ios.1-unsigned.ipa` and `SHA256SUMS-ios` from the
-   [official iPhone/iPad release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.22-ios.1).
-2. Run `shasum -a 256 KartPad-v0.4.22-ios.1-unsigned.ipa` on a Mac and
+1. Download `KartPad-v0.4.23-ios.1-unsigned.ipa` and `SHA256SUMS-ios` from the
+   [official iPhone/iPad release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.23-ios.1).
+2. Run `shasum -a 256 KartPad-v0.4.23-ios.1-unsigned.ipa` on a Mac and
    compare it with the IPA row in `SHA256SUMS-ios`. The source download is optional for normal installation.
 3. Re-sign and install it with AltStore Classic plus AltServer or another
    compatible IPA-signing workflow. AltStore PAL cannot import arbitrary

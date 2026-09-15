@@ -15,3 +15,9 @@ Evidence: `build/launcher-ui-preview/comparison.png` combines the approved conce
 Verification: UIKit control tests passed for default dark mode, persisted light/dark state after controller recreation, both mode callbacks, resume/next-launch labels, and preference display. Native simulator interaction verified theme toggle, persistent preference through app relaunch, Help opening/closing, and Resume callback. Full runtime compiled and relinked, signed, installed in place, launched, and was visually inspected on iPhone 14. Physical gameplay and the return/resume cycle in this new build remain user acceptance checks.
 
 No remaining P0/P1/P2 findings in the reviewed phone layout. P3: native rewind symbol and typography are platform approximations; broader Dynamic Type/device coverage remains useful.
+
+## Release 0.4.23 acceptance
+
+Owner confirmed the iPhone missing-Mii repair worked and both phone interfaces/game operation were accepted without observed regressions. Android physical testing also verified identity actions, rename editor, Help, theme persistence and returning to the paused launcher. This does not establish general Android performance improvement.
+
+iPad simulator harness using the actual launcher class: iPad mini A17 Pro and iPad Pro 13-inch M4, iPadOS 26.5 landscape, dark and light themes passed visual review and all 8 behavior checks each. Launch preference popover anchored correctly, selection persisted after reboot, and Help opened/dismissed. Choose Mii popover anchoring was source-reviewed. This is layout/interaction coverage, not full iPad IPA gameplay acceptance.
