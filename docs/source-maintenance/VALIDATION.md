@@ -67,9 +67,9 @@ Paths are relative to the isolated checkout's `build/source-migration/` director
 
 ## Open gates
 
-- Complete a bounded iPad race/results/save/relaunch check on build 42, plus a
-  Retro WFC race and reconnect before claiming that full online sequence.
-  The owner reports the build works and a new license reaches Retro WFC.
+- Owner accepted loading/running/game-start checks as the release gameplay scope.
+  Completed races, save/relaunch and online race/reconnect remain unverified
+  limitations rather than additional owner-required release gates.
 - Remaining macOS interactive acceptance checks. Android and iPad candidates
   were installed in place; see the device pass below.
 - Prepare public version metadata and release packages from clean committed

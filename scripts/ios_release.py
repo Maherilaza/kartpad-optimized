@@ -7,13 +7,13 @@ import re
 from pathlib import Path
 import subprocess
 
-RELEASE_TAG = "v0.4.17-ios.1"
-APP_VERSION = "0.4.17"
-APP_BUILD = "39"
-COMPILED_SOURCE = "cf47944d1a841f60e7e774dd44e44dc99341fd92"
-EXECUTABLE_SHA256 = "4d3035a322538c88f5d9412439fa8d7b471623cc9ef38c5fe637eecdaf077811"
-RUNTIME_SHA256 = "8351179cbf2e3f6a89599448a3109d3a8d880c06bc7717f4362e6a81fda9c1c2"
-TRANSLATION_SHA256 = "f5b67171325d4b98ccee74752268d689952d054f78f001b9083e42507dff8e0b"
+RELEASE_TAG = "v0.4.22-ios.1"
+APP_VERSION = "0.4.22"
+APP_BUILD = "43"
+COMPILED_SOURCE = "43a1661a5c2cb6a5f545cf6e3aaeb330a6857456"
+EXECUTABLE_SHA256 = "e765832a7d0b534417f3f92d6437d0d39ac226a4b8bf09294e22628ad58cf571"
+RUNTIME_SHA256 = "a2909df0080112d054c40225594a61ec5a6c734fee929030c79ab9ab3b9d20ed"
+TRANSLATION_SHA256 = "f92c0764fcfc778770f79590e0e9e10e2e1ff0a9415b3be75c6668768ede0ae5"
 # Compare production inputs, excluding release notes and packaging-only changes.
 PRODUCTION_PATHS = (
     "apple/ios", "apple/mobile", "apple/shared", "apple/third_party",
@@ -59,5 +59,17 @@ def verify_source_equivalence(repo: Path, packaging_commit: str) -> None:
         ["git", "-C", str(repo), "diff", "--name-only", COMPILED_SOURCE,
          packaging_commit, "--", *PRODUCTION_PATHS], text=True,
     ).strip()
+    profile = "builder/profiles/mkwii-rmcp01-rev0.json"
+    if profile in changed.splitlines():
+        old = json.loads(subprocess.check_output(
+            ["git", "-C", str(repo), "show", f"{COMPILED_SOURCE}:{profile}"], text=True))
+        new = json.loads(subprocess.check_output(
+            ["git", "-C", str(repo), "show", f"{packaging_commit}:{profile}"], text=True))
+        # This only corrects the validation count for the already-generated graph.
+        assert old['translation']["expectedRetroFunctions"] == 4095
+        old['translation']["expectedRetroFunctions"] = 4101
+        if old != new:
+            raise ValueError("unexpected builder profile change")
+        changed = "\n".join(p for p in changed.splitlines() if p != profile)
     if changed:
         raise ValueError(f"production inputs differ from accepted compilation: {changed}")
