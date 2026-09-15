@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Run the patched iOS allocator on Darwin; also compile against the iPhone SDK.
+"""Run the maintained iOS allocator on Darwin; also compile against the iPhone SDK.
 
-Pass --runtime-include from a prepared Apple runtime to use its real public header.
+Defaults to maintained iOS source; --runtime-include selects a prepared runtime.
 The host run selects the iOS branch using a TargetConditionals shim; only Mach API
 fault injection is substituted, and successful remaps use the real kernel API.
 """
@@ -10,20 +10,15 @@ import pathlib
 import subprocess
 import tempfile
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--runtime-include', required=True, type=pathlib.Path)
-args = parser.parse_args()
 repo = pathlib.Path(__file__).resolve().parent.parent
-patch = (repo / 'patches/wiicompiled-apple-runtime.patch').read_text()
-section = patch.split('+++ b/src/apple/guest_flat_memory_apple.cpp', 1)[1].split('diff -ruN', 1)[0]
-source = '\n'.join(line[1:] for line in section.splitlines() if line.startswith('+')) + '\n'
+parser = argparse.ArgumentParser()
+parser.add_argument('--runtime-include', type=pathlib.Path,
+                    default=repo / 'vendor/runtimes/ios/runtime/include')
+args = parser.parse_args()
+source = (args.runtime_include.parent / 'src/apple/guest_flat_memory_apple.cpp').read_text()
 with tempfile.TemporaryDirectory(prefix='kartpad-apple-ram-') as directory:
     root = pathlib.Path(directory)
-    (root / 'src/apple').mkdir(parents=True)
-    (root / 'src/apple/guest_flat_memory_apple.cpp').write_text(source)
-    subprocess.run(['patch', '--batch', '--fuzz=0', '-p1', '-d', str(root), '-i',
-                    str(repo / 'patches/wiicompiled-ios-anonymous-memory.patch')], check=True)
-    (root / 'guest_flat_memory_apple.cpp').write_text((root / 'src/apple/guest_flat_memory_apple.cpp').read_text())
+    (root / 'guest_flat_memory_apple.cpp').write_text(source)
     (root / 'TargetConditionals.h').write_text('#pragma once\n#undef TARGET_OS_IPHONE\n#define TARGET_OS_IPHONE 1\n')
     subprocess.run(['xcrun', 'clang++', '-std=c++20', '-Wall', '-Wextra', '-Werror',
                     '-I', str(root), '-I', str(args.runtime_include),

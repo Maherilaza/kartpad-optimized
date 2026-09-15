@@ -1,4 +1,5 @@
 import pathlib
+from runtime_sources import runtime_source, assert_runtime_staging
 import unittest
 
 
@@ -48,13 +49,11 @@ class ExperimentalMiiWiimoteContractTests(unittest.TestCase):
         self.assertIn('com.apple.security.device.bluetooth', entitlements)
 
     def test_runtime_preparation_applies_explicit_nunchuk_preset(self) -> None:
-        preset = REPO / "patches/wiicompiled-experimental-wiimote-preset.patch"
-        self.assertTrue(preset.exists())
-        text = preset.read_text()
+        text = runtime_source("ios", "runtime/src/settings_overlay.cpp")
         self.assertIn('kWiimoteNunchukPreset', text)
         self.assertIn('"unmapped",      // L: Nunchuk Z', text)
         for script in ("prepare-g7-game-runtime.sh", "prepare-ios-game-runtime.sh"):
-            self.assertIn(preset.name, (REPO / "scripts" / script).read_text())
+            assert_runtime_staging(self, "macos" if "g7" in script else "ios")
 
 
 if __name__ == "__main__":

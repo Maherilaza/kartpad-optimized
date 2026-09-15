@@ -12,19 +12,19 @@ import subprocess
 import tarfile
 import zipfile
 
-TAG = "v0.4.21-android-matrix.1"
-VERSION = "0.4.21-matrix.1"
-CODE = 91
+TAG = "v0.4.22-android.1"
+VERSION = "0.4.22-android.1"
+CODE = 93
 # Exact candidate; changing notes must not relabel its compiled source as HEAD.
-APPROVED_SOURCE = "62798c932eb1320f1ed392c0cc61e06d23cc616c"
-APPROVED_APK = "31467e4cf59461e0786ac642877eb318ad1115da6d093ee9f1351961500f1188"
-APPROVED_AAB = "137370711cd4ed463a5b375d65b85c5b40b36b10d9fdb6a320d9aa0e20b36a24"
-APPROVED_SOURCE_ARCHIVE = "cf4566bf87fb30d0f0786cc1dd19813edcb27498e2d8c50e1b400e1417d00fbe"
+APPROVED_SOURCE = "42122cebbb6e0af4f4d803050f376996878548aa"
+APPROVED_APK = "ed81b26dffe407b7ca430505756db194456dacb28c5789c9bcdda3b587459a78"
+APPROVED_AAB = "4e1f2621a535d5c3f35ff410d62c3b6e8f59d10d68abdaef9e33e752e0a6960d"
+APPROVED_SOURCE_ARCHIVE = "9ec41dd5def8ba046ce6661f93ec1a51febd02625efeeb6f5c71c0a132d57e31"
 APPROVED_NATIVE = {
     "lib/arm64-v8a/libSDL3.so": "d7a17c375adcb71818210581b885f59832d5f95b663aa7a7d493484a00a94753",
     "lib/arm64-v8a/libc++_shared.so": "c4c2fe5cbcb1fba0003a31fc7ab29a9bb12df6cc187ec45a806462540e83d93b",
-    "lib/arm64-v8a/libkartpad_discio.so": "1d6c9fde69a3e4117987422bb6f0ebf41a40ec2de4945ebb7539b8a4b8e89207",
-    "lib/arm64-v8a/libmain.so": "8611660ddae96cc33748b15938be1bad4c52f383d2d2f76b827a1408ea208347"
+    "lib/arm64-v8a/libkartpad_discio.so": "0e5bd27501b1aee71db63364f0673682e0cca3c0234d560d4c54ac87e01c0d0b",
+    "lib/arm64-v8a/libmain.so": "ebad797b6bd22898a968e4700fd54f3a795d234975846eaa21955638a34da7bb"
 }
 REPO = Path(__file__).resolve().parents[1]
 
@@ -85,7 +85,7 @@ def main() -> None:
         "INSTALL_ANDROID.md": REPO / "docs/INSTALL_ANDROID.md",
         "BUILD_ANDROID.md": REPO / "android/README.md",
         "RELEASE_NOTES.md": REPO / f"docs/releases/{TAG}.md",
-        "SOURCE_DELIVERY.md": REPO / "docs/artifacts/2026-09-14/android-matrix-source-delivery.md",
+        "SOURCE_DELIVERY.md": REPO / "docs/releases/v0.4.22-source.md",
         "SOURCE_RECONSTRUCTION.md": REPO / "docs/artifacts/2026-09-13/android-source-reconstruction.md",
         "RIGHTS_AND_LICENSES.md": REPO / "RIGHTS_AND_LICENSES.md",
         "THIRD_PARTY_NOTICES.md": REPO / "THIRD_PARTY_NOTICES.md",
@@ -157,11 +157,11 @@ def main() -> None:
         "containsTranslatedGameCode": True, "containsGameData": False,
         "containsPrivateSigningMaterial": False, "maintainerAuthorizedFreeCommunityRelease": True,
         "upstreamRightsConfirmed": False, "profileableByShell": False, "debuggable": False,
-        "physicalAcceptance": "No physical Android gameplay acceptance is claimed for code91. Actual original shaders match code85; alternate shader matrix selection and host Dawn/Tint validation passed. Native release compilation, package audit and setting persistence/failure/activity-recreation checks passed. Affected Adreno/Vulkan behavior remains unverified; this is a targeted comparison prerelease, not a confirmed graphics or performance fix.",
+        "physicalAcceptance": "The owner accepted loading, running and game starts on private migration code92. Public code93 uses the same game/runtime sources with external-source-path normalization and release packaging. Full online race/reconnect and broad GPU acceptance are not claimed.",
         "sourceArchive": {"filename": args.source_archive.name, "bytes": args.source_archive.stat().st_size,
                           "sha256": sha(args.source_archive.read_bytes()),
                           "reconstruction": "Exact current Git snapshots, prepared Android runtime and pinned dependency source archives are supplied. Private translated game functions are regenerated from user-supplied inputs using delivered emitters and recipes. No new independent second-host or bit-identical rebuild claim."},
-        "releaseTwin": "No code91 private signing twin or device install is claimed. Public APK uses the existing Community Release certificate; a differently signed private preview must not be uninstalled to force this update.",
+        "releaseTwin": "Private hardware code92 retained its development signer. Public code93 retains the established release signer; no incompatible in-place device update was attempted.",
         "noticesSHA256": {n: sha(b) for n, b in sorted(data.items())},
     }
     data["PROVENANCE.json"] = (json.dumps(provenance, indent=2, sort_keys=True) + "\n").encode()

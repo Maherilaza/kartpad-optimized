@@ -2,26 +2,24 @@
 
 ## Current update
 
-[**0.4.19 Android 1 / code 85**](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.19-android.1)
-isolates Original startup from broken Retro install state, protects background
-Retro installs from concurrent recovery, and corrects packed vertex reads. It
-retains earlier controls and Preferred Game improvements and supports Retro
-Rewind 6.12.8. See the [release notes](releases/v0.4.19-android.1.md) for local
-test evidence; no fresh physical Android gameplay acceptance is claimed.
-Menu transitions, graphics corruption on some GPUs, online stalls and cup crashes
-are not declared resolved. Download the APK, notices and checksums; the source
-archive is available for rebuilding and modification.
+[**0.4.22 Android 1 / code 93**](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.22-android.1)
+replaces patch replay with maintained source while retaining the existing game
+behavior and Retro Rewind 6.12.8 support. The owner accepted loading, running and
+starting games on the tested Pixel candidate. Broader GPU coverage, complete
+online race/reconnect and performance fixes are not claimed. See the
+[release notes](releases/v0.4.22-android.1.md). Update in place using the same
+signing identity; do not uninstall or clear app data.
 
 For the character corruption comparison in #193, use the separate
 [**experimental code 91 APK**](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.21-android-matrix.1).
 Its [three-phase test instructions](releases/v0.4.21-android-matrix.1.md) compare
 original and compatibility indexing. It is not a confirmed graphics or FPS fix;
-Normal remains the default and code 85 remains the general release.
+Normal remains the default and code 93 is the general release.
 
 ## Download and first launch
 
-1. Open the [current Android release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.19-android.1).
-   Download `KartPad-v0.4.19-android.1-arm64.apk`, `SHA256SUMS`, and the companion
+1. Open the [current Android release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.22-android.1).
+   Download `KartPad-v0.4.22-android.1-arm64.apk`, `SHA256SUMS`, and the companion
    notices ZIP. APK is Android's installable format; IPA is Apple-only. The AAB
    is a developer bundle and is not needed for installation (it is not published).
 2. Use an ARM64 phone/tablet with Vulkan and Android 9/API 28 or newer. The
@@ -73,7 +71,7 @@ debug certificate. Android will reject the public release as an in-place update
 over those previews. Do not uninstall to force it through: preserve the working
 preview and its app data, and plan a deliberate backed-up migration separately.
 The first public package was code 21; the testing preview was code 28. The
-current public package is code 85.
+current public package is code 93.
 Changing a package signature is not a save migration.
 Self-built APKs similarly cannot update public builds unless the signer matches.
 

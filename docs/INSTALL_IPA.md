@@ -1,13 +1,13 @@
 # Install the KartPad unsigned IPA
 
-KartPad `v0.4.17-ios.1` (0.4.17, build 39) is the current unsigned ARM64 IPA
+KartPad `v0.4.22-ios.1` (0.4.22, build 43) is the current unsigned ARM64 IPA
 for iPhone and iPad, with the official Retro Rewind 6.12.8 profile. Re-sign it
 with your existing compatible Apple identity and update in place.
 
-This build includes the corrected compiled REL-report guard. The owner accepted
-the bounded iPhone 14 race-and-relaunch trial, with saves and configuration
-preserved. The separate iPhone 17 Pro Max/iOS 27 report still needs matching
-hardware confirmation. See the [release notes](releases/v0.4.17-ios.1.md).
+This is the maintained-source migration release. The owner accepted loading,
+running and starting games on the iPad candidate. New-license Retro WFC login
+worked; completed online race/reconnect and broader hardware coverage remain
+unverified. See the [release notes](releases/v0.4.22-ios.1.md).
 
 The IPA declares **iOS/iPadOS 16 or newer** and an ARM64 device with Metal.
 The generic ARM64 startup correction is retained. The A10X reporter confirmed
@@ -21,9 +21,9 @@ Older IPAs should remain offline. This does not erase incorrect serial history
 already held by a server or clear bans; affected accounts may need service-admin
 help. Never reset identities or delete saves as a workaround.
 
-1. Download `KartPad-v0.4.17-ios.1-unsigned.ipa` and `SHA256SUMS-ios` from the
-   [official iPhone/iPad release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.17-ios.1).
-2. Run `shasum -a 256 KartPad-v0.4.17-ios.1-unsigned.ipa` on a Mac and
+1. Download `KartPad-v0.4.22-ios.1-unsigned.ipa` and `SHA256SUMS-ios` from the
+   [official iPhone/iPad release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.22-ios.1).
+2. Run `shasum -a 256 KartPad-v0.4.22-ios.1-unsigned.ipa` on a Mac and
    compare it with the IPA row in `SHA256SUMS-ios`. The source download is optional for normal installation.
 3. Re-sign and install it with AltStore Classic plus AltServer or another
    compatible IPA-signing workflow. AltStore PAL cannot import arbitrary
@@ -68,6 +68,20 @@ If **Import from This Installation's Folder…** cannot see a game image because
 the signer created a different app container, KartPad opens the normal Files
 picker automatically. Select the visible WBFS/ISO there; the app still validates
 the exact supported game before importing it.
+
+## Files access
+
+KartPad already enables `UIFileSharingEnabled` and
+`LSSupportsOpeningDocumentsInPlace` for iPhone and iPad. In Apple's Files app,
+open **Browse → On My iPhone/iPad → KartPad** to manage its Documents folder.
+Finder's device file-sharing view exposes the same folder on a connected Mac.
+You can copy your ISO/WBFS into that folder and select it with KartPad's import
+picker. Files may also be selected directly from another Files provider.
+
+This folder is not the entire app container. Live saves, installed Retro content,
+and the Mii database currently remain under Application Support. The sharing
+flags do not expose those directories or add save/Mii export controls. Use the
+existing **Player Identity → Import Mii Appearance…** action for `.mii` imports.
 
 ## Content and updates
 
