@@ -671,39 +671,61 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
 
 }  // namespace
 
+// Shared by the cold-start chooser and the suspended-game menu. Preferences
+// never alter the live runtime; switching games keeps the existing restart gate.
+static NSString *const kKartPadDarkModeKey = @"KartPadLauncherDarkMode";
+static NSString *const kKartPadPreferredGameKey = @"KartPadPreferredGame";
+
 @interface KartPadFirstLaunchViewController : UIViewController
 @property(nonatomic, copy) void (^modeSelected)(BOOL retroRewind);
 @property(nonatomic, assign) BOOL resumingGame;
 @property(nonatomic, assign) BOOL currentRetroRewind;
 @property(nonatomic, assign) BOOL gameDataReady;
 @property(nonatomic, strong) NSLayoutConstraint *contentWidthConstraint;
-@property(nonatomic, strong) UIStackView *choices;
 @property(nonatomic, strong) UIStackView *content;
 @property(nonatomic, strong) UIStackView *header;
+@property(nonatomic, strong) UIStackView *footer;
+@property(nonatomic, strong) NSMutableArray<UIStackView *> *rows;
+@property(nonatomic, strong) NSMutableArray<UIView *> *rowSurfaces;
 @property(nonatomic, strong) NSMutableArray<UILabel *> *cardTitles;
-@property(nonatomic, strong) NSMutableArray<UIView *> *compactDetails;
+@property(nonatomic, strong) NSMutableArray<UILabel *> *secondaryLabels;
+@property(nonatomic, strong) NSMutableArray<UILabel *> *primaryLabels;
+@property(nonatomic, strong) NSMutableArray<UIView *> *dividers;
+@property(nonatomic, strong) NSMutableArray<UIButton *> *actionButtons;
+@property(nonatomic, strong) UISwitch *themeSwitch;
+@property(nonatomic, strong) UIButton *preferenceButton;
+@property(nonatomic, strong) UIImageView *checker;
 @end
 
 @implementation KartPadFirstLaunchViewController
+
+- (UIColor *)racingRed {
+  return self.themeSwitch.on ? [UIColor colorWithRed:1 green:0.20 blue:0.26 alpha:1]
+                            : [UIColor colorWithRed:0.80 green:0.035 blue:0.12 alpha:1];
+}
 
 - (UILabel *)label:(NSString *)text style:(UIFontTextStyle)style secondary:(BOOL)secondary {
   UILabel *label = [UILabel new];
   label.text = text;
   label.font = [UIFont preferredFontForTextStyle:style];
   label.adjustsFontForContentSizeCategory = YES;
-  label.textColor = secondary
-      ? [UIColor colorWithRed:0.70 green:0.75 blue:0.82 alpha:1] : UIColor.whiteColor;
+  label.textColor = secondary ? UIColor.secondaryLabelColor : UIColor.labelColor;
   label.numberOfLines = 0;
+  [(secondary ? self.secondaryLabels : self.primaryLabels) addObject:label];
   return label;
 }
 
 - (UIButton *)link:(NSString *)title symbol:(NSString *)symbol action:(void (^)(void))action {
   UIButtonConfiguration *configuration = [UIButtonConfiguration plainButtonConfiguration];
   configuration.title = title;
-  configuration.image = [UIImage systemImageNamed:symbol];
+  configuration.image = symbol.length ? [UIImage systemImageNamed:symbol] : nil;
   configuration.imagePadding = 8;
-  configuration.baseForegroundColor = [UIColor colorWithRed:0.48 green:0.75 blue:1 alpha:1];
-  configuration.contentInsets = NSDirectionalEdgeInsetsMake(12, 0, 12, 12);
+  configuration.baseForegroundColor = [UIColor colorWithDynamicProvider:^UIColor *(UITraitCollection *traits) {
+    return traits.userInterfaceStyle == UIUserInterfaceStyleDark
+        ? [UIColor colorWithRed:1 green:0.20 blue:0.26 alpha:1]
+        : [UIColor colorWithRed:0.80 green:0.035 blue:0.12 alpha:1];
+  }];
+  configuration.contentInsets = NSDirectionalEdgeInsetsMake(10, 0, 10, 4);
   UIButton *button = [UIButton buttonWithConfiguration:configuration primaryAction:
       [UIAction actionWithHandler:^(__kindof UIAction *event) { action(); }]];
   [button.heightAnchor constraintGreaterThanOrEqualToConstant:44].active = YES;
@@ -781,180 +803,265 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
     [content.widthAnchor constraintEqualToAnchor:scroll.frameLayoutGuide.widthAnchor constant:-48],
   ]];
   UINavigationController *navigation = [[UINavigationController alloc] initWithRootViewController:help];
-  navigation.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+  navigation.overrideUserInterfaceStyle = self.overrideUserInterfaceStyle;
   navigation.modalPresentationStyle = UIModalPresentationFormSheet;
   navigation.preferredContentSize = CGSizeMake(620, 640);
   [self presentViewController:navigation animated:YES completion:nil];
 }
 
+
+- (UIView *)divider {
+  UIView *line = [UIView new];
+  [line.heightAnchor constraintEqualToConstant:1].active = YES;
+  [self.dividers addObject:line];
+  return line;
+}
+
+- (void)updatePreferenceTitle {
+  NSString *value = [NSUserDefaults.standardUserDefaults stringForKey:kKartPadPreferredGameKey];
+  NSString *title = [value isEqualToString:@"base"] ? @"Mario Kart Wii"
+      : ([value isEqualToString:@"retro_rewind"] ? @"Retro Rewind" : @"Ask every time");
+  UIButtonConfiguration *configuration = self.preferenceButton.configuration;
+  configuration.title = title;
+  self.preferenceButton.configuration = configuration;
+  self.preferenceButton.accessibilityLabel = @"Game on launch";
+  self.preferenceButton.accessibilityValue = title;
+}
+
+- (void)showLaunchPreference {
+  UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"On Launch"
+      message:@"Choose a game to open automatically. You can always return here from the in-game menu."
+      preferredStyle:UIAlertControllerStyleActionSheet];
+  NSArray<NSString *> *titles = @[@"Ask every time", @"Mario Kart Wii", @"Retro Rewind"];
+  NSArray<NSString *> *values = @[@"ask", @"base", @"retro_rewind"];
+  __weak KartPadFirstLaunchViewController *weakSelf = self;
+  for (NSUInteger i = 0; i < titles.count; ++i) {
+    NSString *value = values[i];
+    [alert addAction:[UIAlertAction actionWithTitle:titles[i] style:UIAlertActionStyleDefault
+        handler:^(UIAlertAction *action) {
+      [NSUserDefaults.standardUserDefaults setObject:value forKey:kKartPadPreferredGameKey];
+      [weakSelf updatePreferenceTitle];
+    }]];
+  }
+  [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+  alert.popoverPresentationController.sourceView = self.preferenceButton;
+  alert.popoverPresentationController.sourceRect = self.preferenceButton.bounds;
+  [self presentViewController:alert animated:YES completion:nil];
+}
+
+- (void)applyTheme {
+  BOOL dark = self.themeSwitch.on;
+  self.overrideUserInterfaceStyle = dark ? UIUserInterfaceStyleDark : UIUserInterfaceStyleLight;
+  self.view.backgroundColor = dark ? [UIColor colorWithWhite:0.065 alpha:1]
+                                  : [UIColor colorWithRed:0.985 green:0.975 blue:0.95 alpha:1];
+  UIColor *foreground = dark ? [UIColor colorWithWhite:0.97 alpha:1]
+                            : [UIColor colorWithRed:0.045 green:0.065 blue:0.10 alpha:1];
+  UIColor *secondary = dark ? [UIColor colorWithWhite:0.66 alpha:1]
+                           : [UIColor colorWithWhite:0.37 alpha:1];
+  for (UILabel *label in self.primaryLabels) label.textColor = foreground;
+  for (UILabel *label in self.secondaryLabels) label.textColor = secondary;
+  for (UIView *line in self.dividers) line.backgroundColor = [foreground colorWithAlphaComponent:0.15];
+  for (NSUInteger i = 0; i < self.rowSurfaces.count; ++i) {
+    BOOL current = self.resumingGame && self.currentRetroRewind == (i == 1);
+    self.rowSurfaces[i].backgroundColor = current
+        ? [[self racingRed] colorWithAlphaComponent:dark ? 0.10 : 0.065] : UIColor.clearColor;
+    UIButton *button = self.actionButtons[i];
+    UIButtonConfiguration *config = button.configuration;
+    BOOL primary = current || (!self.resumingGame && i == 0);
+    config.baseBackgroundColor = primary ? [UIColor colorWithRed:0.89 green:0.025 blue:0.10 alpha:1] : UIColor.clearColor;
+    config.baseForegroundColor = primary ? UIColor.whiteColor : [self racingRed];
+    button.configuration = config;
+  }
+  self.themeSwitch.onTintColor = [UIColor colorWithRed:0.89 green:0.025 blue:0.10 alpha:1];
+  self.checker.tintColor = dark ? UIColor.whiteColor : UIColor.blackColor;
+  self.checker.alpha = dark ? 1.0 : 0.65;
+}
+
+- (void)themeChanged:(UISwitch *)sender {
+  [NSUserDefaults.standardUserDefaults setBool:sender.on forKey:kKartPadDarkModeKey];
+  [self applyTheme];
+}
+
 - (UIView *)gameCard:(BOOL)retro installedVersion:(NSString *)installedVersion {
   BOOL current = self.resumingGame && self.currentRetroRewind == retro;
   BOOL ready = self.gameDataReady && (!retro || installedVersion.length > 0);
-  UIColor *accent = retro ? [UIColor colorWithRed:0.77 green:0.67 blue:1 alpha:1]
-                          : [UIColor colorWithRed:0.43 green:0.73 blue:1 alpha:1];
-  NSString *status = current ? @"CURRENT GAME · PAUSED"
-      : (self.resumingGame ? @"NEXT LAUNCH"
-      : (ready ? @"READY TO PLAY" : (retro && !self.gameDataReady ? @"BASE GAME REQUIRED" : @"SETUP NEEDED")));
-  UILabel *badge = [self label:status style:UIFontTextStyleCaption1 secondary:NO];
-  badge.textColor = accent;
-  badge.font = [UIFontMetrics.defaultMetrics scaledFontForFont:
-      [UIFont systemFontOfSize:12 weight:UIFontWeightSemibold]];
-  UIImageView *icon = [[UIImageView alloc] initWithImage:[UIImage systemImageNamed:
-      retro ? @"gobackward" : @"flag.checkered"]];
-  icon.tintColor = accent;
-  icon.contentMode = UIViewContentModeScaleAspectFit;
-  icon.isAccessibilityElement = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [icon.widthAnchor constraintEqualToConstant:32], [icon.heightAnchor constraintEqualToConstant:32],
-  ]];
-  UIView *spacer = [UIView new];
-  UIStackView *top = [[UIStackView alloc] initWithArrangedSubviews:@[icon, spacer, badge]];
-  top.axis = UILayoutConstraintAxisHorizontal;
-  top.alignment = UIStackViewAlignmentCenter;
-  top.spacing = 12;
-  UILabel *title = [self label:retro ? @"Retro Rewind" : @"Mario Kart Wii"
-      style:UIFontTextStyleTitle1 secondary:NO];
+  NSString *status = current ? @"Paused" : (self.resumingGame ? @"Next launch"
+      : (ready ? @"Ready to play" : (retro && !self.gameDataReady ? @"Import Mario Kart Wii first" : @"Setup needed")));
+  UILabel *title = [self label:retro ? @"Retro Rewind" : @"Mario Kart Wii" style:UIFontTextStyleTitle2 secondary:NO];
   title.accessibilityTraits |= UIAccessibilityTraitHeader;
   [self.cardTitles addObject:title];
-  NSString *detail = retro ? @"More tracks, characters and Retro WFC online play. Uses your Mario Kart Wii game data."
-                           : @"Grand Prix, time trials and local races. Your original game, on this device.";
-  UILabel *description = [self label:detail style:UIFontTextStyleBody secondary:YES];
-  NSString *note = retro ? (installedVersion.length > 0
-      ? [NSString stringWithFormat:@"Installed pack · %@", installedVersion]
-      : [NSString stringWithFormat:@"Official pack · %@ · downloaded in the app", KartPadRetroRewindInstaller.requiredVersion])
-      : (self.gameDataReady ? @"Game data imported" : @"PAL (Europe) · ISO / WBFS · RMCP01 rev 0");
-  UILabel *metadata = [self label:note style:UIFontTextStyleFootnote secondary:YES];
-  [self.compactDetails addObjectsFromArray:@[description, metadata]];
+  UILabel *badge = [self label:status style:UIFontTextStyleFootnote secondary:YES];
+  UIStackView *text = [[UIStackView alloc] initWithArrangedSubviews:@[title, badge]];
+  text.axis = UILayoutConstraintAxisVertical;
+  text.spacing = 4;
+  UIImageView *icon = [[UIImageView alloc] initWithImage:[UIImage systemImageNamed:retro ? @"gobackward" : @"flag.checkered"]];
+  icon.tintColor = retro ? [UIColor colorWithRed:1 green:0.68 blue:0.08 alpha:1]
+                        : [UIColor colorWithRed:0.10 green:0.52 blue:1 alpha:1];
+  icon.contentMode = UIViewContentModeScaleAspectFit;
+  icon.isAccessibilityElement = NO;
+  [NSLayoutConstraint activateConstraints:@[[icon.widthAnchor constraintEqualToConstant:36],
+      [icon.heightAnchor constraintEqualToConstant:36]]];
+  UIStackView *identity = [[UIStackView alloc] initWithArrangedSubviews:@[icon, text]];
+  identity.axis = UILayoutConstraintAxisHorizontal;
+  identity.alignment = UIStackViewAlignmentCenter;
+  identity.spacing = 18;
   NSString *actionTitle = current ? @"Resume Game" : (self.resumingGame ? @"Use on Next Launch"
       : (ready ? @"Play Game" : (retro ? @"Set Up Game" : @"Import Game")));
   UIButtonConfiguration *configuration = [UIButtonConfiguration filledButtonConfiguration];
   configuration.title = actionTitle;
-  configuration.image = [UIImage systemImageNamed:current || ready ? @"play.fill" : @"arrow.right"];
+  configuration.image = [UIImage systemImageNamed:@"arrow.right"];
   configuration.imagePlacement = NSDirectionalRectEdgeTrailing;
-  configuration.imagePadding = 10;
-  configuration.baseBackgroundColor = current || (!self.resumingGame && !retro)
-      ? [UIColor colorWithRed:0.16 green:0.47 blue:0.88 alpha:1]
-      : [UIColor colorWithRed:0.19 green:0.23 blue:0.31 alpha:1];
-  configuration.baseForegroundColor = UIColor.whiteColor;
+  configuration.imagePadding = 12;
   configuration.cornerStyle = UIButtonConfigurationCornerStyleMedium;
   configuration.contentInsets = NSDirectionalEdgeInsetsMake(14, 18, 14, 18);
   __weak KartPadFirstLaunchViewController *weakSelf = self;
   UIButton *action = [UIButton buttonWithConfiguration:configuration primaryAction:
       [UIAction actionWithHandler:^(__kindof UIAction *event) {
-    if (weakSelf.modeSelected != nil) weakSelf.modeSelected(retro);
+    if (weakSelf.modeSelected) weakSelf.modeSelected(retro);
   }]];
+  action.configurationUpdateHandler = ^(UIButton *button) {
+    if (UIAccessibilityIsReduceMotionEnabled()) return;
+    [UIView animateWithDuration:0.12 delay:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionAllowUserInteraction animations:^{
+      button.transform = button.highlighted ? CGAffineTransformMakeScale(0.97, 0.97) : CGAffineTransformIdentity;
+    } completion:nil];
+  };
   action.accessibilityIdentifier = retro ? @"kartpad.mode.retro-rewind" : @"kartpad.mode.original";
-  action.accessibilityLabel = [actionTitle containsString:title.text] ? actionTitle
-      : [NSString stringWithFormat:@"%@, %@", actionTitle, title.text];
-  action.accessibilityHint = status;
-  [action.heightAnchor constraintGreaterThanOrEqualToConstant:50].active = YES;
-  UIView *gap = [UIView new];
-  UIStackView *content = [[UIStackView alloc] initWithArrangedSubviews:
-      @[top, title, description, metadata, gap, action]];
-  content.axis = UILayoutConstraintAxisVertical;
-  content.spacing = 12;
-  [content setCustomSpacing:18 afterView:top];
-  content.translatesAutoresizingMaskIntoConstraints = NO;
-  UIView *card = [UIView new];
-  card.backgroundColor = [UIColor colorWithRed:0.075 green:0.10 blue:0.15 alpha:1];
-  card.layer.cornerRadius = 20;
-  card.layer.borderWidth = 1;
-  card.layer.borderColor = [UIColor colorWithRed:0.17 green:0.21 blue:0.28 alpha:1].CGColor;
-  [card addSubview:content];
+  action.accessibilityLabel = [NSString stringWithFormat:@"%@, %@", actionTitle, title.text];
+  action.accessibilityHint = [NSString stringWithFormat:@"%@. %@", status, retro
+      ? (installedVersion.length ? [NSString stringWithFormat:@"Installed pack %@", installedVersion] : @"Optional official pack, downloaded in the app")
+      : (self.gameDataReady ? @"Game data imported" : @"PAL Europe ISO or WBFS, RMCP01 revision zero")];
+  [action.heightAnchor constraintGreaterThanOrEqualToConstant:48].active = YES;
+  [action.widthAnchor constraintGreaterThanOrEqualToConstant:190].active = YES;
+  [action setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
+  [self.actionButtons addObject:action];
+  UIStackView *row = [[UIStackView alloc] initWithArrangedSubviews:@[identity, action]];
+  row.axis = UILayoutConstraintAxisHorizontal;
+  row.alignment = UIStackViewAlignmentCenter;
+  row.spacing = 16;
+  row.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.rows addObject:row];
+  UIView *surface = [UIView new];
+  surface.layer.cornerRadius = 14;
+  [surface addSubview:row];
+  [self.rowSurfaces addObject:surface];
   [NSLayoutConstraint activateConstraints:@[
-    [content.leadingAnchor constraintEqualToAnchor:card.leadingAnchor constant:24],
-    [content.trailingAnchor constraintEqualToAnchor:card.trailingAnchor constant:-24],
-    [content.topAnchor constraintEqualToAnchor:card.topAnchor constant:24],
-    [content.bottomAnchor constraintEqualToAnchor:card.bottomAnchor constant:-24],
-    [gap.heightAnchor constraintGreaterThanOrEqualToConstant:0],
+    [row.leadingAnchor constraintEqualToAnchor:surface.leadingAnchor constant:18],
+    [row.trailingAnchor constraintEqualToAnchor:surface.trailingAnchor constant:-18],
+    [row.topAnchor constraintEqualToAnchor:surface.topAnchor constant:16],
+    [row.bottomAnchor constraintEqualToAnchor:surface.bottomAnchor constant:-16],
   ]];
-  return card;
+  if (current) {
+    UIView *indicator = [UIView new];
+    indicator.backgroundColor = [UIColor colorWithRed:1 green:0.15 blue:0.23 alpha:1];
+    indicator.layer.cornerRadius = 2;
+    indicator.translatesAutoresizingMaskIntoConstraints = NO;
+    [surface addSubview:indicator];
+    [NSLayoutConstraint activateConstraints:@[
+      [indicator.widthAnchor constraintEqualToConstant:4],
+      [indicator.leadingAnchor constraintEqualToAnchor:surface.leadingAnchor],
+      [indicator.topAnchor constraintEqualToAnchor:surface.topAnchor constant:8],
+      [indicator.bottomAnchor constraintEqualToAnchor:surface.bottomAnchor constant:-8],
+    ]];
+  }
+  return surface;
 }
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.compactDetails = [NSMutableArray array];
+  self.rows = [NSMutableArray array];
+  self.rowSurfaces = [NSMutableArray array];
+  self.actionButtons = [NSMutableArray array];
+  self.primaryLabels = [NSMutableArray array];
+  self.secondaryLabels = [NSMutableArray array];
   self.cardTitles = [NSMutableArray array];
-  self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
-  self.view.backgroundColor = [UIColor colorWithRed:0.035 green:0.05 blue:0.08 alpha:1];
+  self.dividers = [NSMutableArray array];
+  self.themeSwitch = [UISwitch new];
+  id savedTheme = [NSUserDefaults.standardUserDefaults objectForKey:kKartPadDarkModeKey];
+  self.themeSwitch.on = savedTheme == nil || [savedTheme boolValue];
+  self.themeSwitch.accessibilityLabel = @"Dark mode";
+  self.themeSwitch.accessibilityIdentifier = @"kartpad.theme.dark";
+  [self.themeSwitch addTarget:self action:@selector(themeChanged:) forControlEvents:UIControlEventValueChanged];
   UIImageView *mark = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"KartPadLogo"]];
   mark.contentMode = UIViewContentModeScaleAspectFit;
   mark.isAccessibilityElement = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [mark.widthAnchor constraintEqualToConstant:48], [mark.heightAnchor constraintEqualToConstant:48],
-  ]];
+  [NSLayoutConstraint activateConstraints:@[[mark.widthAnchor constraintEqualToConstant:48],
+      [mark.heightAnchor constraintEqualToConstant:48]]];
   UILabel *brand = [self label:@"KartPad" style:UIFontTextStyleTitle1 secondary:NO];
-  brand.font = [UIFontMetrics.defaultMetrics scaledFontForFont:
-      [UIFont systemFontOfSize:30 weight:UIFontWeightBold]];
-  UILabel *platform = [self label:@"Mario Kart Wii, on your device."
-      style:UIFontTextStyleSubheadline secondary:YES];
-  UIStackView *brandText = [[UIStackView alloc] initWithArrangedSubviews:@[brand, platform]];
-  brandText.axis = UILayoutConstraintAxisVertical;
-  brandText.spacing = 4;
+  brand.font = [UIFontMetrics.defaultMetrics scaledFontForFont:[UIFont systemFontOfSize:30 weight:UIFontWeightBold]];
+  UIStackView *identity = [[UIStackView alloc] initWithArrangedSubviews:@[mark, brand]];
+  identity.axis = UILayoutConstraintAxisHorizontal;
+  identity.alignment = UIStackViewAlignmentCenter;
+  identity.spacing = 12;
+  UILabel *themeLabel = [self label:@"Dark mode" style:UIFontTextStyleSubheadline secondary:NO];
+  UIStackView *theme = [[UIStackView alloc] initWithArrangedSubviews:@[themeLabel, self.themeSwitch]];
+  theme.axis = UILayoutConstraintAxisHorizontal;
+  theme.alignment = UIStackViewAlignmentCenter;
+  theme.spacing = 10;
+  [theme setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
   __weak KartPadFirstLaunchViewController *weakSelf = self;
-  UIButton *help = [self link:@"Help" symbol:@"questionmark.circle" action:^{ [weakSelf showSetupHelp]; }];
+  UIButton *help = [self link:@"Help" symbol:nil action:^{ [weakSelf showSetupHelp]; }];
   help.accessibilityIdentifier = @"kartpad.setup.help";
   [help setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
-  UIStackView *header = [[UIStackView alloc] initWithArrangedSubviews:@[mark, brandText, help]];
-  header.axis = UILayoutConstraintAxisHorizontal;
-  header.alignment = UIStackViewAlignmentCenter;
-  header.spacing = 16;
-  self.header = header;
-  [self.compactDetails addObject:platform];
-
-  UILabel *heading = [self label:self.resumingGame ? @"Back to the race" : @"Choose a game"
-      style:UIFontTextStyleLargeTitle secondary:NO];
-  heading.accessibilityTraits |= UIAccessibilityTraitHeader;
-  UILabel *intro = [self label:self.resumingGame
-      ? @"Your game is paused. Resume now, or choose a game for the next launch."
-      : (self.gameDataReady ? @"Your Mario Kart Wii game data is ready."
-                           : @"Start by importing Mario Kart Wii. Add Retro Rewind whenever you're ready.")
-      style:UIFontTextStyleBody secondary:YES];
-  [self.compactDetails addObjectsFromArray:@[heading, intro]];
+  [identity setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
+  [themeLabel setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
+  self.header = [[UIStackView alloc] initWithArrangedSubviews:@[identity, [UIView new], theme, help]];
+  self.header.axis = UILayoutConstraintAxisHorizontal;
+  self.header.alignment = UIStackViewAlignmentCenter;
+  self.header.spacing = 20;
+  UILabel *launch = [self label:@"On launch:" style:UIFontTextStyleFootnote secondary:YES];
+  self.preferenceButton = [self link:@"Ask every time" symbol:@"chevron.down" action:^{ [weakSelf showLaunchPreference]; }];
+  UIButtonConfiguration *pref = self.preferenceButton.configuration;
+  pref.imagePlacement = NSDirectionalRectEdgeTrailing;
+  pref.baseForegroundColor = UIColor.labelColor;
+  self.preferenceButton.configuration = pref;
+  self.preferenceButton.accessibilityIdentifier = @"kartpad.launch.preference";
+  [self.preferenceButton.widthAnchor constraintGreaterThanOrEqualToConstant:150].active = YES;
+  [self.preferenceButton setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
+  [self updatePreferenceTitle];
+  UIStackView *launchChoice = [[UIStackView alloc] initWithArrangedSubviews:@[launch, self.preferenceButton]];
+  launchChoice.axis = UILayoutConstraintAxisHorizontal;
+  launchChoice.alignment = UIStackViewAlignmentCenter;
+  launchChoice.spacing = 10;
+  [launchChoice setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
+  [launchChoice setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
+  UILabel *returnHint = [self label:@"Return here anytime from the in-game menu."
+      style:UIFontTextStyleFootnote secondary:YES];
+  returnHint.textAlignment = NSTextAlignmentRight;
+  [launch setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
+  [self.preferenceButton setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
+  self.footer = [[UIStackView alloc] initWithArrangedSubviews:@[launchChoice, [UIView new], returnHint]];
+  self.footer.axis = UILayoutConstraintAxisHorizontal;
+  self.footer.alignment = UIStackViewAlignmentCenter;
+  self.footer.spacing = 24;
   NSString *version = KartPadRetroRewindInstaller.installedVersion;
-  self.choices = [[UIStackView alloc] initWithArrangedSubviews:
-      @[[self gameCard:NO installedVersion:version], [self gameCard:YES installedVersion:version]]];
-  self.choices.axis = UILayoutConstraintAxisHorizontal;
-  self.choices.spacing = 20;
-  self.choices.distribution = UIStackViewDistributionFillEqually;
-
-  UILabel *supportTitle = [self label:@"A little help getting started"
-      style:UIFontTextStyleHeadline secondary:NO];
-  UILabel *supportText = [self label:@"File formats, importing your game, and adding Retro Rewind — explained step by step."
-      style:UIFontTextStyleSubheadline secondary:YES];
-  UIButton *setup = [self link:@"Setup guide" symbol:@"book.closed" action:^{
-    [weakSelf openGuide:@"blob/main/docs/INSTALL_IPA.md"];
-  }];
-  UIButton *troubleshooting = [self link:@"Troubleshooting" symbol:@"wrench.and.screwdriver" action:^{
-    [weakSelf openGuide:@"blob/main/docs/SUPPORT.md"];
-  }];
-  UIStackView *links = [[UIStackView alloc] initWithArrangedSubviews:@[setup, troubleshooting]];
-  links.axis = UILayoutConstraintAxisHorizontal;
-  links.alignment = UIStackViewAlignmentLeading;
-  links.distribution = UIStackViewDistributionFillEqually;
-  links.spacing = 12;
-  UILabel *footer = [self label:[NSString stringWithFormat:@"KartPad %@ · Build %@   /   Guides open on GitHub",
-      [NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleShortVersionString"] ?: @"",
-      [NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleVersion"] ?: @""]
-      style:UIFontTextStyleCaption1 secondary:YES];
-  UIStackView *content = [[UIStackView alloc] initWithArrangedSubviews:
-      @[header, heading, intro, self.choices, supportTitle, supportText, links, footer]];
-  content.translatesAutoresizingMaskIntoConstraints = NO;
-  content.axis = UILayoutConstraintAxisVertical;
-  self.content = content;
-  [self.compactDetails addObjectsFromArray:@[supportTitle, supportText, links, footer]];
-  content.spacing = 10;
-  [content setCustomSpacing:30 afterView:header];
-  [content setCustomSpacing:22 afterView:intro];
-  [content setCustomSpacing:28 afterView:self.choices];
+  self.content = [[UIStackView alloc] initWithArrangedSubviews:@[self.header,
+      [self gameCard:NO installedVersion:version], [self divider],
+      [self gameCard:YES installedVersion:version], [self divider], self.footer]];
+  self.content.axis = UILayoutConstraintAxisVertical;
+  self.content.spacing = 10;
+  [self.content setCustomSpacing:24 afterView:self.header];
+  self.content.translatesAutoresizingMaskIntoConstraints = NO;
+  self.checker = [[UIImageView alloc] initWithImage:[[UIImage imageNamed:@"KartPadChecker"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
+  self.checker.contentMode = UIViewContentModeScaleAspectFill;
+  self.checker.clipsToBounds = YES;
+  self.checker.translatesAutoresizingMaskIntoConstraints = NO;
+  self.checker.isAccessibilityElement = NO;
+  [self.view addSubview:self.checker];
+  [NSLayoutConstraint activateConstraints:@[
+    [self.checker.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+    [self.checker.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+    [self.checker.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
+    [self.checker.widthAnchor constraintEqualToConstant:70],
+  ]];
   UIScrollView *scroll = [UIScrollView new];
   scroll.translatesAutoresizingMaskIntoConstraints = NO;
+  scroll.alwaysBounceVertical = NO;
   [self.view addSubview:scroll];
   UIView *canvas = [UIView new];
   canvas.translatesAutoresizingMaskIntoConstraints = NO;
   [scroll addSubview:canvas];
-  [canvas addSubview:content];
-  self.contentWidthConstraint = [content.widthAnchor constraintEqualToConstant:880];
+  [canvas addSubview:self.content];
+  self.contentWidthConstraint = [self.content.widthAnchor constraintEqualToConstant:700];
   NSLayoutConstraint *height = [canvas.heightAnchor constraintEqualToAnchor:scroll.frameLayoutGuide.heightAnchor];
   height.priority = UILayoutPriorityDefaultLow;
   [NSLayoutConstraint activateConstraints:@[
@@ -968,34 +1075,37 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
     [canvas.bottomAnchor constraintEqualToAnchor:scroll.contentLayoutGuide.bottomAnchor],
     [canvas.widthAnchor constraintEqualToAnchor:scroll.frameLayoutGuide.widthAnchor],
     [canvas.heightAnchor constraintGreaterThanOrEqualToAnchor:scroll.frameLayoutGuide.heightAnchor],
-    [content.centerXAnchor constraintEqualToAnchor:canvas.centerXAnchor],
-    [content.centerYAnchor constraintEqualToAnchor:canvas.centerYAnchor],
-    [content.topAnchor constraintGreaterThanOrEqualToAnchor:canvas.topAnchor constant:16],
-    [content.bottomAnchor constraintLessThanOrEqualToAnchor:canvas.bottomAnchor constant:-16],
+    [self.content.centerXAnchor constraintEqualToAnchor:canvas.centerXAnchor],
+    [self.content.centerYAnchor constraintEqualToAnchor:canvas.centerYAnchor],
+    [self.content.topAnchor constraintGreaterThanOrEqualToAnchor:canvas.topAnchor constant:12],
+    [self.content.bottomAnchor constraintLessThanOrEqualToAnchor:canvas.bottomAnchor constant:-12],
     self.contentWidthConstraint, height,
   ]];
+  [self applyTheme];
 }
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
-  const UIEdgeInsets insets = self.view.safeAreaInsets;
-  const CGFloat available = CGRectGetWidth(self.view.bounds) - insets.left - insets.right - 48;
-  self.contentWidthConstraint.constant = MIN(920, MAX(0, available));
-  BOOL accessibilityText = UIContentSizeCategoryIsAccessibilityCategory(self.traitCollection.preferredContentSizeCategory);
-  BOOL compact = CGRectGetHeight(self.view.bounds) - insets.top - insets.bottom < 500 && !accessibilityText;
-  self.choices.axis = (!compact && available < 660) || accessibilityText
-      ? UILayoutConstraintAxisVertical : UILayoutConstraintAxisHorizontal;
-  [self.content setCustomSpacing:compact ? 12 : 30 afterView:self.header];
-  for (UILabel *title in self.cardTitles) {
-    title.font = [UIFont preferredFontForTextStyle:compact ? UIFontTextStyleTitle2 : UIFontTextStyleTitle1];
+  UIEdgeInsets insets = self.view.safeAreaInsets;
+  CGFloat available = CGRectGetWidth(self.view.bounds) - insets.left - insets.right - 32;
+  self.contentWidthConstraint.constant = MIN(1040, MAX(0, available));
+  BOOL largeText = UIContentSizeCategoryIsAccessibilityCategory(self.traitCollection.preferredContentSizeCategory);
+  BOOL stacked = available < 600 || largeText;
+  for (UIStackView *row in self.rows) {
+    row.axis = stacked ? UILayoutConstraintAxisVertical : UILayoutConstraintAxisHorizontal;
+    row.alignment = stacked ? UIStackViewAlignmentFill : UIStackViewAlignmentCenter;
   }
-  for (UIView *detail in self.compactDetails) detail.hidden = compact;
+  self.header.axis = largeText ? UILayoutConstraintAxisVertical : UILayoutConstraintAxisHorizontal;
+  self.footer.axis = stacked ? UILayoutConstraintAxisVertical : UILayoutConstraintAxisHorizontal;
+  for (UILabel *title in self.cardTitles) {
+    title.font = [UIFontMetrics.defaultMetrics scaledFontForFont:
+        [UIFont systemFontOfSize:available > 850 ? 28 : 22 weight:UIFontWeightSemibold]];
+  }
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
   return UIInterfaceOrientationMaskLandscape;
 }
-
 @end
 
 @interface KartPadFirstLaunchHost : NSObject <UIDocumentPickerDelegate,
@@ -1591,6 +1701,9 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   };
   NSString *requestedProfile = [NSUserDefaults.standardUserDefaults
       stringForKey:kKartPadRequestedRuntimeProfileKey];
+  if (requestedProfile.length == 0 && gameDataReady) {
+    requestedProfile = [NSUserDefaults.standardUserDefaults stringForKey:kKartPadPreferredGameKey];
+  }
   if ([requestedProfile isEqualToString:@"retro_rewind"] ||
       [requestedProfile isEqualToString:@"base"]) {
     [NSUserDefaults.standardUserDefaults
