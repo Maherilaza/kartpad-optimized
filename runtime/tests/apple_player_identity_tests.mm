@@ -72,6 +72,46 @@ int main() {
     assert([retroBefore isEqual:[NSData dataWithContentsOfFile:retro]]);
     assert([[NSFileManager.defaultManager contentsOfDirectoryAtPath:
         [root stringByAppendingPathComponent:@"SaveBackups"] error:nil] count] >= 4);
+    // Imported save with no matching database Mii: relink explicitly, preserving all progress.
+    auto orphan = save;
+    orphan[offset + kartpad::mii::kRksysCreateIdOffset] ^= 1;
+    kartpad::mii::UpdateRksysCrc(orphan);
+    Write(original, orphan);
+    records = KartPadLicenseRecords(&error);
+    assert([records[0][@"missingLinkedMii"] boolValue]);
+    NSData *orphanId = records[0][@"createId"];
+    NSData *databaseBefore = [NSData dataWithContentsOfFile:
+        [root stringByAppendingPathComponent:@"NAND/shared2/menu/FaceLib/RFL_DB.dat"]];
+    NSData *otherSave = [NSData dataWithContentsOfFile:retro];
+    assert(!KartPadStageLicenseMii(@"original", 0, orphanId, 0, orphanId, &error));
+    assert(!KartPadHasPendingMiiChanges());
+    error = nil;
+    assert(KartPadStageLicenseMii(@"original", 0, orphanId, 0, createId, &error));
+    auto replacementDatabase = kartpad::mii::CreateSeedDatabase({0x02, 0x17, 0xab, 0x10, 0x20, 0x31});
+    Write([root stringByAppendingPathComponent:@"NAND/shared2/menu/FaceLib/RFL_DB.dat"], replacementDatabase);
+    assert(!KartPadApplyPendingMiiDatabase(&error));
+    assert(KartPadHasPendingMiiChanges());
+    assert([databaseBefore writeToFile:[root stringByAppendingPathComponent:
+        @"NAND/shared2/menu/FaceLib/RFL_DB.dat"] atomically:YES]);
+    error = nil;
+    // New progress while the change is pending must survive cold-launch application.
+    orphan[offset + 0x90] ^= 1;
+    kartpad::mii::UpdateRksysCrc(orphan);
+    Write(original, orphan);
+    assert(KartPadApplyPendingMiiDatabase(&error));
+    records = KartPadLicenseRecords(&error);
+    assert(![records[0][@"missingLinkedMii"] boolValue]);
+    assert([records[0][@"name"] isEqual:@"Both"]);
+    after = [NSData dataWithContentsOfFile:original];
+    bytes = static_cast<const uint8_t*>(after.bytes);
+    for (size_t index = 0; index < orphan.size(); ++index) {
+      const bool identityByte = index >= offset + 0x14 && index < offset + 0x30;
+      const bool crcByte = index >= 0x27ffc && index < 0x28000;
+      if (!identityByte && !crcByte) assert(bytes[index] == orphan[index]);
+    }
+    assert([databaseBefore isEqual:[NSData dataWithContentsOfFile:
+        [root stringByAppendingPathComponent:@"NAND/shared2/menu/FaceLib/RFL_DB.dat"]]]);
+    assert([otherSave isEqual:[NSData dataWithContentsOfFile:retro]]);
     // Only this test-created, exact temporary tree is removed.
     std::filesystem::remove_all(directory);
     puts("Apple identity staging, pending preview, backup and preservation tests passed.");

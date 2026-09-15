@@ -3261,14 +3261,61 @@ static NSString *const kKartPadPreferredGameKey = @"KartPadPreferredGame";
 - (NSString *)licenseTitleForRecord:(NSDictionary<NSString *, id> *)record {
   NSString *pending = record[@"pendingOperation"];
   NSString *suffix = [pending isEqualToString:@"delete"] ? @" · deletion pending" :
-      [pending isEqualToString:@"rename"] ? @" · name pending" : @"";
+      [pending isEqualToString:@"rename"] ? @" · name pending" :
+      [pending isEqualToString:@"mii"] ? @" · Mii link pending" :
+      [record[@"missingLinkedMii"] boolValue] ? @" · Mii missing" : @"";
   return [NSString stringWithFormat:@"%@ · Slot %lu · %@%@",
       record[@"profileTitle"] ?: @"Mario Kart Wii",
       (unsigned long)([record[@"slot"] unsignedIntegerValue] + 1),
       record[@"name"] ?: @"Unnamed", suffix];
 }
 
+- (void)chooseMiiForLicense:(NSDictionary<NSString *, id> *)record {
+  NSError *error = nil;
+  NSArray<NSDictionary<NSString *, id> *> *miis = KartPadMiiRecords(&error);
+  if (error != nil || miis.count == 0) {
+    [self showIntegrationAlert:@"No Miis Available"
+        message:error.localizedDescription ?: @"Import a Mii appearance in Player Identity, then return here to link it to this license."];
+    return;
+  }
+  UIViewController *controller = KartPadVisibleViewController(_window);
+  if (controller == nil) return;
+  UIAlertController *picker = [UIAlertController alertControllerWithTitle:@"Choose Mii for This License"
+      message:@"Choose the name and appearance this license should use."
+      preferredStyle:UIAlertControllerStyleActionSheet];
+  __weak KartPadRuntimeOverlayHost *weakSelf = self;
+  for (NSDictionary<NSString *, id> *mii in miis) {
+    [picker addAction:[UIAlertAction actionWithTitle:mii[@"name"] ?: @"Unnamed"
+        style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.35 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        UIAlertController *confirm = [UIAlertController alertControllerWithTitle:
+            [NSString stringWithFormat:@"Use %@?", mii[@"name"] ?: @"this Mii"]
+            message:[NSString stringWithFormat:@"%@, slot %lu, will use this Mii's name and appearance. Progress and friend code stay intact. Fully close KartPad from the app switcher and reopen to apply.",
+                record[@"profileTitle"], (unsigned long)([record[@"slot"] unsignedIntegerValue] + 1)]
+            preferredStyle:UIAlertControllerStyleAlert];
+        [confirm addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+        [confirm addAction:[UIAlertAction actionWithTitle:@"Save for Next Launch" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+          NSError *linkError = nil;
+          if (!KartPadStageLicenseMii(record[@"profileIdentifier"], [record[@"slot"] unsignedIntegerValue], record[@"createId"],
+                  [mii[@"slot"] unsignedIntegerValue], mii[@"createIdBytes"], &linkError)) {
+            [weakSelf showIntegrationAlert:@"Mii Link Not Scheduled" message:linkError.localizedDescription];
+            return;
+          }
+          [weakSelf showIntegrationAlert:@"Mii Link Scheduled"
+              message:@"Fully close KartPad from the app switcher and reopen it. The game will then use the selected Mii. Your progress and friend code are kept, with an automatic backup."];
+        }]];
+        [controller presentViewController:confirm animated:YES completion:nil];
+      });
+    }]];
+  }
+  [picker addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+  picker.popoverPresentationController.sourceView = _overlay;
+  picker.popoverPresentationController.sourceRect = CGRectMake(CGRectGetMidX(_overlay.bounds), CGRectGetMidY(_overlay.bounds), 1, 1);
+  [controller presentViewController:picker animated:YES completion:nil];
+}
+
 - (void)showLicenseNameEditorForRecord:(NSDictionary<NSString *, id> *)record {
+  if ([record[@"missingLinkedMii"] boolValue]) { [self chooseMiiForLicense:record]; return; }
   UIViewController *controller = KartPadVisibleViewController(_window);
   if (controller == nil) return;
   UIAlertController *editor = [UIAlertController
@@ -3344,10 +3391,12 @@ static NSString *const kKartPadPreferredGameKey = @"KartPadPreferredGame";
   if (controller == nil) return;
   UIAlertController *actions = [UIAlertController
       alertControllerWithTitle:[self licenseTitleForRecord:record]
-                       message:@"Fully close KartPad from the app switcher and reopen it to apply changes. Returning to the KartPad menu and resuming does not apply pending edits. Rename keeps this license’s account and progress. Delete removes only this slot; other licenses stay in place."
+                       message:[record[@"missingLinkedMii"] boolValue]
+          ? @"This license's Mii is missing. The game can show Player even when the saved name is correct. Choose a Mii to repair the link; progress and friend code are kept."
+          : @"Rename the name shown in the game. Progress and friend code are kept. Changes apply after fully closing and reopening KartPad."
                 preferredStyle:UIAlertControllerStyleActionSheet];
   __weak KartPadRuntimeOverlayHost *weakSelf = self;
-  [actions addAction:[UIAlertAction actionWithTitle:@"Rename License…"
+  [actions addAction:[UIAlertAction actionWithTitle:[record[@"missingLinkedMii"] boolValue] ? @"Choose Mii…" : @"Rename License…"
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction *action) {
     (void)action;
@@ -3495,12 +3544,9 @@ static NSString *const kKartPadPreferredGameKey = @"KartPadPreferredGame";
   NSString *summary = names.count == 0 ? @"No Miis found."
       : [names componentsJoinedByString:@", "];
   NSString *pending = KartPadHasPendingMiiChanges()
-      ? @"\n\nChanges are pending. Fully close KartPad from the app switcher and reopen it to apply them before making another change. Returning to the KartPad menu and resuming does not apply pending edits." : @"";
+      ? @"\n\nChange scheduled. Fully close KartPad from the app switcher and reopen to apply it." : @"";
   NSString *message = [NSString stringWithFormat:
-      @"%lu Mii appearance%@ available: %@\n%lu existing license%@ found.\n\nA Mii supplies your name and appearance. A game license stores your progress and friend code. Create a license with New inside the game, then select your Mii.%@",
-      (unsigned long)records.count, records.count == 1 ? @"" : @"s",
-      summary, (unsigned long)licenses.count,
-      licenses.count == 1 ? @"" : @"s", pending];
+      @"Choose your game license to change its displayed name. Original and Retro Rewind have separate saves.%@", pending];
   UIViewController *controller = KartPadVisibleViewController(_window);
   if (controller == nil) return;
   UIAlertController *manager = [UIAlertController
