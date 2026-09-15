@@ -11,7 +11,8 @@ class ExperimentalMiiWiimoteContractTests(unittest.TestCase):
         source = (REPO / "apple/ios/KartPadRuntimeOverlayHost.mm").read_text()
         self.assertIn('actionWithTitle:@"Player Identity…"', source)
         self.assertIn('actionWithTitle:@"Rename or Delete Licenses…"', source)
-        self.assertIn('actionWithTitle:@"Rename License…"', source)
+        self.assertIn('@"Rename License…"', source)
+        self.assertIn('@"Choose Mii…"', source)
         self.assertIn('actionWithTitle:@"Delete License…"', source)
         self.assertIn('actionWithTitle:@"Remove Mii Appearance…"', source)
         self.assertIn('actionWithTitle:@"Edit Mii Name…"', source)
@@ -19,6 +20,13 @@ class ExperimentalMiiWiimoteContractTests(unittest.TestCase):
         self.assertIn('actionWithTitle:@"Experimental Wii Remote + Nunchuk…"', source)
         self.assertLess(source.index('actionWithTitle:@"Player Identity…"'),
                         source.index('gameData = [UIMenu menuWithTitle:dataMenu.title'))
+
+    def test_android_identity_actions_are_not_hidden_by_dialog_message(self) -> None:
+        source = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadActivity.kt").read_text()
+        menu = source.split("private fun showPlayerIdentity()", 1)[1].split("private fun showIdentityRecords", 1)[0]
+        # Android AlertDialog shows message content instead of list items when both are set.
+        self.assertIn(".setItems(choices)", menu)
+        self.assertNotIn(".setMessage(", menu)
 
     def test_mii_changes_are_staged_and_applied_before_runtime(self) -> None:
         manager = (REPO / "apple/shared/KartPadMiiManager.mm").read_text()

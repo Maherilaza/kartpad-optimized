@@ -12,19 +12,19 @@ import subprocess
 import tarfile
 import zipfile
 
-TAG = "v0.4.22-android.1"
-VERSION = "0.4.22-android.1"
-CODE = 93
+TAG = "v0.4.23-android.1"
+VERSION = "0.4.23-android.1"
+CODE = 104
 # Exact candidate; changing notes must not relabel its compiled source as HEAD.
-APPROVED_SOURCE = "42122cebbb6e0af4f4d803050f376996878548aa"
-APPROVED_APK = "ed81b26dffe407b7ca430505756db194456dacb28c5789c9bcdda3b587459a78"
-APPROVED_AAB = "4e1f2621a535d5c3f35ff410d62c3b6e8f59d10d68abdaef9e33e752e0a6960d"
-APPROVED_SOURCE_ARCHIVE = "9ec41dd5def8ba046ce6661f93ec1a51febd02625efeeb6f5c71c0a132d57e31"
+APPROVED_SOURCE = "6dccb23569a5c770aa883947ef7127e985ccd0c3"
+APPROVED_APK = "88a7b7eabb97ae28182bb85a56a20e6e38d1135f9e423c7c98ef75dd21fef4d0"
+APPROVED_AAB = "d0e6c864fa73b4d78c9c6b47b6809255c9da2398bc08f5290047484a5fadab05"
+APPROVED_SOURCE_ARCHIVE = "bfa5ad0ce0d1b15862d195724eb5a2dba3cb7954e2b610063bad263c2007ee27"
 APPROVED_NATIVE = {
     "lib/arm64-v8a/libSDL3.so": "d7a17c375adcb71818210581b885f59832d5f95b663aa7a7d493484a00a94753",
     "lib/arm64-v8a/libc++_shared.so": "c4c2fe5cbcb1fba0003a31fc7ab29a9bb12df6cc187ec45a806462540e83d93b",
     "lib/arm64-v8a/libkartpad_discio.so": "0e5bd27501b1aee71db63364f0673682e0cca3c0234d560d4c54ac87e01c0d0b",
-    "lib/arm64-v8a/libmain.so": "ebad797b6bd22898a968e4700fd54f3a795d234975846eaa21955638a34da7bb"
+    "lib/arm64-v8a/libmain.so": "28ceffce0935aa1a7a6f1c17728d79f39f3d4bd4c053693f056e331ec6700c64"
 }
 REPO = Path(__file__).resolve().parents[1]
 
@@ -85,7 +85,7 @@ def main() -> None:
         "INSTALL_ANDROID.md": REPO / "docs/INSTALL_ANDROID.md",
         "BUILD_ANDROID.md": REPO / "android/README.md",
         "RELEASE_NOTES.md": REPO / f"docs/releases/{TAG}.md",
-        "SOURCE_DELIVERY.md": REPO / "docs/releases/v0.4.22-source.md",
+        "SOURCE_DELIVERY.md": REPO / "docs/releases/v0.4.23-source.md",
         "SOURCE_RECONSTRUCTION.md": REPO / "docs/artifacts/2026-09-13/android-source-reconstruction.md",
         "RIGHTS_AND_LICENSES.md": REPO / "RIGHTS_AND_LICENSES.md",
         "THIRD_PARTY_NOTICES.md": REPO / "THIRD_PARTY_NOTICES.md",
@@ -138,7 +138,9 @@ def main() -> None:
     # A later release tag may include notes and this packager, not changed app code.
     changed = subprocess.check_output(["git", "diff", "--name-only", APPROVED_SOURCE, commit],
                                       cwd=REPO, text=True).splitlines()
-    packaging_files = ("README.md", "android/README.md", "scripts/package-android-release-notices.py",
+    packaging_files = ("README.md", "design-qa.md", "scripts/ios_release.py",
+                       "scripts/refresh-ios-release.py", "scripts/package-public-unsigned-ipa.py",
+                       "scripts/audit-public-unsigned-ipa.py", "tests/test_ios_release_provenance.py", "android/README.md", "scripts/package-android-release-notices.py",
                        "scripts/package-release-source.py", "scripts/restore-source-git.py",
                        "tools/android63-base-common-shards.json",
                        "tests/test_android_public_release_contract.py",

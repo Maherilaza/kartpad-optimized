@@ -1117,14 +1117,15 @@ class KartPadActivity : SDLActivity() {
     }
 
     private fun showPlayerIdentity() {
-        val choices = arrayOf("Edit Mii Name…", "Rename or Delete Licenses…", "Mii Appearance…", "About Player Identity")
-        AlertDialog.Builder(this).setTitle("Player Identity")
+        val choices = arrayOf("Rename or Delete Licenses…", "Edit Mii Name…", "Mii Appearance…", "About Player Identity")
+        AlertDialog.Builder(this).setTitle(if (KartPadIdentityStorage.hasPending(filesDir))
+                "Player Identity · Change Scheduled" else "Player Identity")
             .setItems(choices) { dialog, which ->
                 dialog.dismiss()
                 menuButton.post {
                     when (which) {
-                        0 -> showIdentityRecords(true)
-                        1 -> showIdentityRecords(false)
+                        0 -> showIdentityRecords(false)
+                        1 -> showIdentityRecords(true)
                         2 -> showMiiManager()
                         else -> showParityBoundary("Player Identity",
                             "A Mii is your identity and appearance; a license holds progress for one game profile. Create a license with New inside the game, then choose your Mii. Renaming a Mii updates its linked licenses without changing friend codes or progress. Fully close KartPad from Recents and reopen to apply edits; returning to the menu and resuming does not apply them.")
@@ -1144,14 +1145,18 @@ class KartPadActivity : SDLActivity() {
             return
         }
         AlertDialog.Builder(this).setTitle(if (miis) "Edit Mii Name" else "Rename or Delete Licenses")
-            .setItems(records.map { "${KartPadIdentityStorage.titles[it.profile]} • Slot ${it.slot + 1} — ${it.name}" }.toTypedArray()) { dialog, index ->
+            .setItems(records.map { "${KartPadIdentityStorage.titles[it.profile]} • Slot ${it.slot + 1} — ${it.name}${if (it.missingLinkedMii) " (Mii missing)" else ""}" }.toTypedArray()) { dialog, index ->
                 dialog.dismiss()
                 val record = records[index]
                 menuButton.post {
                     if (miis) editIdentityName(record)
                     else AlertDialog.Builder(this).setTitle("${KartPadIdentityStorage.titles[record.profile]} • Slot ${record.slot + 1}")
-                        .setMessage("Rename updates this license and its matching Mii, keeping the account and progress. Other licenses may share that Mii. Delete removes only this license slot after another confirmation. Fully close KartPad from Recents and reopen to apply.")
-                        .setPositiveButton("Rename License…") { _, _ -> menuButton.post { editIdentityName(record) } }
+                        .setMessage(if (record.missingLinkedMii)
+                            "This license's Mii is missing. The game can show Player even when the saved name is correct. Choose a Mii to repair the link; your progress and friend code are kept."
+                            else "Rename the name shown in the game. Progress and friend code are kept. Changes apply after fully closing and reopening KartPad.")
+                        .setPositiveButton(if (record.missingLinkedMii) "Choose Mii…" else "Rename License…") { _, _ -> menuButton.post {
+                            if (record.missingLinkedMii) chooseLicenseMii(record) else editIdentityName(record)
+                        } }
                         .setNeutralButton("Delete License…") { _, _ -> menuButton.post {
                             AlertDialog.Builder(this).setTitle("Delete This License?")
                                 .setMessage("Delete ${record.name} from ${KartPadIdentityStorage.titles[record.profile]}, slot ${record.slot + 1}? Other licenses remain intact. A private backup is retained when this applies on next launch.")
@@ -1162,7 +1167,34 @@ class KartPadActivity : SDLActivity() {
             }.setNegativeButton("Back", null).show()
     }
 
+    private fun chooseLicenseMii(record: KartPadIdentityStorage.Record) {
+        val miis = runCatching { KartPadIdentityStorage.records(filesDir, true) }.getOrElse {
+            showParityBoundary("Miis Could Not Be Read", "No changes were made. Try importing a Mii appearance first.")
+            return
+        }
+        if (miis.isEmpty()) {
+            showParityBoundary("No Miis Available", "Import a Mii in Player Identity → Mii Appearance, then return here to link it to this license.")
+            return
+        }
+        AlertDialog.Builder(this).setTitle("Choose Mii for This License")
+            .setItems(miis.map { it.name }.toTypedArray()) { dialog, index ->
+                dialog.dismiss()
+                val mii = miis[index]
+                menuButton.post {
+                    AlertDialog.Builder(this).setTitle("Use ${mii.name}?")
+                        .setMessage("${KartPadIdentityStorage.titles[record.profile]}, slot ${record.slot + 1}, will use this Mii's name and appearance. Progress and friend code stay intact. Fully close KartPad from Recents and reopen to apply.")
+                        .setNegativeButton("Cancel", null)
+                        .setPositiveButton("Save for Next Launch") { _, _ ->
+                            runCatching { KartPadIdentityStorage.stageLicenseMii(filesDir, record, mii) }
+                                .onSuccess { menuButton.post { identityScheduled() } }
+                                .onFailure { error -> menuButton.post { showParityBoundary("Mii Link Not Scheduled", error.message ?: "No changes were made.") } }
+                        }.show()
+                }
+            }.setNegativeButton("Cancel", null).show()
+    }
+
     private fun editIdentityName(record: KartPadIdentityStorage.Record) {
+        if (record.missingLinkedMii) { chooseLicenseMii(record); return }
         val field = EditText(this).apply {
             isSingleLine = true
             setText(record.name)
