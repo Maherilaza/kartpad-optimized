@@ -1,7 +1,7 @@
 # Migration validation ledger
 
 Status: source migration implemented in an isolated candidate. Promotion and
-physical device/gameplay acceptance remain open. Existing releases are unchanged.
+remaining physical gameplay checks remain open. Existing releases are unchanged.
 
 - Baseline main: `dd79c936e5f32dde2d5a003798163cf615935c0d`.
 - Upstream remains `1912292c804ff9b1b79938de89369ec4496f9fff`.
@@ -67,8 +67,14 @@ Paths are relative to the isolated checkout's `build/source-migration/` director
 
 ## Open gates
 
-- iPad gameplay and the remaining macOS interactive acceptance checks.
-  Android and iPad candidates are now installed in place; see the device pass below.
+- Complete a bounded iPad race/results/save/relaunch check on build 42, plus a
+  Retro WFC race and reconnect before claiming that full online sequence.
+  The owner reports the build works and a new license reaches Retro WFC.
+- Remaining macOS interactive acceptance checks. Android and iPad candidates
+  were installed in place; see the device pass below.
+- Prepare public version metadata and release packages from clean committed
+  source; verify native payload identity against these tested candidates.
+  Do not include the separate unfinished file-export feature changes.
 - Experimental tvOS native/device acceptance is not established.
 - Publish the reusable other-project plan only from accepted KartPad results.
 
@@ -103,8 +109,19 @@ part of the public source or this ledger.
   and resume responded after focusing the game canvas. A fresh 25-file data
   backup was verified; after a clean quit only three log files changed. Sustained
   driving, a completed race, audio, Retro and multiplayer remain unverified.
-- iPad interactive gameplay is still awaiting user testing. Installation,
-  chooser rendering and content validation do not close that gate.
+- iPad owner reports build 42 works. One existing Retro license returns the
+  exact console-serial mismatch message, error 22005. A controlled in-place
+  reinstall of preserved build 41 reproduced the same error; the owner
+  confirmed it and the screen was independently observed. Restored build 42.
+  Across the reinstall comparison, console identity, NAND and Retro saves stayed
+  unchanged; configuration differences were formatting only, and runtime logs
+  changed normally. A separate 34-file private recovery snapshot was verified.
+- On restored build 42 the owner created a new license and reports successful
+  entry to Retro WFC. This establishes login success for that license and shows
+  the old-profile failure is not specific to the migration build. It does not
+  establish completed online race/results/reconnect or repair the old profile.
+  Keep both licenses intact; no slot move, license deletion or identity reset
+  was performed by the agent.
 
 Private backups, signing receipts, logs and artifact records remain under ignored
 `build/source-migration/device-validation/20260915/`; they must not be published.
