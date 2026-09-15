@@ -10,6 +10,30 @@ spec.loader.exec_module(release)
 
 
 class SourceEquivalenceTests(unittest.TestCase):
+    def test_only_the_validated_retro_count_correction_is_allowed(self):
+        import json
+        with tempfile.TemporaryDirectory() as temp:
+            repo = Path(temp)
+            def git(*args):
+                return subprocess.check_output(["git", "-C", temp, *args], stderr=subprocess.DEVNULL, text=True).strip()
+            git("init"); git("config", "user.name", "Test"); git("config", "user.email", "test@example.invalid")
+            profile = repo / "builder/profiles/mkwii-rmcp01-rev0.json"
+            profile.parent.mkdir(parents=True)
+            profile.write_text(json.dumps({'translation': {"expectedRetroFunctions": 4095}, "other": "unchanged"}))
+            git("add", "."); git("commit", "-m", "baseline")
+            original = release.COMPILED_SOURCE
+            release.COMPILED_SOURCE = git("rev-parse", "HEAD")
+            try:
+                profile.write_text(json.dumps({'translation': {"expectedRetroFunctions": 4101}, "other": "unchanged"}))
+                git("add", "."); git("commit", "-m", "validated count")
+                release.verify_source_equivalence(repo, "HEAD")
+                profile.write_text(json.dumps({'translation': {"expectedRetroFunctions": 4101}, "other": "changed"}))
+                git("add", "."); git("commit", "-m", "unrelated profile edit")
+                with self.assertRaisesRegex(ValueError, "unexpected builder profile change"):
+                    release.verify_source_equivalence(repo, "HEAD")
+            finally:
+                release.COMPILED_SOURCE = original
+
     def test_documentation_allowed_but_runtime_change_rejected(self):
         with tempfile.TemporaryDirectory() as temp:
             repo = Path(temp)
