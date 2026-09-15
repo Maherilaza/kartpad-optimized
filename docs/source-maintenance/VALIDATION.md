@@ -136,3 +136,23 @@ expose live saves or Miis under Application Support. See the Files access sectio
 in `docs/INSTALL_IPA.md`. Android uses its existing system document pickers;
 macOS exposes Application Support through its data menu. These iOS keys are not
 an Android/macOS file-access implementation, nor a tvOS Files browser.
+
+## 0.4.22 public packaging checks
+
+The owner explicitly accepts loading, running and game starts for this release;
+completed races and reconnect remain outside the claimed evidence. Public Apple
+version metadata is 0.4.22/build 43, with iOS code identical to the accepted
+unsigned executable and macOS code identical after stripping signing data.
+Android code 93 rebuilds from clean source and adds only external runtime path
+normalization to avoid disclosing checkout paths in the public library.
+
+The dedicated clean release checkout excludes the uncommitted save/Mii export
+work. All nine retained native dependency archive pins were compared with the
+current runtime. The recursive source restoration test passed for the initial
+release source snapshot, including all four maintained runtime gitlinks.
+
+The broader legacy verify-sources.sh reference checks passed at the pinned
+commits after isolating a clean Dolphin reference. Its supplied-WBFS container
+size fixture does not match the current local image container; that historical
+fixture was not weakened. The generated game-code parity and previously audited
+profile inputs remain the migration evidence, not a claim that this fixture passed.
