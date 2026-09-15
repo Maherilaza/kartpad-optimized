@@ -62,3 +62,28 @@ owner's settings and saves. The phone was connected but locked during the
 initial build; an unlock request was sent while independent work continued.
 
 No new full-race performance gain is established by the checks above.
+
+## Built and installed outcome
+
+Private code105, `0.4.23-cpu-resolution-test`, is installed in place on the
+attached Pixel. APK SHA-256:
+`17075d5fb44d23971fc94502458c1a299c2b371c068d08204de3d740aaf6641e`.
+The embedded provenance records clean KartPad source
+`1012b27590b411197e08d3bbe20803c64022d1a8` and the prepared maintained runtime.
+The full dual-game native target and Android application built successfully.
+Package privacy/dependency/ABI/alignment audit and certificate verification
+passed; the certificate matches the installed private103 preview. No uninstall
+or app-data clear occurred.
+
+This is an API28 debug test package, not a public release or a valid unmatched
+FPS comparison against the older API29 release-style build. After installation,
+before its first launch, 35 save, identity and settings files were archived and
+their individual hashes verified against the phone. That verifies the current
+backup, not a pre-install/post-install byte comparison. Existing NAND, Retro
+Rewind save, identities and preferences are present. Game assets were not removed.
+
+The screen remains behind the keyguard. No candidate gameplay or visual
+acceptance is claimed. Unlock is required to continue with live resolution
+switching, visual checks and demanding-race measurements. Build artifacts,
+package receipts, existing-package backup and private state archive are in
+`build/android-cpu-resolution/`. No binary or runtime change was published.
