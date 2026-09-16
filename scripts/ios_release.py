@@ -14,6 +14,7 @@ RUNTIME_SHA256 = "9e82b15f855b7c2a6ff39b908f768a18a58e72a623bc8ddc3f7f8bb7b3f6f1
 TRANSLATION_SHA256 = "f5b67171325d4b98ccee74752268d689952d054f78f001b9083e42507dff8e0b"
 COMPOSITION_SHA256 = "8f86f5db4804ca78f7d00ec3f7f09f23f5451bd4f8f296dfd425bb18b647dcf2"
 REFRESHED_INPUTS_SHA256 = "612bce5bc068c02fd3e5775eb2149047ce9c0c37398665c1d8288f7066cd1a05"
+FPS_RUNTIME_SHA256 = "ebd52bdf068382d0e3bcfad218c6116b854d8594d452dc00622f4bc6bfdbc16a"
 PRODUCTION_PATHS = ("apple/ios", "apple/mobile", "apple/shared", "apple/third_party", "runtime/include")
 
 
@@ -54,5 +55,5 @@ def verify_source_equivalence(repo: Path, packaging_commit: str) -> None:
         raise ValueError("refreshed production inputs differ from compilation")
 
     runtime_source = repo / "vendor/runtimes/ios/runtime/src/settings_overlay.cpp"
-    if hashlib.sha256(runtime_source.read_bytes()).hexdigest() != "ebd52bdf068382d0e3bcfad218c6116b854d8594d452dc00622f4bc6bfdbc16a":
+    if hashlib.sha256(runtime_source.read_bytes()).hexdigest() != FPS_RUNTIME_SHA256:
         raise ValueError("FPS runtime source differs from compilation")

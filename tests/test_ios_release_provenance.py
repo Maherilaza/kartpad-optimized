@@ -24,6 +24,11 @@ class SourceEquivalenceTests(unittest.TestCase):
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text("accepted")
             inputs = {name: hashlib.sha256(b"accepted").hexdigest() for name in names}
+            runtime_file = repo / "vendor/runtimes/ios/runtime/src/settings_overlay.cpp"
+            runtime_file.parent.mkdir(parents=True)
+            runtime_file.write_text("accepted")
+            original_fps = release.FPS_RUNTIME_SHA256
+            release.FPS_RUNTIME_SHA256 = hashlib.sha256(b"accepted").hexdigest()
             original = release.REFRESHED_INPUTS_SHA256
             release.REFRESHED_INPUTS_SHA256 = hashlib.sha256(json.dumps(inputs, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
             try:
@@ -38,7 +43,11 @@ class SourceEquivalenceTests(unittest.TestCase):
                             release.verify_source_equivalence(repo, "HEAD")
                         (repo / name).write_text("accepted")
                         git("add", "."); git("commit", "-m", "restore")
+            runtime_file.write_text("changed")
+                with self.assertRaisesRegex(ValueError, "FPS runtime source differs"):
+                    release.verify_source_equivalence(repo, "HEAD")
             finally:
+                release.FPS_RUNTIME_SHA256 = original_fps
                 release.REFRESHED_INPUTS_SHA256 = original
 
     def test_tampered_composition_rejected(self):
