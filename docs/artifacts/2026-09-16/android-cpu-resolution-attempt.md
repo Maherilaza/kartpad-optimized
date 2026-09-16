@@ -82,8 +82,54 @@ their individual hashes verified against the phone. That verifies the current
 backup, not a pre-install/post-install byte comparison. Existing NAND, Retro
 Rewind save, identities and preferences are present. Game assets were not removed.
 
-The screen remains behind the keyguard. No candidate gameplay or visual
-acceptance is claimed. Unlock is required to continue with live resolution
-switching, visual checks and demanding-race measurements. Build artifacts,
+At the initial handoff the screen was behind the keyguard. The owner subsequently
+unlocked it; see the hardware follow-up below for actual gameplay observations. Build artifacts,
 package receipts, existing-package backup and private state archive are in
 `build/android-cpu-resolution/`. No binary or runtime change was published.
+
+
+## Unlocked hardware follow-up
+
+The owner unlocked the Pixel and private105 launched Retro Rewind successfully.
+Wild Woods 200cc VS with 12 racers rendered and accepted touch acceleration and
+steering, but mostly ran near the 60 FPS cap in the observed warm interval. This
+did not reproduce the slower-device reports. Two later captures named
+`candidate-1x-stationary` and `candidate-half-stationary` had already reached the
+post-race menu; both are excluded from performance conclusions.
+
+A repeatable workload uses the bundled Wild Woods 150cc ghost replay, following
+the moving racer through the track. Screenshots during and at the end of each
+accepted capture establish that these measurements concern a moving race rather
+than a menu. This is one racer, not a substitute for a demanding 12-racer test.
+
+Matched control private106 was built with the same API28/debug configuration,
+dependencies, translation and fractional-resolution changes. Its maintained
+runtime is `1e9d397`, reverting only the CPU context change from `a8b6889`;
+`ppc_runtime.h` is the only maintained-runtime file different between variants.
+Control APK SHA-256:
+`16ae274c9c38ee55f2c7af3cf462d7763f0e088ccded122cc3b5adcb92f1dfb2`.
+
+Candidate private107 returns to runtime `a8b6889`, with source provenance
+`390e11d4fad54156f3c4f9eadd5cfdf2952f43c4` (documentation-only change from the
+private105 source). Its package audit passed. APK SHA-256:
+`4476f3324d9ff089ab65e86e02547aeb6ac19becc36ac54a68ad18769c14fe84`.
+Both updates installed in place successfully without clearing application data.
+
+
+### Rejected performance workload
+
+The owner correctly rejected the ghost workload: it omits the opponents and
+item activity relevant to the reported slowdown. The ghost measurements are
+functional checks only and must not be used to accept the CPU optimization or
+claim improvement on slower devices. The initial two 1x captures were both
+approximately 59.9 FPS; the return candidate was also capped. No meaningful
+Android performance improvement is established. Additional ghost measurements
+were stopped. The owner's original 2x resolution was restored through the UI.
+
+Before further build comparisons, reproduce sustained slowdown in an actual
+full race at the owner's settings and retain its course, mode, opponent count,
+items, route and warm shader state. The historical Original N64 Sherbet Land
+owner session is a lead, not a current reproduction: old logs recorded about
+25-33 main-thread CPU ms per present in slow intervals, but subsequent runtime
+changes prevent treating that old profile as today's bottleneck. Obtain a new
+profile of a genuinely slow full-race interval before selecting another patch.

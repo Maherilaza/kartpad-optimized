@@ -2113,6 +2113,13 @@ class KartPadActivity : SDLActivity() {
     private fun configureDebugStateTrace() {
         if (!BuildConfig.DEBUG) return
 
+        // Private hardware benchmark only; never enabled by release builds or UI settings.
+        if (File(filesDir, "KartPad/Diagnostics/FullRaceCpu.enable").isFile) {
+            Os.setenv("KARTPAD_FULL_RACE_CPU", "1", true)
+        } else {
+            Os.unsetenv("KARTPAD_FULL_RACE_CPU")
+        }
+
         val marker = File(filesDir, DEBUG_STATE_TRACE_MARKER_RELATIVE_PATH)
         if (marker.isFile) {
             val output = File(filesDir, DEBUG_STATE_TRACE_RELATIVE_PATH)
