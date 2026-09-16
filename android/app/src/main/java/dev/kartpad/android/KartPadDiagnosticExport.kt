@@ -30,12 +30,12 @@ internal object KartPadDiagnosticExport {
     }
 
     /** One attachable text file; only the selected runtime session, never saves or identity files. */
-    fun writeText(context: Context, destination: Uri, sessionId: String) {
+    fun writeText(context: Context, destination: Uri, sessionId: String?) {
         val root = logsRoot(context)
-        val session = sessions(context).firstOrNull { it.id == sessionId }
+        val session = if (sessionId == null) null else sessions(context).firstOrNull { it.id == sessionId }
             ?: error("The selected game session is no longer available. Choose it again.")
-        val directory = File(root, session.id)
-        val files = directory.listFiles().orEmpty().filter {
+        val directory = session?.let { File(root, it.id) }
+        val files = directory?.listFiles().orEmpty().filter {
             it.isFile && it.absoluteFile == it.canonicalFile &&
                 (it.name == "console.log" || (it.name.startsWith("crash_") && it.extension == "txt"))
         }.sortedWith(compareByDescending<File> { it.name == "console.log" }.thenByDescending { it.lastModified() })
@@ -48,10 +48,14 @@ internal object KartPadDiagnosticExport {
                 appendLine("Review before attaching on GitHub. Nothing was uploaded.")
                 appendLine("Export-time app: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
                 appendLine("Export-time device: ${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}; API ${android.os.Build.VERSION.SDK_INT}")
-                appendLine("Selected session: ${session.id}; console last written (Unix ms): ${session.modified}")
+                appendLine("Selected session: ${session?.id ?: "no runtime session"}; console last written (Unix ms): ${session?.modified ?: "unavailable"}")
                 appendLine("Older session version must be read from its console header; otherwise unknown.")
-                appendLine("Only console.log and crash text from this session follow. Each is capped at 256 KiB.")
+                appendLine("OS exit history below may cover other sessions; match timestamp and recorded build/profile. Session text is capped at 256 KiB per file.")
             }.toByteArray())
+            out.write("\n--- process-exits.json (recent OS history, not automatic session attribution) ---\n".toByteArray())
+            out.write(KartPadExitDiagnostics.snapshot(context).toByteArray())
+            out.write("\n--- Native crash frames (recent OS history; match timestamp) ---\n".toByteArray())
+            out.write(KartPadExitTraces.summary(context).toByteArray())
             for (file in files) {
                 out.write("\n--- ${file.name} ---\n".toByteArray())
                 RandomAccessFile(file, "r").use { input ->
@@ -111,6 +115,9 @@ internal object KartPadDiagnosticExport {
             zip.closeEntry()
             zip.putNextEntry(ZipEntry("report-context.json"))
             zip.write(KartPadReportContext.snapshot(context, null).toString(2).toByteArray())
+            zip.closeEntry()
+            zip.putNextEntry(ZipEntry("process-exits.json"))
+            zip.write(KartPadExitDiagnostics.snapshot(context).toByteArray())
             zip.closeEntry()
             KartPadExitTraces.write(context, zip)
             val buffer = ByteArray(32 * 1024)

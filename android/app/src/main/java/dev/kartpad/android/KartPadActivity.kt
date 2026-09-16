@@ -92,6 +92,9 @@ class KartPadActivity : SDLActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Mark before recovery, resource install and SDL/native library loading.
+        KartPadExitDiagnostics.mark(this, requestedRuntimeProfile())
+        Os.setenv("KARTPAD_DIAGNOSTIC_BUILD", "${BuildConfig.VERSION_NAME}/${BuildConfig.VERSION_CODE}", true)
         saveDocumentProfile = savedInstanceState?.getString("save_document_profile")
             ?.takeIf { it in KartPadSaveStorage.profiles }
         ghostLicense = savedInstanceState?.getInt("ghost_license", -1) ?: -1
@@ -100,6 +103,7 @@ class KartPadActivity : SDLActivity() {
         Os.setenv("KARTPAD_ANDROID_FILES_DIR", filesDir.absolutePath, true)
         Os.setenv("KARTPAD_ANDROID_CACHE_DIR", cacheDir.absolutePath, true)
         KartPadRendererDiagnostics.configure(this)
+        if (BuildConfig.VERSION_NAME.contains("diagnostics")) Os.setenv("KARTPAD_FUNCTION_TIMING", "1", true)
         KartPadCharacterGraphicsTest.configure(this)
         if (BuildConfig.GAME_RUNTIME) {
             RetroRewindInstallStorage.recoverForLaunch(filesDir, requestedRuntimeProfile())
@@ -550,7 +554,16 @@ class KartPadActivity : SDLActivity() {
                 MenuRow("Report a Problem…", R.drawable.ic_kartpad_report) {
                     closeKartPadMenu(::showReportProblem)
                 },
-            ),
+            ) + if (BuildConfig.VERSION_NAME.contains("diagnostics")) listOf(
+                MenuRow("Test Native Crash…", R.drawable.ic_kartpad_report) {
+                    closeKartPadMenu {
+                        AlertDialog.Builder(this).setTitle("Test Native Crash?")
+                            .setMessage("This intentionally closes KartPad to test crash reporting. Finish your race first. Reopen KartPad afterward and export the test session. Unsaved progress may be lost.")
+                            .setNegativeButton("Cancel", null)
+                            .setPositiveButton("Crash Test") { _, _ -> nativeTestDiagnosticCrash() }.show()
+                    }
+                }
+            ) else emptyList(),
         )
     }
 
@@ -2294,6 +2307,7 @@ class KartPadActivity : SDLActivity() {
         showFps: Boolean, fpsSize: Int, aspectMode: Int, resolutionScale: Float,
     )
 
+    private external fun nativeTestDiagnosticCrash()
     private external fun nativeEnableActivityRecreation()
 
     private external fun nativeDebugDisplaySettings(): String

@@ -5,10 +5,11 @@ import android.content.Context
 import android.os.Build
 import org.json.JSONObject
 
-object BuildConfig { const val VERSION_CODE = 23 }
+object BuildConfig { const val VERSION_CODE = 23; const val VERSION_NAME = "host-test" }
 
 fun main() {
     testPrivateExitTraces()
+    testDiagnosticExport()
     val manager = ActivityManager()
     val context = Context(manager)
     Build.VERSION.SDK_INT = 28

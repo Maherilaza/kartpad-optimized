@@ -102,6 +102,16 @@ android {
         }
     }
 
+    buildTypes {
+        getByName("release") {
+            ndk { debugSymbolLevel = "FULL" }
+            // Only the private owner-test candidate uses the existing local debug signer.
+            if (providers.gradleProperty("kartpadDiagnosticRelease").orNull == "true") {
+                signingConfig = signingConfigs.getByName("debug")
+            }
+        }
+    }
+
     buildFeatures {
         prefab = true
         buildConfig = true

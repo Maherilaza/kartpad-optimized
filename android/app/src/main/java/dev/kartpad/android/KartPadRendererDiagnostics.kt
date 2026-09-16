@@ -32,7 +32,7 @@ internal object KartPadRendererDiagnostics {
     }.isSuccess
 
     fun configure(context: Context) {
-        active = enabled(context)
+        active = enabled(context) || BuildConfig.VERSION_NAME.contains("diagnostics")
         Os.setenv("KARTPAD_RENDERER_VALIDATION", if (active) "1" else "0", true)
     }
 }

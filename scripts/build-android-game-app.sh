@@ -14,9 +14,10 @@ case "$profileable" in
 esac
 case "$package_format" in
   apk) package_task=assembleDebug; package_kind=APK ;;
+  apk-release) package_task=assembleRelease; package_kind="private release APK" ;;
   aab) package_task=bundleRelease; package_kind="unsigned AAB" ;;
   *)
-    echo "ERROR: KARTPAD_ANDROID_PACKAGE_FORMAT must be apk or aab" >&2
+    echo "ERROR: KARTPAD_ANDROID_PACKAGE_FORMAT must be apk, apk-release or aab" >&2
     exit 64
     ;;
 esac
@@ -112,6 +113,9 @@ gradle_args=(
   -PkartpadAndroidNativeTarget="$native_target"
   -PkartpadDiscIoJniRoot="$discio_jni_root"
 )
+if [[ "$package_format" == apk-release ]]; then
+  gradle_args+=("-PkartpadDiagnosticRelease=true")
+fi
 if [[ "$profileable" == 1 ]]; then
   gradle_args+=("-PkartpadProfileable=true")
   echo "Local profiling enabled; keep performance captures private. Debugging remains disabled in release builds."
@@ -128,6 +132,8 @@ fi
 
 if [[ "$package_format" == apk ]]; then
   package_path="$repo_root/android/app/build/outputs/apk/debug/app-debug.apk"
+elif [[ "$package_format" == apk-release ]]; then
+  package_path="$repo_root/android/app/build/outputs/apk/release/app-release.apk"
 else
   package_path="$repo_root/android/app/build/outputs/bundle/release/app-release.aab"
 fi

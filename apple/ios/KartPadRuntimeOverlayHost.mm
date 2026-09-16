@@ -11,6 +11,7 @@
 #import "KartPadDiagnosticContext.h"
 #import "KartPadMiiManager.h"
 #import "SunPadDiagnostics.h"
+#import "KartPadSystemDiagnostics.h"
 #import "SunPadGameOverlay.h"
 #import "SunPadInputMixer.h"
 #import "SunPadSettings.h"
@@ -2441,6 +2442,21 @@ static NSString *const kKartPadPreferredGameKey = @"KartPadPreferredGame";
   [children addObject:display];
   if (gameData != nil) [children addObject:gameData];
   if (reportProblem != nil) [children addObject:reportProblem];
+  if (KartPadSystemDiagnosticsIsCandidate()) {
+    [children addObject:[UIAction actionWithTitle:@"Test Native Crash…"
+        image:[UIImage systemImageNamed:@"exclamationmark.triangle"] identifier:nil
+        handler:^(__kindof UIAction *action) {
+      UIViewController *presenter = KartPadVisibleViewController(weakSelf.window);
+      UIAlertController *confirm = [UIAlertController alertControllerWithTitle:@"Test Native Crash?"
+          message:@"This intentionally closes KartPad to test crash reporting. Finish your race first. Reopen KartPad afterward and export the test session. Unsaved progress may be lost."
+          preferredStyle:UIAlertControllerStyleAlert];
+      [confirm addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+      [confirm addAction:[UIAlertAction actionWithTitle:@"Crash Test" style:UIAlertActionStyleDestructive
+          handler:^(UIAlertAction *action) { KartPadDiagnosticCrashProbe(); }]];
+      [presenter presentViewController:confirm animated:YES completion:nil];
+    }]];
+  }
+
   menuButton.menu = [UIMenu menuWithTitle:@"KartPad"
                                     image:sourceMenu.image
                                identifier:@"dev.kartpad.menu"
@@ -2478,6 +2494,7 @@ static NSString *const kKartPadPreferredGameKey = @"KartPadPreferredGame";
                                                       error:&error] : nil;
       NSURL *kartPadReportURL = nil;
       if (report != nil) {
+        report = [report stringByAppendingString:KartPadSystemDiagnosticsReport()];
         report = [report stringByReplacingOccurrencesOfString:
             @"SunPad Diagnostic Report v2" withString:@"KartPad Diagnostic Report v2"];
         report = [report stringByReplacingOccurrencesOfString:
@@ -4019,6 +4036,7 @@ static NSString *const kKartPadPreferredGameKey = @"KartPadPreferredGame";
 @end
 
 extern "C" bool KartPadMobileEnsureGameDataAvailable() {
+  KartPadSystemDiagnosticsStart();
   KartPadApplyPrivateServerAtLaunch();
   NSError *miiError = nil;
   if (!KartPadApplyPendingMiiDatabase(&miiError)) {
