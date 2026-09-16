@@ -43,7 +43,7 @@ class SourceEquivalenceTests(unittest.TestCase):
                             release.verify_source_equivalence(repo, "HEAD")
                         (repo / name).write_text("accepted")
                         git("add", "."); git("commit", "-m", "restore")
-            runtime_file.write_text("changed")
+                runtime_file.write_text("changed")
                 with self.assertRaisesRegex(ValueError, "FPS runtime source differs"):
                     release.verify_source_equivalence(repo, "HEAD")
             finally:
