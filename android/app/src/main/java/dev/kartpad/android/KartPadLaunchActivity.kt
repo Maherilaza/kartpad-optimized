@@ -440,7 +440,7 @@ open class KartPadLaunchActivity : Activity() {
             setOnClickListener {
                 AlertDialog.Builder(this@KartPadLaunchActivity)
                     .setTitle("Export Private Diagnostics")
-                    .setMessage("Save recent runtime logs to a location you choose. Logs may contain local paths or personal details. No game images, saves, profiles, or signing material are copied. Keep this file private and review it before sharing.")
+                    .setMessage("Save recent runtime logs and any retained app crash/hang traces to a location you choose. Traces may contain local paths, network information or other personal details. No game images, saves, profiles, or signing material are copied. Keep this file private and review it before sharing.")
                     .setNegativeButton("Cancel", null)
                     .setPositiveButton("Save Locally…") { _, _ ->
                         val sessions = runCatching { KartPadDiagnosticExport.sessions(this@KartPadLaunchActivity) }.getOrDefault(emptyList())

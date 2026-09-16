@@ -26,4 +26,16 @@ BOOL KartPadStageLicenseDeletion(NSString *profileIdentifier, NSUInteger slot,
 BOOL KartPadApplyPendingMiiDatabase(NSError **error);
 BOOL KartPadHasPendingMiiChanges(void);
 
+
+// Original-course RKG exchange; imports use downloaded slots and preserve personal bests.
+NSArray<NSDictionary<NSString *, id> *> *KartPadOriginalGhosts(NSUInteger license, NSError **error);
+BOOL KartPadStageOriginalGhost(NSData *ghost, NSUInteger license, NSError **error);
+
+BOOL KartPadHasPendingGhost(void);
+BOOL KartPadCancelPendingGhost(NSError **error);
+
+FOUNDATION_EXPORT NSData * _Nullable KartPadReadSave(NSString *profile, NSError **error);
+FOUNDATION_EXPORT BOOL KartPadStageSaveRestore(NSString *profile, NSData *data, NSError **error);
+FOUNDATION_EXPORT BOOL KartPadCancelSaveRestore(NSError **error);
+FOUNDATION_EXPORT BOOL KartPadHasPendingSaveRestore(void);
 NS_ASSUME_NONNULL_END
