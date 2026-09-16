@@ -118,7 +118,7 @@ if ! rg -a -F -q '[KartPad] exact SunPad runtime overlay installed' "${binary}";
 fi
 for importer_contract in \
   'Game Data Required' \
-  "Import from This Installation's Folder" \
+  "Import from Extracted Folder" \
   'Opening disc image' \
   'Game-file extraction was incomplete' \
   'RemoveGameDataOnNextLaunch' \
@@ -127,7 +127,13 @@ for importer_contract in \
   'The validated RMCP01 data is stored privately.' \
   'GameData.import-' \
   'NSFileProtectionCompleteUntilFirstUserAuthentication'; do
-  if ! rg -a -F -q "${importer_contract}" "${binary}"; then
+  # NSString literals containing typographic punctuation are stored as UTF-16.
+  if ! python3 - "${binary}" "${importer_contract}" <<'PYTEXT'
+import pathlib, sys
+blob = pathlib.Path(sys.argv[1]).read_bytes()
+raise SystemExit(0 if any(sys.argv[2].encode(encoding) in blob for encoding in ("utf-8", "utf-16-le", "utf-16-be")) else 1)
+PYTEXT
+  then
     echo "game app is missing the private game-data importer contract: ${importer_contract}" >&2
     exit 69
   fi

@@ -8,6 +8,7 @@ import org.json.JSONObject
 object BuildConfig { const val VERSION_CODE = 23 }
 
 fun main() {
+    testPrivateExitTraces()
     val manager = ActivityManager()
     val context = Context(manager)
     Build.VERSION.SDK_INT = 28

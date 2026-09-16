@@ -103,7 +103,7 @@ internal object KartPadDiagnosticExport {
                 appendLine("Selected game session: ${session?.id ?: "none available"}")
                 appendLine("Session console last-written time (Unix ms): ${session?.modified ?: "unavailable"}")
                 appendLine("Read Logs/${session?.id ?: "<no session>"}/console.log and any crash text from the same folder.")
-                appendLine("Only console.log and crash_*.txt from this session are included; no other session, health history, or OS exit history.")
+                appendLine("Runtime logs are from this session. OS-exits separately contains up to three recent app ANR/native-crash traces and their timestamps, when Android retains them.")
                 appendLine("Each log contains at most $MAX_FILE_BYTES bytes: its original header and recent tail, with an explicit gap marker if shortened.")
                 appendLine("Files may contain private details. Share only reviewed relevant text, never this entire private ZIP or game data.")
                 appendLine("Log files: ${files.size}")
@@ -112,6 +112,7 @@ internal object KartPadDiagnosticExport {
             zip.putNextEntry(ZipEntry("report-context.json"))
             zip.write(KartPadReportContext.snapshot(context, null).toString(2).toByteArray())
             zip.closeEntry()
+            KartPadExitTraces.write(context, zip)
             val buffer = ByteArray(32 * 1024)
             for (file in files) {
                 zip.putNextEntry(ZipEntry("Logs/" + file.relativeTo(root).invariantSeparatorsPath))
