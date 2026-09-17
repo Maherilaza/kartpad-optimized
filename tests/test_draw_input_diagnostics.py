@@ -56,6 +56,22 @@ int main() {
   assert(!sampling.take(30000));
   assert(!sampling.take(UINT64_MAX));
   sampling={}; assert(sampling.take(29999));
+  DrawOutcomeWindow outcome;
+  assert(outcome.record(false, 100)); // missing pipeline first observed
+  assert(outcome.skipped==1 && outcome.encoded==0);
+  outcome.clearCounts();
+  assert(!outcome.record(false, 101));
+  assert(outcome.record(true, 102)); // readiness transition must not be hidden
+  assert(outcome.skipped==1 && outcome.encoded==1);
+  outcome.clearCounts();
+  assert(!outcome.record(true, 5101));
+  assert(outcome.record(true, 5102));
+  assert(outcome.encoded==2);
+  outcome.clearCounts();
+  assert(!outcome.record(false, 1)); // backward clock cannot underflow
+  for(unsigned i=3;i<120;++i) assert(outcome.record(true, 5102+uint64_t(i)*5000));
+  assert(outcome.reports==120);
+  assert(!outcome.record(false, UINT64_MAX));
   DrawReportBudget budget;
   for (uint64_t i=0;i<32;++i) {
     assert(budget.take(i,false));
