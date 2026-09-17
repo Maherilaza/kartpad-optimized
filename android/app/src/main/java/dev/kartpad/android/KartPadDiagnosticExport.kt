@@ -31,21 +31,30 @@ internal object KartPadDiagnosticExport {
 
     // Root journal can contain several processes/sessions; never silently label
     // it as the selected session. Only a bounded tail of this allowlisted file.
-    private fun healthEvidence(root: File): ByteArray {
+    private fun healthEvidence(root: File): ByteArray = runCatching {
         val file = File(root, "android-health.log")
         if (!file.isFile || file.absoluteFile != file.canonicalFile)
-            return "Health journal unavailable.\n".toByteArray()
-        return RandomAccessFile(file, "r").use { input ->
-            val count = minOf(input.length(), 256L * 1024).toInt()
-            val omitted = input.length() - count
+            return@runCatching "Health journal unavailable.\n".toByteArray()
+        RandomAccessFile(file, "r").use { input ->
+            val size = input.length()
+            val count = minOf(size, 256L * 1024).toInt()
+            val omitted = size - count
             input.seek(omitted)
             val data = ByteArray(count)
-            input.readFully(data)
-            "Health history: match pid/unix_ms to the selected session; older entries may lack them. Earlier bytes omitted=$omitted.\n".toByteArray() + data
+            var read = 0
+            // The writer can reset this journal when full. A short read must
+            // not prevent exporting the session and OS crash evidence.
+            while (read < count) {
+                val n = input.read(data, read, count - read)
+                if (n <= 0) break
+                read += n
+            }
+            val bytes = data.copyOf(read)
+            "Health history: match pid/unix_ms to the selected session; older entries may lack them. Earlier bytes omitted=$omitted; concurrent reset=${read < count}; first line may be partial.\n".toByteArray() + bytes
         }
-    }
+    }.getOrElse { "Health journal unavailable; session and OS evidence retained.\n".toByteArray() }
 
-    /** One attachable text file; only the selected runtime session, never saves or identity files. */
+    /** Selected runtime session plus labelled OS/health history; never saves or identity files. */
     fun writeText(context: Context, destination: Uri, sessionId: String?) {
         val root = logsRoot(context)
         val session = if (sessionId == null) null else sessions(context).firstOrNull { it.id == sessionId }

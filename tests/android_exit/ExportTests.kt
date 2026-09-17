@@ -22,7 +22,7 @@ fun testDiagnosticExport() {
   ZipFile(zip).use { check(it.getEntry("process-exits.json")!=null); check(it.getEntry("OS-exits/manifest.json")!=null) }
   val logs=File(root,"KartPad/Logs/base_123_pid42");logs.mkdirs()
   File(logs,"console.log").writeText("BUILD-HEADER\n"+"x".repeat(300000)+"\nRECENT-TAIL")
-  File(logs.parentFile,"android-health.log").writeText("HEALTH-PID42")
+  File(logs.parentFile,"android-health.log").writeText("z".repeat(300000)+"\nHEALTH-PID42")
   File(logs,"mem1.bin").writeText("PRIVATE-MEMORY")
   File(logs,"save.dat").writeText("PRIVATE-SAVE")
   val private=File(root,"private.txt");private.writeText("PRIVATE-SYMLINK")
@@ -32,6 +32,7 @@ fun testDiagnosticExport() {
   check(report.contains("BUILD-HEADER") && report.contains("RECENT-TAIL") && report.contains("middle omitted"))
   check(!report.contains("PRIVATE-"))
   check(report.contains("HEALTH-PID42"))
+  check(!report.contains("z".repeat(262145)))
   check(runCatching { KartPadDiagnosticExport.writeText(context,Uri(text.path),"../private.txt") }.isFailure)
   KartPadDiagnosticExport.write(context,Uri(zip.path),logs.name)
   ZipFile(zip).use { archive -> check(archive.entries().asSequence().none { it.name.contains("mem1") || it.name.contains("save.dat") || it.name.contains("crash_link") }) }
