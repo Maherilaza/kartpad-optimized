@@ -15,6 +15,10 @@ val discIoJniRoot = providers.gradleProperty("kartpadDiscIoJniRoot").orNull
 val kartpadProfileable = providers.gradleProperty("kartpadProfileable")
     .map { it.toBooleanStrict() }
     .getOrElse(false)
+// Private RenderDoc handoff: opt in without switching to an unoptimized Debug runtime.
+val kartpadFrameCapture = providers.gradleProperty("kartpadFrameCapture")
+    .map { it.toBooleanStrict() }
+    .getOrElse(false)
 val kartpadBuildAssets = layout.buildDirectory.dir("generated/assets/kartpadBuild")
 val prepareKartpadBuildProvenance by tasks.registering(Exec::class) {
     val output = kartpadBuildAssets.get().file("kartpad-build.json").asFile
@@ -50,6 +54,9 @@ val kartpadVersionName = providers.gradleProperty("kartpadVersionName")
         value
     }
     .getOrElse("0.4.24-android.1")
+require(!kartpadFrameCapture || kartpadVersionName.endsWith("-capture")) {
+    "Frame capture builds must have a version name ending in -capture"
+}
 
 android {
     namespace = "dev.kartpad.android"
@@ -64,6 +71,7 @@ android {
         versionCode = kartpadVersionCode
         versionName = kartpadVersionName
         manifestPlaceholders["kartpadProfileable"] = kartpadProfileable.toString()
+        manifestPlaceholders["kartpadFrameCapture"] = kartpadFrameCapture.toString()
         buildConfigField("boolean", "GAME_RUNTIME", (gameRuntimeSource != null).toString())
         buildConfigField("boolean", "DISC_IMAGE_IMPORT", (discIoJniRoot != null).toString())
 
@@ -104,6 +112,10 @@ android {
 
     buildTypes {
         getByName("release") {
+            isDebuggable = kartpadFrameCapture
+            if (kartpadFrameCapture) {
+                externalNativeBuild.cmake.arguments += "-DCMAKE_BUILD_TYPE=RelWithDebInfo"
+            }
             ndk { debugSymbolLevel = "FULL" }
             // Only the private owner-test candidate uses the existing local debug signer.
             if (providers.gradleProperty("kartpadDiagnosticRelease").orNull == "true") {
