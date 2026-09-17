@@ -28,7 +28,7 @@ Retain the APK hash, native BuildID and matching symbols. Verify the final APK's
 ## Reporter handoff
 
 1. Install the matching-signer candidate in place. Open KartPad normally once and confirm the same problem still occurs with Character Graphics Test set to Normal. Keep the original failing settings.
-2. In RenderDoc, select the connected Android device and the KartPad package. Override the launch activity to `dev.kartpad.android.KartPadActivity`, which runs the game process. Its default profile is Original; for Retro use the existing string extra `dev.kartpad.android.RUNTIME_PROFILE=retro_rewind` and an already validated installed pack.
+2. In RenderDoc, select the connected Android device. Set Executable Path to `dev.kartpad.android/dev.kartpad.android.KartPadActivity`, which launches the game process directly. Leave arguments empty for this first Original-mode capture.
 3. Reproduce the same scene, capture one frame and keep a screenshot showing the defect. Confirm the capture is of the game and that the captured image still has the defect. A chooser-only capture or a frame where the defect disappears does not satisfy the request.
 4. Share the capture privately with the maintainer, together with the screenshot, app version and phone/GPU information. A frame capture may contain textures and meshes; do not attach it to a public issue or ordinary public log export.
 
