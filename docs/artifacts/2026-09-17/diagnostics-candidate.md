@@ -1,5 +1,6 @@
 # Private diagnostics candidate — 2026-09-17
 
+Update: the owner subsequently authorized publishing diagnostics preview 2 and asking affected reporters to retry their normal failures. The earlier private-stage installation gate below is historical and does not block this preview. See [release instructions](../../releases/v0.4.25-diagnostics.2.md).
 Status: implementation complete; final artifact validation is recorded separately
 in `build/diagnostic-candidates/`. Physical acceptance remains pending. No publication, installation,
 reporter outreach, or affected-device acceptance is authorized for this stage.

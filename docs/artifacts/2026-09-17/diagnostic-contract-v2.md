@@ -1,5 +1,6 @@
 # Mobile diagnostic contract 2 — private Android 119 / iOS 51
 
+Update: the owner subsequently authorized publishing diagnostics preview 2 and asking affected reporters to retry their normal failures. The earlier private-stage installation gate below is historical and does not block this preview. See [release instructions](../../releases/v0.4.25-diagnostics.2.md).
 Reviewed 47 open GitHub issues on 2026-09-17. This is an evidence build, not a claim that the reported failures are fixed. Preserve the private 118/50 candidates. No installation, publication, or reporter outreach is part of this iteration.
 
 ## What changed and why
