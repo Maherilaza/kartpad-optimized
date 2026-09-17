@@ -95,11 +95,16 @@ int main() {
  busy.windows=120;
  { kartpad::diagnostics::FunctionScope s(busy); }
  assert(busy.calls==1);
+ kartpad::diagnostics::FunctionWindow emitted{"fixture_emitted"};
+ emitted.last -= std::chrono::seconds(6);
+ { kartpad::diagnostics::FunctionScope s(emitted); }
+ assert(emitted.windows==1 && emitted.calls==0);
 }
 '''
         with tempfile.TemporaryDirectory() as tmp:
             cpp=Path(tmp)/"test.cpp"; exe=Path(tmp)/"test";cpp.write_text(source)
             subprocess.run(["clang++","-std=c++20","-Wall","-Wextra","-Werror","-I",str(ROOT/"vendor/runtimes/android/runtime/include"),str(cpp),"-o",str(exe)],check=True)
-            subprocess.run([str(exe)],check=True)
+            run=subprocess.run([str(exe)],capture_output=True,text=True,check=True)
+            self.assertRegex(run.stderr, r"\[KartPadFunction\] pid=[1-9][0-9]* unix_ms=[1-9][0-9]* steady_ms=[1-9][0-9]* function=fixture_emitted window=1 calls=1")
 
 if __name__ == "__main__": unittest.main()
