@@ -35,6 +35,8 @@ Machine-readable results and source revisions are in `platform-investigation-evi
 
 ## Remaining fault boundaries and next decisions
 
+Follow-up: `graphics-test-blind-spots.md` establishes that the compatibility variant retains dynamic texture-matrix indexing, one target uses alpha discard, and native backend validation is disabled. The comparison below isolates position/normal indexing only; a negative result does not clear all matrix indexing or prove either recipe belongs to the missing body.
+
 1. **Guest data and encoded draw inputs.** Equal generators do not imply equal vertices, indices, matrices, projection, viewport or resource contents. Current finite-matrix/index checks cover only part of that boundary. A matched scene comparison should check semantic ranges and layout first; animation/timing means unrelated whole-frame hashes would be misleading.
 2. **Merge/state/resource lifetime.** Both existing indexing comparison modes disable draw merging. If both restore the body relative to Normal, inspect merge/state behavior before attributing the result to matrix indexing. If only compatibility restores it, inspect the indexing/backend path. Reversing the comparison checks whether the improvement persists for unrelated reasons.
 3. **Actual backend output.** If inputs agree and the indexing comparison differentiates output, capture the narrowly targeted translated shader/device options and a failing draw. Host compilation cannot close that boundary. Do not infer a driver defect merely from vendor-specific code in Dawn.
