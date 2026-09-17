@@ -33,7 +33,7 @@ internal object KartPadExitTraces {
                     .sortedByDescending { it.timestamp }.take(3)
                 for ((index, exit) in exits.withIndex()) {
                     val native = exit.reason == ApplicationExitInfo.REASON_CRASH_NATIVE
-                    val row = JSONObject().put("timestamp_ms", exit.timestamp)
+                    val row = JSONObject().put("timestamp_ms", exit.timestamp).put("pid", exit.pid)
                         .put("reason", if (native) "native_crash" else "anr")
                     entries.put(row)
                     // Read and close before opening a ZIP entry; optional OS failure must not damage the archive.

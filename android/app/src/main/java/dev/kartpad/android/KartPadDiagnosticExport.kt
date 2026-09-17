@@ -29,6 +29,22 @@ internal object KartPadDiagnosticExport {
             .sortedByDescending { it.modified }
     }
 
+    // Root journal can contain several processes/sessions; never silently label
+    // it as the selected session. Only a bounded tail of this allowlisted file.
+    private fun healthEvidence(root: File): ByteArray {
+        val file = File(root, "android-health.log")
+        if (!file.isFile || file.absoluteFile != file.canonicalFile)
+            return "Health journal unavailable.\n".toByteArray()
+        return RandomAccessFile(file, "r").use { input ->
+            val count = minOf(input.length(), 256L * 1024).toInt()
+            val omitted = input.length() - count
+            input.seek(omitted)
+            val data = ByteArray(count)
+            input.readFully(data)
+            "Health history: match pid/unix_ms to the selected session; older entries may lack them. Earlier bytes omitted=$omitted.\n".toByteArray() + data
+        }
+    }
+
     /** One attachable text file; only the selected runtime session, never saves or identity files. */
     fun writeText(context: Context, destination: Uri, sessionId: String?) {
         val root = logsRoot(context)
@@ -56,6 +72,8 @@ internal object KartPadDiagnosticExport {
             out.write(KartPadExitDiagnostics.snapshot(context).toByteArray())
             out.write("\n--- Native crash frames (recent OS history; match timestamp) ---\n".toByteArray())
             out.write(KartPadExitTraces.summary(context).toByteArray())
+            out.write("\n--- Recent health history (not automatic session attribution) ---\n".toByteArray())
+            out.write(healthEvidence(root))
             for (file in files) {
                 out.write("\n--- ${file.name} ---\n".toByteArray())
                 RandomAccessFile(file, "r").use { input ->
@@ -120,6 +138,9 @@ internal object KartPadDiagnosticExport {
             zip.write(KartPadExitDiagnostics.snapshot(context).toByteArray())
             zip.closeEntry()
             KartPadExitTraces.write(context, zip)
+            zip.putNextEntry(ZipEntry("health-history.txt"))
+            zip.write(healthEvidence(root))
+            zip.closeEntry()
             val buffer = ByteArray(32 * 1024)
             for (file in files) {
                 zip.putNextEntry(ZipEntry("Logs/" + file.relativeTo(root).invariantSeparatorsPath))

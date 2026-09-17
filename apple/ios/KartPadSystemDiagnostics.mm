@@ -3,6 +3,8 @@
 #import <CommonCrypto/CommonDigest.h>
 #import <mach-o/dyld.h>
 #import <mach-o/loader.h>
+#import <mach/mach.h>
+#include <unistd.h>
 
 static const NSUInteger MaximumPayload = 1024 * 1024;
 static const NSUInteger MaximumReports = 8;
@@ -93,6 +95,30 @@ void KartPadSystemDiagnosticsStart(void) {
             [[NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleVersion"] UTF8String]);
         subscriber = [KartPadSystemDiagnosticSubscriber new];
         [MXMetricManager.sharedManager addSubscriber:subscriber];
+        // Independent of the UI/game thread: a stalled frame does not suppress
+        // thermal/memory evidence. The native transcript retains this bounded rate.
+        static dispatch_source_t healthTimer;
+        healthTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, DiagnosticQueue());
+        dispatch_source_set_timer(healthTimer, DISPATCH_TIME_NOW, 10*NSEC_PER_SEC, NSEC_PER_SEC);
+        dispatch_source_set_event_handler(healthTimer, ^{
+            static unsigned samples = 0;
+            if (samples++ >= 720) { dispatch_source_cancel(healthTimer); return; }
+            task_vm_info_data_t memory{};
+            mach_msg_type_number_t count = TASK_VM_INFO_COUNT;
+            const bool available = task_info(mach_task_self(), TASK_VM_INFO,
+                reinterpret_cast<task_info_t>(&memory), &count) == KERN_SUCCESS;
+            char footprint[32]{};
+            if (available) snprintf(footprint, sizeof(footprint), "%llu", (unsigned long long)memory.phys_footprint);
+            else snprintf(footprint, sizeof(footprint), "null");
+            fprintf(stderr, "[KartPadHealth] {\"schema\":2,\"pid\":%d,\"unix_ms\":%lld,\"elapsed_ms\":%lld,\"thermal_status\":%ld,\"thermal_scale\":\"apple_process_info\",\"power_save\":%s,\"pss_kib\":null,\"physical_footprint_bytes\":%s,\"final_sample\":%s}\n",
+                getpid(), (long long)(NSDate.date.timeIntervalSince1970*1000),
+                (long long)(NSProcessInfo.processInfo.systemUptime*1000),
+                (long)NSProcessInfo.processInfo.thermalState,
+                NSProcessInfo.processInfo.lowPowerModeEnabled ? "true" : "false", footprint,
+                samples == 720 ? "true" : "false");
+        });
+        dispatch_resume(healthTimer);
+
         NSArray *past = MXMetricManager.sharedManager.pastDiagnosticPayloads;
         if (past.count) [subscriber didReceiveDiagnosticPayloads:past];
     });

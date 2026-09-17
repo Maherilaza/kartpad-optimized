@@ -9,6 +9,35 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 
 class NativeDiagnosticContracts(unittest.TestCase):
+    def test_shared_wire_format_and_independent_budgets(self):
+        import json
+        canonical = ROOT / "runtime/include/kartpad/diagnostics/events.h"
+        for platform in ("android", "ios"):
+            self.assertEqual(canonical.read_bytes(), (ROOT/"vendor/runtimes"/platform/"aurora-main/include/aurora/kartpad_diagnostics.h").read_bytes())
+        source = r'''#include "events.h"
+#include <limits>
+int main() {
+ using namespace kartpad::diagnostics;
+ event(Boundary::Adapter,"rejected",7,"quote\"slash\\newline\n");
+ for(int i=0;i<100;i++) event(Boundary::Instance,"driver_message",i,std::string(600,'x'));
+ event(Boundary::Device,"uncaptured_error",9,"later failure");
+ frame(300,std::numeric_limits<double>::infinity(),2,3,4,5,1);
+}'''
+        source = '#include <string>\n' + source
+        with tempfile.TemporaryDirectory() as tmp:
+            cpp=Path(tmp)/"test.cpp"; exe=Path(tmp)/"test";cpp.write_text(source)
+            subprocess.run(["clang++","-std=c++20","-Wall","-Wextra","-Werror","-I",str(canonical.parent),str(cpp),"-o",str(exe)],check=True)
+            run=subprocess.run([str(exe)],capture_output=True,text=True,check=True)
+        rows=[json.loads(line.split(" ",1)[1]) for line in run.stderr.splitlines()]
+        self.assertEqual(len(rows),36)
+        self.assertEqual(rows[0]["detail"], 'quote"slash\\newline ')
+        self.assertEqual(rows[1]["detail"], 'x'*512)
+        self.assertTrue(rows[1]["detail_truncated"])
+        self.assertEqual(rows[-3]["status"],"budget_exhausted")
+        self.assertEqual(rows[-2]["boundary"],"device")
+        self.assertEqual(rows[-1]["fps"],-1)
+        self.assertTrue(all(row["pid"]>0 and row["schema"]==2 for row in rows))
+
     def test_exact_build_id_symbolization(self):
         tools = Path.home()/"Library/Android/sdk/ndk/29.0.14206865/toolchains/llvm/prebuilt/darwin-x86_64/bin"
         spec = importlib.util.spec_from_file_location("symbolize", ROOT/"scripts/symbolize-android-frame.py")

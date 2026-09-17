@@ -33,10 +33,11 @@ fun main() {
     val exits = report.getJSONArray("exits")
     check(exits.length() == 8)
     val first = exits.getJSONObject(0)
+    check(first.getInt("pid") == 42)
     check(first.getString("reason") == "native_crash" && first.getInt("status") == 11)
     check(first.getInt("version_code") == 22 && first.getString("last_profile") == "retro_rewind")
     check(first.getLong("pss_kib") == 2048L && first.getLong("rss_kib") == 4096L)
-    check(first.keySet() == setOf("timestamp_ms", "reason_code", "reason", "status", "importance",
+    check(first.keySet() == setOf("pid", "timestamp_ms", "reason_code", "reason", "status", "importance",
         "pss_kib", "rss_kib", "version_code", "last_profile"))
     check(exits.getJSONObject(1).getString("reason") == "low_memory")
     check(exits.getJSONObject(1).isNull("version_code") && exits.getJSONObject(1).isNull("pss_kib"))
