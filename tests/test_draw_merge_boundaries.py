@@ -110,6 +110,35 @@ int main() {
 }
 ''')
 
+    def test_vertex_format_switch_breaks_merge_even_at_equal_stride(self):
+        for platform, text in self.sources():
+            with self.subTest(platform=platform):
+                start = text.index("static u32 calculate_last_vtx_size(")
+                function = text[start:text.index("static void handle_draw_unmerged(", start)]
+                self.run_cpp(r'''
+#include <array>
+#include <cassert>
+#include <cstdint>
+using u32=uint32_t; using GXVtxFmt=int; using GXAttr=int;
+constexpr int GX_VA_PNMTXIDX=0, GX_VA_POS=9, GX_VA_NRM=10, GX_VA_TEX7=20;
+constexpr int GX_NONE=0, GX_DIRECT=1, GX_INDEX8=2, GX_INDEX16=3, GX_NRM_NBT3=9;
+struct Attr { unsigned type=0, cnt=0; };
+struct Format { std::array<Attr, 26> attrs; };
+struct State { std::array<Format, 8> vtxFmts; std::array<int,26> vtxDesc{};
+  GXVtxFmt lastVtxFmt=0; unsigned lastVtxSize=6; bool stateDirty=false; } g_gxState;
+unsigned comp_type_size(GXAttr, unsigned type) {return type==2 || type==3 ? 2 : 4;}
+unsigned comp_cnt_count(GXAttr, unsigned count) {return count;}
+''' + function + r'''
+int main() {
+  g_gxState.vtxDesc[GX_VA_POS]=GX_DIRECT;
+  g_gxState.vtxFmts[0].attrs[GX_VA_POS]={2,3};
+  g_gxState.vtxFmts[1].attrs[GX_VA_POS]={3,3};
+  assert(calculate_last_vtx_size(1)==6);
+  assert(g_gxState.lastVtxFmt==1);
+  assert(g_gxState.stateDirty && "new format must not use the previous draw shader/layout");
+}
+''')
+
 
 if __name__ == "__main__":
     unittest.main()
