@@ -6,6 +6,16 @@ repo_root="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$repo_root"
 translation="${1:?Supply the existing validated private translation directory}"
 export DAWN_ANDROID_ROOT="${2:?Supply the backported Dawn Android install directory}"
+# Prevent an accidental rebuild against the unpatched prebuilt library.
+python3 - "$DAWN_ANDROID_ROOT/lib/libwebgpu_dawn.a" <<'PY'
+import hashlib, sys
+from pathlib import Path
+path = Path(sys.argv[1])
+with path.open('rb') as stream:
+    digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+if digest != '2552416c021482ac44981b9aeed791396cf45c80b4dbd517145fc91944739923':
+    raise SystemExit('Dawn library differs from the reviewed prototype; review dependency evidence before building.')
+PY
 export MINIZIP_ANDROID_ROOT="${3:?Supply the pinned minizip source directory}"
 export MBEDTLS_ANDROID_ROOT="${4:?Supply the pinned mbedTLS source directory}"
 discio="${5:?Supply the existing DiscIO JNI directory}"
@@ -24,5 +34,5 @@ export CMAKE_BUILD_PARALLEL_LEVEL="${KARTPAD_PROTOTYPE_JOBS:-6}"
   -PkartpadTranslatedShardManifest="$translation/build_shards/shards.cmake" \
   -PkartpadAndroidNativeTarget=KartPadDual -PkartpadDiscIoJniRoot="$discio" \
   -PkartpadDiagnosticRelease=true -PkartpadProfileable=true \
-  -PkartpadVersionCode=122 -PkartpadVersionName=0.4.25-stabilization.1-prototype :app:assembleRelease
+  -PkartpadVersionCode=123 -PkartpadVersionName=0.4.25-stabilization.2-prototype :app:assembleRelease
 echo 'Local prototype only; verify the signer before considering any in-place device test.'

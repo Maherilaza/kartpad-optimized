@@ -90,6 +90,11 @@ fun main() {
             check(android.system.Os.getenv("KARTPAD_RENDERER_CONST_PNMTX") == null)
         }
         check(!KartPadRendererDiagnostics.enabled(game))
+        fun newRendererProcess() {
+            val latch = KartPadRendererDiagnostics::class.java.getDeclaredField("configured")
+            latch.isAccessible = true
+            latch.setBoolean(null, false)
+        }
         check(KartPadRendererDiagnostics.setEnabled(chooser, true))
         KartPadRendererDiagnostics.configure(game)
         check(KartPadRendererDiagnostics.active && android.system.Os.getenv("KARTPAD_RENDERER_VALIDATION") == "1")
@@ -97,13 +102,26 @@ fun main() {
         check(!KartPadRendererDiagnostics.setEnabled(chooser, false))
         check(KartPadRendererDiagnostics.enabled(game))
         android.util.AtomicFile.failSuffix = null
+        android.util.AtomicFile.silentFailSuffix = "RendererValidation"
+        check(!KartPadRendererDiagnostics.setEnabled(chooser, false))
+        check(KartPadRendererDiagnostics.enabled(game))
+        android.util.AtomicFile.silentFailSuffix = null
         check(KartPadRendererDiagnostics.setEnabled(chooser, false))
+        KartPadRendererDiagnostics.configure(game)
+        // The native renderer caches its environment setting. Activity recreation
+        // must not relabel the running session with the next-launch preference.
+        check(KartPadRendererDiagnostics.active && android.system.Os.getenv("KARTPAD_RENDERER_VALIDATION") == "1")
+        newRendererProcess()
         KartPadRendererDiagnostics.configure(game)
         check(!KartPadRendererDiagnostics.active && android.system.Os.getenv("KARTPAD_RENDERER_VALIDATION") == "0")
         java.io.File(root, "KartPad/RendererValidation").writeText("1\nprivate-data")
         check(!KartPadRendererDiagnostics.enabled(game))
+        newRendererProcess()
+        KartPadRendererDiagnostics.configure(game)
+        check(!KartPadRendererDiagnostics.active)
     } finally {
         android.util.AtomicFile.failSuffix = null
+        android.util.AtomicFile.silentFailSuffix = null
         root.deleteRecursively()
     }
     println("PASS: API compatibility, bounded exit attribution, privacy, failure recovery, durable renderer setting")

@@ -2,6 +2,27 @@
 
 This is a local experiment based on KartPad `c9f425c` (the Android121 diagnostic line), not a release branch promotion. It preserves the existing checkout, diagnostic artifacts, public versions and device data. It has two independently testable parts: a full Android app candidate for classified defects, and a small GPU executable for the proposed renderer allocation refactor.
 
+## Phone preparation follow-up
+
+The revised app candidate is `0.4.25-stabilization.2-prototype`, code123. Code122 remains archived unchanged. This revision fixes two Android diagnostic-setting defects: silent `AtomicFile` publication failure is detected by readback, and activity recreation retains the game process's actual validation mode instead of applying a pending preference to its report. Existing settings are preserved; changing the setting still takes effect on the next game-process launch. Fault-injected host regressions reproduce the old persistence failure and cover the corrected behavior.
+
+The build entry point now verifies the reviewed backported Dawn library digest before invoking Gradle. Supplying the old or an otherwise different library fails before the app build. A deliberate dependency rebuild needs its own identity review before changing that approved digest.
+
+The GPU probe now tests both overwriting and additive drawing. The latter makes every earlier draw contribute to the final pixel, so later draws cannot hide a lost submission. All eight GPU cases pass. An intentionally faulty local probe omitting the first 256 draws passes the old overwrite checks but fails the new accumulated-pixel check as expected.
+
+Before putting a candidate on a phone, run the **read-only** identity preflight:
+
+```sh
+python3 prototypes/stabilization/phone-preflight.py /absolute/path/to/reviewed.apk \
+  --sha256 DIGEST_FROM_ITS_EVIDENCE --connected
+```
+
+It checks the reviewed APK digest, verified signer, package and forward version against the installed base APK, plus the connected phone's API and ABI. It rejects ambiguous or unauthorized devices and never installs, launches, clears or uninstalls an app. `--installed-apk /path/to/previous.apk` can substitute for `--connected` for an explicitly offline comparison; it does not establish what is on the phone. Neither mode proves free space, backup completeness, Vulkan driver support or gameplay.
+
+The candidate still uses the local debug identity. A public-release installation requires a separately prepared candidate with the existing public signing identity; a preflight mismatch is a stop, not a reason to remove the app. The existing general hardware installer is not the prototype's preflight and has historical defaults; do not invoke it without reviewing its complete handoff.
+
+For the first game run, preserve/export existing saves and use **Character Graphics Test: Normal** and **Renderer Validation: Off** from Getting Started, then fully close and reopen KartPad. Earlier comparison preferences survive an update and disable draw merging; the revised build intentionally does not erase them. Check that existing Original/Retro profiles and saves are visible before proceeding. Then use one known race for startup, rendering, pause/resume and return-to-chooser checks. This is a bounded first smoke test, not broad device or performance acceptance. Do not begin by repeating the older indexing comparisons.
+
 ## Changes in the app candidate
 
 - The Android runtime contains WiiCompiled's sleep-timer reentry correction, `c2289e4ba4132aa3fb2afaadba3136bf3999b199`.
@@ -21,7 +42,7 @@ The admission test runs boundary cases, interpolation-sized reservations, clear/
 
 `gpu_batch_probe.cpp` is an executable WebGPU experiment, not a model of GPU completion. It allocates three mapped staging buffers, uploads real vertex/index/uniform/storage data, submits indexed rendering, waits for mapping before reusing a slot, preserves the target with load operations across submissions, and reads back actual pixels. It also injects oversized requests before valid draws to verify rejection does not disturb subsequent output.
 
-On the Apple M3 Max, all runs matched independently calculated pixel values, and every split result was byte-identical to the unsplit control:
+On the Apple M3 Max, all runs matched independently calculated pixel values, and every split result was byte-identical to the unsplit control. Each workload below now runs in both overwrite and additive modes:
 
 | Workload | Submitted batches | Result |
 |---|---:|---|

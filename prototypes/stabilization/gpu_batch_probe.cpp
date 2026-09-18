@@ -14,7 +14,10 @@ using namespace std::chrono_literals;
 static void require(bool ok,const char* message) {if(!ok) throw std::runtime_error(message);}
 static constexpr unsigned Width=16, Draws=769;
 static std::atomic_uint errors{0};
-static std::array<unsigned char,4> color(unsigned draw) {
+static std::array<unsigned char,4> color(unsigned draw,bool accumulate=false) {
+  if(accumulate) return {static_cast<unsigned char>(draw%31+1),
+    static_cast<unsigned char>((draw*3%31+1)*2),
+    static_cast<unsigned char>(draw*7%31+1),static_cast<unsigned char>(draw%17+1)};
   return {static_cast<unsigned char>((draw*17+3)%251),static_cast<unsigned char>((draw*31+7)%251),
           static_cast<unsigned char>((draw*43+11)%251),255};
 }
@@ -79,7 +82,7 @@ struct GPU {
   }
 };
 
-static std::vector<unsigned char> render(GPU& gpu,unsigned drawsPerBatch,bool mixedLimits) {
+static std::vector<unsigned char> render(GPU& gpu,unsigned drawsPerBatch,bool mixedLimits,bool accumulate=false) {
   const auto ua=gpu.limits.minUniformBufferOffsetAlignment;
   const auto sa=gpu.limits.minStorageBufferOffsetAlignment;
   Sizes capacity{32ull*drawsPerBatch, uint64_t(ua)*drawsPerBatch+3840,
@@ -129,6 +132,13 @@ static std::vector<unsigned char> render(GPU& gpu,unsigned drawsPerBatch,bool mi
   wgpu::VertexAttribute attr{};attr.format=wgpu::VertexFormat::Float32x2;attr.shaderLocation=0;
   wgpu::VertexBufferLayout vertex{};vertex.arrayStride=8;vertex.attributeCount=1;vertex.attributes=&attr;
   wgpu::ColorTargetState target{};target.format=textureDesc.format;
+  // The overwrite workload checks the final draw per tile. Additive rendering
+  // also makes every earlier draw observable, catching lost submitted prefixes.
+  wgpu::BlendState blend{};
+  blend.color.operation=blend.alpha.operation=wgpu::BlendOperation::Add;
+  blend.color.srcFactor=blend.color.dstFactor=wgpu::BlendFactor::One;
+  blend.alpha.srcFactor=blend.alpha.dstFactor=wgpu::BlendFactor::One;
+  if(accumulate) target.blend=&blend;
   wgpu::FragmentState fragment{};fragment.module=shader;fragment.entryPoint="fs";
   fragment.targetCount=1;fragment.targets=&target;
   wgpu::RenderPipelineDescriptor pipeDesc{};pipeDesc.layout=pipelineLayout;
@@ -180,7 +190,7 @@ static std::vector<unsigned char> render(GPU& gpu,unsigned drawsPerBatch,bool mi
     auto status=reservation.reserve(requests,ranges);
     if(status==Admission::Flush){flush();status=reservation.reserve(requests,ranges);}
     require(status==Admission::Accepted,"Draw admission failed");
-    const auto rgba=color(n);float values[4];for(unsigned i=0;i<4;++i)values[i]=rgba[i]/255.f;
+    const auto rgba=color(n,accumulate);float values[4];for(unsigned i=0;i<4;++i)values[i]=rgba[i]/255.f;
     const void* inputs[]{vertices,values,indices,factors};const size_t sizes[]{32,16,12,16};
     for(unsigned i=0;i<4;++i){auto* dst=memory+base[i]+ranges[i].offset;
       std::memset(dst,0,ranges[i].size);std::memcpy(dst,inputs[i],sizes[i]);}
@@ -201,11 +211,19 @@ static std::vector<unsigned char> render(GPU& gpu,unsigned drawsPerBatch,bool mi
   for(unsigned tile=0;tile<Width*Width;++tile) {
     const unsigned last=tile+((Draws-1-tile)/(Width*Width))*(Width*Width);
     auto expected=color(last);expected[1]=static_cast<unsigned char>(std::lround(expected[1]*0.5));
+    if(accumulate) {
+      expected={};
+      for(unsigned draw=tile;draw<Draws;draw+=Width*Width) {
+        const auto contribution=color(draw,true);
+        for(unsigned channel=0;channel<4;++channel)
+          expected[channel]+=channel==1?contribution[channel]/2:contribution[channel];
+      }
+    }
     for(unsigned channel=0;channel<4;++channel)
       require(std::abs(int(pixels[tile*4+channel])-int(expected[channel]))<=1,"Rendered pixel disagrees with independent expected output");
   }
   require(errors==0,"GPU error");
-  std::cout<<"PASS: "<<Draws<<" indexed draws, "<<batches<<" batches, 3 staging slots, "
+  std::cout<<"PASS: "<<(accumulate?"accumulate, ":"overwrite, ")<<Draws<<" indexed draws, "<<batches<<" batches, 3 staging slots, "
            <<total*3<<" staging bytes, output matches expected pixels\n";
   return pixels;
 }
@@ -216,6 +234,10 @@ int main() {
   require(render(gpu,5,false)==control,"Split and unsplit pixels differ");
   require(render(gpu,5,true)==control,"Mixed-buffer pressure changes pixels");
   require(render(gpu,1,false)==control,"Single-draw batch pixels differ");
+  auto accumulated=render(gpu,Draws,false,true);
+  require(render(gpu,5,false,true)==accumulated,"Split accumulation differs");
+  require(render(gpu,5,true,true)==accumulated,"Mixed-buffer accumulation differs");
+  require(render(gpu,1,false,true)==accumulated,"Single-draw accumulation differs");
   std::cout<<"PASS: all split outputs byte-identical to control, zero GPU validation errors\n";
  } catch(const std::exception& e){std::cerr<<"FAIL: "<<e.what()<<"\n";return 1;}
 }
