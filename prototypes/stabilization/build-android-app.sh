@@ -10,6 +10,7 @@ export MINIZIP_ANDROID_ROOT="${3:?Supply the pinned minizip source directory}"
 export MBEDTLS_ANDROID_ROOT="${4:?Supply the pinned mbedTLS source directory}"
 discio="${5:?Supply the existing DiscIO JNI directory}"
 : "${JAVA_HOME:?Set JAVA_HOME to the pinned JDK}"
+export ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$HOME/Library/Android/sdk}}"
 [[ -f android/app/libs/SDL3-3.4.4.aar ]] || { echo 'Prepare the pinned SDL AAR first.' >&2; exit 1; }
 runtime="$repo_root/build/prototype-android/runtime"
 if [[ ! -e "$runtime" ]]; then
