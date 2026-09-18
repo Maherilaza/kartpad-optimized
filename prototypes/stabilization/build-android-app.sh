@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# Deliberate local dependency override, confined to this prototype entry point.
+# No installation, public signing, publication, or production lock update.
+repo_root="$(cd "$(dirname "$0")/../.." && pwd)"
+cd "$repo_root"
+translation="${1:?Supply the existing validated private translation directory}"
+export DAWN_ANDROID_ROOT="${2:?Supply the backported Dawn Android install directory}"
+export MINIZIP_ANDROID_ROOT="${3:?Supply the pinned minizip source directory}"
+export MBEDTLS_ANDROID_ROOT="${4:?Supply the pinned mbedTLS source directory}"
+discio="${5:?Supply the existing DiscIO JNI directory}"
+: "${JAVA_HOME:?Set JAVA_HOME to the pinned JDK}"
+[[ -f android/app/libs/SDL3-3.4.4.aar ]] || { echo 'Prepare the pinned SDL AAR first.' >&2; exit 1; }
+runtime="$repo_root/build/prototype-android/runtime"
+if [[ ! -e "$runtime" ]]; then
+  bash scripts/prepare-android-game-runtime.sh "$translation" "$runtime" \
+    "$repo_root/build/prototype-android/unused-native-build" dual
+fi
+python3 scripts/stage-maintained-runtime.py --verify android "$runtime"
+export CMAKE_BUILD_PARALLEL_LEVEL="${KARTPAD_PROTOTYPE_JOBS:-6}"
+./android/gradlew --project-dir android --no-daemon --max-workers=4 \
+  -PkartpadGameRuntimeSource="$runtime" \
+  -PkartpadTranslatedShardManifest="$translation/build_shards/shards.cmake" \
+  -PkartpadAndroidNativeTarget=KartPadDual -PkartpadDiscIoJniRoot="$discio" \
+  -PkartpadDiagnosticRelease=true -PkartpadProfileable=true \
+  -PkartpadVersionCode=122 -PkartpadVersionName=0.4.25-stabilization.1-prototype :app:assembleRelease
+echo 'Local prototype only; verify the signer before considering any in-place device test.'

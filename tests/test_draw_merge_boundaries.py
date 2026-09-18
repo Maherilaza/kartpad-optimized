@@ -1,6 +1,8 @@
 """Execute production FIFO invalidation and merge eligibility against boundary cases."""
 from pathlib import Path
 import re
+import os
+import shlex
 import shutil
 import subprocess
 import tempfile
@@ -11,17 +13,17 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class DrawMergeBoundaries(unittest.TestCase):
     def run_cpp(self, source):
-        compiler = shutil.which("clang++") or shutil.which("g++")
+        compiler = os.environ.get("CXX") or shutil.which("clang++") or shutil.which("g++")
         self.assertIsNotNone(compiler)
         with tempfile.TemporaryDirectory() as tmp:
             cpp, exe = Path(tmp) / "test.cpp", Path(tmp) / "test"
             cpp.write_text(source)
-            subprocess.run([compiler, "-std=c++20", "-fsanitize=address", str(cpp), "-o", str(exe)], check=True)
+            subprocess.run([*shlex.split(compiler), "-std=c++20", "-fsanitize=address", str(cpp), "-o", str(exe)], check=True)
             result = subprocess.run([str(exe)], capture_output=True, text=True, timeout=10)
             self.assertEqual(result.returncode, 0, result.stderr)
 
     def sources(self):
-        for platform in ("android", "ios"):
+        for platform in ("android", "ios", "macos", "tvos"):
             yield platform, (ROOT / "vendor/runtimes" / platform /
                              "aurora-main/lib/gx/command_processor.cpp").read_text()
 
