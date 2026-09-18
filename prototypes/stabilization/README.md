@@ -4,7 +4,7 @@ This is a local experiment based on KartPad `c9f425c` (the Android121 diagnostic
 
 ## Phone preparation follow-up
 
-The revised app candidate is `0.4.25-stabilization.2-prototype`, code123. Code122 remains archived unchanged. This revision fixes two Android diagnostic-setting defects: silent `AtomicFile` publication failure is detected by readback, and activity recreation retains the game process's actual validation mode instead of applying a pending preference to its report. Existing settings are preserved; changing the setting still takes effect on the next game-process launch. Fault-injected host regressions reproduce the old persistence failure and cover the corrected behavior.
+The revised app candidate is `0.4.25-stabilization.2-prototype`, code123. Code122 remains archived unchanged. This revision fixes Android diagnostic-setting defects: silent `AtomicFile` publication failure is detected by readback, read failures cannot falsely confirm disabling validation or returning character indexing to Normal, and activity recreation retains the game process's actual validation mode instead of applying a pending preference to its report. Existing settings are preserved; changing the setting still takes effect on the next game-process launch. Fault-injected host regressions reproduce the old persistence failure and cover the corrected behavior.
 
 The build entry point now verifies the reviewed backported Dawn library digest before invoking Gradle. Supplying the old or an otherwise different library fails before the app build. A deliberate dependency rebuild needs its own identity review before changing that approved digest.
 

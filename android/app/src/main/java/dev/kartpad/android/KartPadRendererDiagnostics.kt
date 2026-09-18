@@ -28,7 +28,11 @@ internal object KartPadRendererDiagnostics {
             output.write(if (enabled) '1'.code else '0'.code)
             output.fd.sync()
             file.finishWrite(output)
-            check(enabled(context) == enabled) { "Setting publication failed" }
+            // Do not use enabled(): its read-error fallback is false, which
+            // would incorrectly confirm a failed read when disabling checks.
+            check(file.openRead().use {
+                it.read() == (if (enabled) '1'.code else '0'.code) && it.read() == -1
+            }) { "Setting publication failed" }
         } catch (error: Exception) {
             file.failWrite(output)
             throw error

@@ -89,6 +89,9 @@ fun main() {
             check(KartPadCharacterGraphicsTest.active == KartPadCharacterGraphicsTest.Mode.NORMAL)
             check(android.system.Os.getenv("KARTPAD_RENDERER_CONST_PNMTX") == null)
         }
+        android.util.AtomicFile.readFailSuffix = "CharacterGraphicsTest"
+        check(!KartPadCharacterGraphicsTest.setMode(chooser, KartPadCharacterGraphicsTest.Mode.NORMAL))
+        android.util.AtomicFile.readFailSuffix = null
         check(!KartPadRendererDiagnostics.enabled(game))
         fun newRendererProcess() {
             val latch = KartPadRendererDiagnostics::class.java.getDeclaredField("configured")
@@ -119,9 +122,14 @@ fun main() {
         newRendererProcess()
         KartPadRendererDiagnostics.configure(game)
         check(!KartPadRendererDiagnostics.active)
+        android.util.AtomicFile.readFailSuffix = "RendererValidation"
+        // The default-off read policy must not falsely confirm a write.
+        check(!KartPadRendererDiagnostics.setEnabled(chooser, false))
+        android.util.AtomicFile.readFailSuffix = null
     } finally {
         android.util.AtomicFile.failSuffix = null
         android.util.AtomicFile.silentFailSuffix = null
+        android.util.AtomicFile.readFailSuffix = null
         root.deleteRecursively()
     }
     println("PASS: API compatibility, bounded exit attribution, privacy, failure recovery, durable renderer setting")
