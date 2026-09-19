@@ -103,6 +103,6 @@ int main() {
 '''
 with tempfile.TemporaryDirectory(prefix='kartpad-pipeline-budget-') as d:
     p=Path(d); (p/'probe.cpp').write_text(preamble+'\n'+constants+'\n'+loader+'\n'+promotion+'\n'+worker+'\n'+main)
-    subprocess.run(['clang++','-std=c++20','-O2','-pthread',str(p/'probe.cpp'),'-lsqlite3','-o',str(p/'probe')],check=True)
+    subprocess.run(['clang++','-std=c++20','-O1','-g','-fsanitize=address,undefined','-fno-omit-frame-pointer','-pthread',str(p/'probe.cpp'),'-lsqlite3','-o',str(p/'probe')],check=True)
     subprocess.run([str(p/'probe')],check=True,timeout=10)
 print('Production cache admission/SQLite reuse/cache preservation and priority-worker progress passed.')
