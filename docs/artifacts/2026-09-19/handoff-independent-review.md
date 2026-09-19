@@ -24,7 +24,7 @@ with AddressSanitizer and UndefinedBehaviorSanitizer.
 | R5: incomplete primitives cross draw boundaries | Reproduced in candidate-before source | Emit complete list triangles; short strips/fans emit nothing. Short line draws are consumed before upload/instance-count arithmetic. |
 | R6: quad remainder references absent vertex | Reproduced in candidate-before source | Complete groups retain prior winding; a three-vertex remainder becomes one triangle; one/two vertices emit nothing. |
 | R7: 16-bit quad counter wraps | Old source fails; wide counter already present in candidate | Retained wide counter; combined tests cover output count, winding and bounds, including 65,520–65,535. |
-| R8: mapped staging slice aborts at capacity | Confirmed `ByteBuffer::resize` abort and the additional 3,840-byte final uniform tail | Not repaired by topology changes. Reservation and real GPU split probes remain experiments, not integrated renderer protection. |
+| R8: mapped staging slice aborts at capacity | Confirmed `ByteBuffer::resize` abort and the additional 3,840-byte final uniform tail | Integrated in September 20 source `2da33c5`: complete-operation admission, bounded retry, offscreen-prefix preservation, and readback generation handling. Real forced-capacity GPU comparisons pass. Oversized operations receive typed rejection; updated app packages and physical acceptance remain pending. See [capacity validation](staging-capacity-verification.md). |
 
 The topology test samples small counts, counts spaced by 127, and every count
 from 65,520 through 65,535. It validates every emitted index in each sampled

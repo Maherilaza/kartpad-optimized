@@ -272,3 +272,18 @@ refreshing those stale fixtures and using `PYTHONPATH=builder`, all 283 local
 tests pass; the product implementation was not changed to satisfy old fixtures.
 The goal remains active: integrate new app builds, resolve remaining controller
 ownership and compatibility questions, and meet the coordinated release gates.
+
+## September 20: controller ownership and saved assignment
+
+The controller review reproduced and fixed three Android defects: assigned SDL
+controllers exposed both mapped Classic and unmapped GameCube input; explicit
+Unassigned was overridden by single-device fallback; and legacy controller
+settings updated SDL without updating the cached Classic player index. The
+actual SDL virtual-device probe passes mapping, suspension, two-player changes,
+release, reconnect and persisted empty-port restart. Matched ASan/UBSan builds
+also pass, and all 286 local tests pass. See
+[android-controller-routing.md](android-controller-routing.md) for negative
+controls and hardware acceptance limits. The Auto-accelerate toggle remains in
+the candidate. Code132/build56 packaging will integrate these Android fixes and
+the all-platform staging-capacity work; older code131/build55 packages do not
+contain these newer changes.
