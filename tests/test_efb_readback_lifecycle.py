@@ -35,7 +35,7 @@ class EfbReadbackLifecycle(unittest.TestCase):
                                             '-fsanitize=address,undefined', '-fno-omit-frame-pointer',
                                             str(cpp), '-o', str(executable)], capture_output=True, text=True)
                     self.assertEqual(build.returncode, 0, build.stderr)
-                    for mode in ('uv', 'success', 'timeout', 'message', 'stale', 'shutdown'):
+                    for mode in ('uv', 'epoch', 'success', 'timeout', 'message', 'stale', 'shutdown'):
                         with self.subTest(mode=mode):
                             env = dict(os.environ, ASAN_OPTIONS='detect_stack_use_after_return=1')
                             run = subprocess.run([str(executable), mode], capture_output=True,
@@ -94,6 +94,8 @@ using TextureHandle = std::shared_ptr<Texture>;
 struct Range {};
 std::array<float, 12> uniform{};
 int uniformWrites=0, guestWrites=0;
+uint64_t testEpoch=1;
+uint64_t staging_epoch() { return testEpoch; }
 TextureHandle new_conv_texture(uint32_t width,uint32_t height,GXTexFmt,const char*) {
   return std::make_shared<Texture>(Texture{{width,height}});
 }
@@ -134,6 +136,14 @@ int main(int argc, char** argv) {
     ensure_native_texture(next,&cache); assert(next.nativeTexture==cache && uniformWrites==2);
     PendingCopy native{.dest=dest,.width=4,.height=4,.texture=cache};
     ensure_native_texture(native); assert(!native.nativeTexture && uniformWrites==2);
+  } else if(mode=="epoch") {
+    PendingCopy copy{.dest=dest,.width=4,.height=4,.texture=new_conv_texture(8,8,GX_TF_RGBA8,"")};
+    ensure_native_texture(copy);
+    const auto texture=copy.nativeTexture;
+    ++testEpoch;
+    ensure_native_texture(copy);
+    assert(copy.nativeTexture==texture && uniformWrites==2);
+    ensure_native_texture(copy); assert(uniformWrites==2);
   } else if(mode=="success" || mode=="timeout" || mode=="message") {
     Download download;
     download.copy={.dest=dest,.width=4,.height=4,.texture=new_conv_texture(4,4,GX_TF_RGBA8,"")};

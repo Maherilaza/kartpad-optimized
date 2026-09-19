@@ -247,3 +247,28 @@ no warmed-race speedup or full-race completion is claimed. Exact bounds and
 remaining acceptance limits are in
 [`pixel-code131-observation.json`](pixel-code131-observation.json). Log collection
 finished and the physical game process was left untouched.
+
+## September 20: integrated capacity admission
+
+R8 has progressed from a separate reservation prototype to production admission
+and automatic submission on all four maintained runtime pins. The real Aurora
+probe now forces each buffer boundary, the raw bridge, pending-readback and
+mid-offscreen splits, matching perspective interpolation, and 16 asynchronous
+worker frames. All pixel comparisons pass. An oversized primitive produces a
+typed error before staging mutation; primitive subdivision is still absent.
+See [staging-capacity-verification.md](staging-capacity-verification.md).
+
+The Android and iPhoneOS renderer libraries compile; this change is not yet in
+a new app package. Code 131's visible **Controls → Touch Settings →
+Auto-accelerate** toggle remains included: OFF disables the A latch and preserves
+normal press/hold/release, and its saved state survived restart and replacement
+of that candidate APK. The code 131 artifacts are historical acceptance inputs,
+not evidence that the newer capacity source has run on the phone.
+
+The first broader local test invocation exposed stale report/menu/release
+fixtures and a missing builder import path, separately from the capacity tests.
+The affected map fixture has been extended with the new generation state. After
+refreshing those stale fixtures and using `PYTHONPATH=builder`, all 283 local
+tests pass; the product implementation was not changed to satisfy old fixtures.
+The goal remains active: integrate new app builds, resolve remaining controller
+ownership and compatibility questions, and meet the coordinated release gates.

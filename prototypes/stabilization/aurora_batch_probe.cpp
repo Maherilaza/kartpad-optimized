@@ -5,9 +5,12 @@
 #include "gfx/texture.hpp"
 #include "gx/gx.hpp"
 #include "gx/fifo.hpp"
+#include "gx/command_processor.hpp"
+#include "gx/frame_interpolation.hpp"
 #include <dolphin/gx.h>
 #include <aurora/aurora.h>
 #include <array>
+#include <bit>
 #include <atomic>
 #include <chrono>
 #include <cstdio>
@@ -55,11 +58,11 @@ Pixels expected(unsigned extent) {
   return bytes;
 }
 
-Pixels run(unsigned splitEvery, bool async = false, bool offscreen = false, unsigned geometry = 0) {
+Pixels run(unsigned splitEvery, bool async = false, bool offscreen = false, unsigned geometry = 0, bool capacityStress = false, bool interpolate = false, bool frameWorker = false) {
   require(!async || !offscreen, "Combined probe mode is not supported");
   guardedBake.fill(0xa5);
   gx::g_gxState.clearColor = {0.f, 0.f, 0.f, 1.f};
-  require(gfx::begin_frame(), "Frame begin failed");
+  require(frameWorker ? aurora_begin_frame() : gfx::begin_frame(), "Frame begin failed");
   std::array<std::array<float, 3>, 4> positions{};
   if (geometry) {
     alignas(32) static std::array<uint8_t, 32768> fifo;
@@ -75,7 +78,7 @@ Pixels run(unsigned splitEvery, bool async = false, bool offscreen = false, unsi
     GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
     GXSetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
     GXSetChanCtrl(GX_COLOR0A0, false, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
-    const float projection[]{1.f, 1.f, 0.f, 1.f, 0.f, 0.f, -0.5f};
+    const float projection[]{interpolate ? 0.f : 1.f, 1.f, 0.f, 1.f, 0.f, 0.f, -0.5f};
     GXSetProjectionv(projection);
     GXClearVtxDesc();
     GXSetVtxDesc(GX_VA_POS, geometry == 2 ? GX_INDEX8 : GX_DIRECT);
@@ -91,9 +94,23 @@ Pixels run(unsigned splitEvery, bool async = false, bool offscreen = false, unsi
     if (geometry) {
       const float top = 1.f - band * 0.5f;
       const float bottom = top - 0.5f;
-      positions = {{{-1.f, top, 0.f}, {1.f, top, 0.f}, {1.f, bottom, 0.f}, {-1.f, bottom, 0.f}}};
+      const float z = interpolate ? -1.f : 0.f;
+      positions = {{{-1.f, top, z}, {1.f, top, z}, {1.f, bottom, z}, {-1.f, bottom, z}}};
       // Keep the same array address/format and change only its bytes between draws.
       if (geometry == 2) GXInvalidateVtxCache();
+      if (geometry == 3) {
+        std::array<uint8_t, 64> raw{};
+        for (unsigned index = 0; index < positions.size(); ++index) {
+          for (unsigned axis = 0; axis < 3; ++axis) {
+            const auto bits = std::bit_cast<uint32_t>(positions[index][axis]);
+            for (unsigned byte = 0; byte < 4; ++byte)
+              raw[index * 16 + axis * 4 + byte] = bits >> (24 - byte * 8);
+          }
+          std::copy(c.begin(), c.end(), raw.begin() + index * 16 + 12);
+        }
+        require(gx::fifo::submit_raw_draw(GX_QUADS, GX_VTXFMT0, raw.data(), 4, raw.size()),
+                "Raw bridge rejected valid quad");
+      } else {
       GXBegin(GX_QUADS, GX_VTXFMT0, 4);
       for (unsigned index = 0; index < positions.size(); ++index) {
         if (geometry == 2) GXPosition1x8(index);
@@ -101,6 +118,7 @@ Pixels run(unsigned splitEvery, bool async = false, bool offscreen = false, unsi
         GXColor4u8(c[0], c[1], c[2], 255);
       }
       GXEnd();
+      }
     } else {
     gfx::push_draw_command(gfx::clear::DrawData{
         .pipeline = pipeline,
@@ -115,12 +133,25 @@ Pixels run(unsigned splitEvery, bool async = false, bool offscreen = false, unsi
       gfx::begin_offscreen(64, 64);
       gfx::push_draw_command(gfx::clear::DrawData{
           .pipeline = pipeline, .color = {1., 0., 1., 1.}, .depth = 0.25f});
+      if (capacityStress) for (unsigned draw = 0; draw < 24; ++draw) {
+        gfx::push_draw_command(gfx::clear::DrawData{
+            .pipeline = pipeline, .color = {1., 0., 1., 1.}, .depth = 0.25f,
+            .useScissor = true, .scissor = {0, 0, 4, 4}});
+      }
       auto baked = gfx::new_render_texture(64, 64, GX_TF_RGBA8, "Aurora probe offscreen bake");
       gfx::resolve_pass(baked, {0, 0, 64, 64}, false, false, false,
                         {0.f, 0.f, 0.f, 1.f}, 1.f, GX_TF_RGBA8, nullptr, false,
                         nullptr, false, 1.f, false, false, true);
       gfx::efb_ram::schedule(guardedBake.data() + 16, 16, 16, GX_TF_RGBA8, baked);
       gfx::end_offscreen();
+      if (capacityStress) {
+        require(gfx::efb_ram::prepare_downloads(), "Early bake readback preparation failed");
+        for (unsigned draw = 0; draw < 24; ++draw) {
+          gfx::push_draw_command(gfx::clear::DrawData{
+              .pipeline = pipeline, .color = {1., 0., 0., 1.}, .depth = 0.5f,
+              .useScissor = true, .scissor = {0, 0, 4, 4}});
+        }
+      }
     }
     if (splitEvery && band < 3 && (band + 1) % splitEvery == 0) submit(false);
   }
@@ -135,7 +166,10 @@ Pixels run(unsigned splitEvery, bool async = false, bool offscreen = false, unsi
   const auto before = guestWrites.load(std::memory_order_acquire);
   if (async) gfx::efb_ram::seal_async_downloads();
   else require(gfx::efb_ram::prepare_downloads(), "Readback preparation failed");
-  submit(true, !async, async);
+  if (frameWorker) {
+    require(!async && aurora_flush_efb_copies_to_ram(), "Worker-mode EFB readback failed");
+    aurora_end_frame();
+  } else submit(true, !async, async);
   if (async) {
     const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
     while (guestWrites.load(std::memory_order_acquire) == before) {
@@ -216,6 +250,85 @@ int main(int argc, char** argv) {
       require(run(splitEvery, false, false, 2) == expected(16), "Invalidated GX array pixels differ from expected output");
       std::printf("Actual Aurora GX invalidation split=%u refreshed the same array address\n", splitEvery);
     }
+    const gfx::StagingSizes physical{gfx::VertexBufferSize, gfx::UniformBufferSize,
+                                      gfx::IndexBufferSize, gfx::StorageBufferSize};
+    const auto uniformTail = gx::MaxUniformSize + 32 * gfx::staging_uniform_bytes(48);
+    for (unsigned buffer = 0; buffer < 4; ++buffer) {
+      auto limits = physical;
+      limits[buffer] = buffer == 0 ? 128 : buffer == 1 ? uniformTail + 512 :
+                       buffer == 2 ? 24 : 2 * gfx::staging_storage_bytes(48);
+      gfx::set_staging_capacity_limits_for_testing(limits);
+      const auto before = gfx::staging_split_count();
+      require(run(0, false, false, buffer == 1 ? 0 : buffer == 3 ? 2 : 1) == expected(16),
+              "Automatic capacity split changed pixels");
+      require(gfx::staging_split_count() > before, "Forced capacity did not split");
+      const auto highWater = gfx::staging_high_water();
+      for (unsigned i = 0; i < limits.size(); ++i)
+        require(highWater[i] <= limits[i], "Actual staging usage exceeded admission budget");
+      std::printf("Actual staging high-water V/U/I/S=%llu/%llu/%llu/%llu bytes\n",
+          static_cast<unsigned long long>(highWater[0]), static_cast<unsigned long long>(highWater[1]),
+          static_cast<unsigned long long>(highWater[2]), static_cast<unsigned long long>(highWater[3]));
+      std::printf("Actual Aurora automatic capacity buffer=%u splits=%llu matched pixels\n", buffer,
+                  static_cast<unsigned long long>(gfx::staging_split_count() - before));
+    }
+    auto limits = physical;
+    limits[0] = 128;
+    gfx::set_staging_capacity_limits_for_testing(limits);
+    require(run(0, false, false, 3) == expected(16), "Raw bridge capacity split changed pixels");
+    std::puts("Actual Aurora raw bridge capacity split preserved direct quad pixels");
+    limits = physical;
+    limits[1] = uniformTail + 768;
+    gfx::set_staging_capacity_limits_for_testing(limits);
+    const auto beforeBake = gfx::staging_split_count();
+    require(run(0, false, true, 0, true) == expected(16),
+            "Automatic offscreen split changed bake or suspended EFB");
+    require(gfx::staging_split_count() - beforeBake >= 9, "Offscreen test did not reuse all staging slots");
+    std::printf("Actual Aurora automatic offscreen/readback splits=%llu preserved all pixels\n",
+                static_cast<unsigned long long>(gfx::staging_split_count() - beforeBake));
+    gfx::set_staging_capacity_limits_for_testing(physical);
+    aurora_set_frame_interpolation_fps(120);
+    for (unsigned frame = 0; frame < 3; ++frame)
+      require(run(0, false, false, 2, false, true) == expected(16), "Perspective warmup changed pixels");
+    AuroraFrameInterpolationDiagnostics interpolation{};
+    gx::get_frame_interpolation_diagnostics(interpolation);
+    require(interpolation.matchable > 0 && interpolation.activeSamples > 0,
+            "Interpolation probe did not establish matching perspective draws");
+    limits = physical;
+    limits[3] = 2 * gfx::staging_storage_bytes(48);
+    gfx::set_staging_capacity_limits_for_testing(limits);
+    require(run(0, false, false, 2, false, true) == expected(16), "Interpolated split changed native pixels");
+    gx::get_frame_interpolation_diagnostics(interpolation);
+    require(!interpolation.replaySafe, "Split frame incorrectly retained interpolation replay");
+    aurora_set_frame_interpolation_fps(0);
+    std::puts("Actual Aurora matched perspective interpolation survived capacity split and disabled replay");
+    limits = physical;
+    limits[0] = 32; // One quad needs 64 bytes: typed rejection before any draw allocation.
+    gfx::set_staging_capacity_limits_for_testing(limits);
+    bool oversized = false;
+    try { run(0, false, false, 1); }
+    catch (const gfx::StagingCapacityError&) { oversized = true; }
+    require(oversized, "Oversized primitive was not rejected");
+    require(gfx::staging_usage() == gfx::StagingSizes{}, "Oversized primitive partially allocated");
+    gx::fifo::clear_buffer();
+    gfx::abort_frame();
+    gfx::set_staging_capacity_limits_for_testing(physical);
+    std::puts("Actual Aurora oversized primitive rejected before staging mutation");
+    require(run(0, false, false, 1) == expected(16), "Renderer failed after rejected primitive cleanup");
+    limits = physical;
+    limits[3] = 2 * gfx::staging_storage_bytes(48);
+    gfx::set_staging_capacity_limits_for_testing(limits);
+    aurora_set_frame_interpolation_fps(120);
+    for (unsigned frame = 0; frame < 16; ++frame)
+      require(run(0, false, false, 2, false, true, true) == expected(16),
+              "Frame-worker capacity split changed pixels");
+    // Grant preparation of the next frame before joining DONE, exactly as the
+    // real producer does; leave no worker waiting for a future begin_frame.
+    require(aurora_begin_frame(), "Final worker frame preparation failed");
+    aurora::wait_for_frame_worker();
+    gfx::abort_frame();
+    aurora_set_frame_interpolation_fps(0);
+    gfx::set_staging_capacity_limits_for_testing(physical);
+    std::puts("Actual Aurora frame worker completed 16 capacity-split perspective frames");
     require(errors == 0, "Renderer reported an error");
   } catch (const std::exception& error) {
     std::fprintf(stderr, "FAIL: %s\n", error.what());

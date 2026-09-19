@@ -47,7 +47,14 @@ def main():
     subprocess.run(argv, cwd=build, check=True)
     revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'],
                                        cwd=ROOT / 'vendor/runtimes/macos', text=True).strip()
+    runtime = ROOT / 'vendor/runtimes/macos'
+    source_hash = hashlib.sha256()
+    for name, path in sorted(maintained.maintained_files(runtime).items()):
+        source_hash.update(name.encode() + b'\0')
+        source_hash.update(path.read_bytes())
     record = {'runtime_revision': revision,
+              'runtime_dirty': bool(subprocess.check_output(['git', 'status', '--porcelain'], cwd=runtime)),
+              'maintained_source_sha256': source_hash.hexdigest(),
               'sha256': hashlib.sha256(output.read_bytes()).hexdigest(), 'command': argv}
     output.with_suffix('.build.json').write_text(json.dumps(record, indent=2) + '\n')
     print(f'Built actual Aurora probe: {output}')

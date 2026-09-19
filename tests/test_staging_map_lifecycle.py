@@ -58,6 +58,7 @@ struct Buffer {void MapAsync(wgpu::MapMode, uint64_t, uint64_t, wgpu::CallbackMo
 std::array<Buffer, 3> g_stagingBuffers;
 size_t currentStagingBuffer = 0;
 uint32_t g_frameIndex = 0;
+uint64_t g_stagingEpoch = 0;
 constexpr uint64_t StagingBufferSize = 4096;
 struct Instance {unsigned calls=0;std::function<void()> next;
   void ProcessEvents(){++calls;if(next){auto callback=std::move(next);next={};callback();}}
