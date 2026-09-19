@@ -24,6 +24,9 @@ tested its gameplay. No replacement was installed during this investigation.
   drained around 10:45:56; subsequent retained samples reached approximately
   60 FPS. This is correlated startup compilation pressure, not a matched race
   benchmark or proof that warmed gameplay is satisfactory.
+  A physical screen capture at 10:52 shows the Luigi Circuit pause menu;
+  contemporaneous near-60 samples are therefore paused-scene evidence, not
+  recovered racing performance.
 - A retained frame window reported 162.65 ms worst frame time. Presentation
   phase maxima reached 161.319 ms and 153.661 ms in nearby windows. The owner's
   approximately one-second perceived pause is not fully captured by those
