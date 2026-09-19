@@ -54,15 +54,29 @@ The normal dependency preparation script passes against this locally staged
 hash-verified archive, checking every extracted member against the locked
 archive and separately checking its library, metadata and cache identity.
 
-## Publication boundary
+## Publication and full application evidence
 
-The Android lock currently names the planned maintained-fork dependency asset
-at tag `dawn-android-20260919.1`. Publication and anonymous download verification
-are still required before merging or releasing this dependency change. A local
-cache supplied the archive during the recorded preparation; it does not prove
-the public URL is available. Full application rebuild and package validation
-against the normal dependency path are the next gate. Code130/build54 predate
-this package and the EFB readback corrections.
+The maintained dependency is now published at
+[`dawn-android-20260919.1`](https://github.com/chrissotraidis/wiicompiled/releases/tag/dawn-android-20260919.1).
+An unauthenticated download of the exact URL in the lock matches the archive
+checksum above. Its GitHub asset size and digest also match. This publishes a
+developer dependency; it does not publish a KartPad app release.
+
+The standard Android build entry point, with no prototype Dawn override,
+produces version 0.5.0/code131 from clean `e34389b`. Both the unsigned AAB and
+signed universal APK pass their audits. The signature matches the established
+public release certificate. The first bundle's FULL debug metadata exposed
+builder paths even though the installed payload did not; public builds now
+use SYMBOL_TABLE metadata, with FULL retained for explicit private diagnostics.
+The full original symbols remain private. All native library bytes match
+between the original FULL bundle, corrected public bundle and signed APK.
+
+The signed APK installs and launches its normal chooser and real game intro/title
+on the disposable emulator. The visible Auto-accelerate option saves OFF and
+survives force-stop and an in-place same-version signed APK replacement, with
+game data preserved. This does not establish affected-handset speed or complete
+race-input acceptance. Exact package identities and current Apple candidates are
+recorded in [`release-050-candidate-build.json`](release-050-candidate-build.json).
 
 This does not extend supported device limits to PowerVR, establish the S24
 corruption cause, repair fixed-capacity admission, or measure warmed Android FPS.

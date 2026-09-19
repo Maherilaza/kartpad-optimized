@@ -194,3 +194,25 @@ The isolated Mac test reaches an Original race and passes pause/resume/return
 to menu; complete race and affected Android acceptance are still pending. See
 [`staging-map-lifecycle.md`](staging-map-lifecycle.md) for measurements and scope.
 Fixed-capacity admission/subdivision and full gameplay acceptance remain open.
+
+## Production dependency and 0.5.0 candidate cycle
+
+The normal Android loader now consumes the rebuilt, published and anonymously
+verified Dawn archive. Clean `e34389b` produces code131/Apple build55 packages
+with the EFB fixes. The public-signed Android APK and AAB pass audits; iOS/iPadOS
+and Mac packages pass their audits and archive readback. A stale iOS dSYM was
+caught by UUID comparison and regenerated from the new executable's objects
+before stripping the package copy. Original full symbols remain private.
+
+The real Aurora Metal probe now additionally covers four offscreen bake/resume
+cases and four cases each of direct GX FIFO vertices and same-address indexed
+array invalidation, with independent expected pixels and explicit legal splits.
+This remains separate from automatic capacity admission. The signed Android
+candidate passes visible setting persistence and in-place same-version APK
+replacement on the disposable emulator. The primary checkout retains its 99
+pre-existing changes. No new reporter requests or app release were published.
+See [`release-050-candidate-build.json`](release-050-candidate-build.json).
+
+Next unresolved integration boundaries remain fixed-capacity staging admission,
+controller mapping ownership and actual workload/runtime acceptance. Public
+source/notices packaging and one coordinated release tag follow those decisions.
