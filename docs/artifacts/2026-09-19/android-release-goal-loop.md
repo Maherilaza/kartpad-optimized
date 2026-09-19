@@ -216,3 +216,34 @@ See [`release-050-candidate-build.json`](release-050-candidate-build.json).
 Next unresolved integration boundaries remain fixed-capacity staging admission,
 controller mapping ownership and actual workload/runtime acceptance. Public
 source/notices packaging and one coordinated release tag follow those decisions.
+
+The attached Pixel's game process was no longer running. A separately signed
+local copy of code131 matches its existing debug certificate and has identical
+application payloads to the public-signed APK. Forward-version preflight passed;
+the old APK was preserved, Package Manager replaced code125 in place, and
+code131/0.5.0 was read back. No uninstall or data reset occurred. The normal
+launcher still recognizes Original game data and the existing Retro Rewind pack.
+Fresh private save-byte backup/readback was unavailable for the non-debuggable
+installed app; earlier durable backups remain preserved. Physical rendering and
+workload acceptance are now in progress, not yet passed.
+
+The Pixel launches the real Vulkan backend (Mali-G715) at its retained 2x
+resolution. Touch A and stick menu navigation work; its existing license reaches
+Single Player and VS selection. A subsequent screenshot shows a race paused
+with native Controls open, beyond the last automated action. Automated phone
+input stopped immediately to avoid interfering with that session. Only read-only
+collection continues. More than 39,000 presentations were recorded without a
+new native crash; near-60 FPS intro/menu samples are not a matched race-speed
+improvement. PSS increased from about 1.6 GiB at startup to 2.4 GiB in menus,
+with reported thermal status zero at the sampled earlier points. Sustained race
+memory/performance and complete-race acceptance remain open. Raw captures and
+exact device details stay private.
+
+The subsequent 90-second read-only window contains four PSS samples spanning
+2,809,201–2,823,733 KiB, all at reported thermal status zero. The process reaches
+52,800 presentations without an observed new native crash. Those samples are
+not independently classified as continuous racing versus paused/menu frames;
+no warmed-race speedup or full-race completion is claimed. Exact bounds and
+remaining acceptance limits are in
+[`pixel-code131-observation.json`](pixel-code131-observation.json). Log collection
+finished and the physical game process was left untouched.
