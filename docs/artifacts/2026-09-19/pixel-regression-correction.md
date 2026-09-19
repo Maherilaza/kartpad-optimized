@@ -121,3 +121,8 @@ GitHub reporter was sent another build or asked for another log. The working
 correction remains on `codex/cross-platform-stabilization-20260919`, with the
 runtime on `codex/pipeline-startup-budget-20260919`; the dirty primary checkout
 is preserved and documentation is reconciled there.
+
+The subsequent [11:20 monitoring finding](pixel-code125-memory-crash.md#monitoring-follow-up-1120-background-launcher-exit)
+records Android reclaiming the background launcher for low memory while the
+game continued. This reinforces the need to measure sustained memory use after
+compilation drains; the speculative-startup cap is not a lifetime memory bound.

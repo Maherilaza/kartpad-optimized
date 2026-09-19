@@ -92,3 +92,26 @@ open. No additional reporter builds or messages were sent.
 [Code126](pixel-regression-correction.md) corrects the discovered Dawn cache-version
 regression, bounds speculative pipeline replay, and fixes demand-work wakeups.
 Host and package checks pass; physical acceptance remains open.
+
+## Monitoring follow-up: 11:20 background launcher exit
+
+The 19 September monitor recorded a new exit at 11:20:13.654 JST for the
+separate `:launcher` process: Android reason `LOW_MEMORY`, background importance
+400, recorded RSS 77 MB. Private exit records correlate the launcher PID across
+samples in the installed code125 session. This is distinct from the 10:45 native
+game crash; the restarted game PID remains unchanged and continues producing
+logs through 11:29. No second native game crash appears in the latest crash
+buffer or exit records.
+
+At 11:29:48, game memory accounting reports Graphics 1,983,412 KiB, TOTAL PSS
+3,438,646 KiB, TOTAL RSS 2,203,760 KiB and TOTAL SWAP PSS 1,336,512 KiB. These
+fields must not be added together. Shader work is already drained (queue zero,
+3,587 created). The launcher reclamation adds evidence of memory pressure after
+startup compilation; it does not establish the game as its sole cause or prove
+that code126 fixes sustained memory use. Recent near-60 FPS samples are not
+controlled gameplay acceptance.
+
+The existing capture remains healthy and bounded to 11:47 JST. Evidence is
+retained privately in the existing capture directory (`112927-exits.txt`,
+`112948-memory.txt`, live app log and latest crash buffer). Code125 remains
+installed; code126 has not been installed or physically accepted.
