@@ -189,6 +189,8 @@ request's state and the CPU-heavy map spin loop. All four runtimes now use a
 generation-scoped, wakeable wait and observe the existing device-loss handler
 while waiting. Source callback tests pass with ASan/UBSan and ThreadSanitizer;
 the real Metal split/readback probe passes all eight cases using the production
-helper. Full builds and candidate integration continue. See
+helper. Android code130 and Apple build54 now pass their package audits.
+The isolated Mac test reaches an Original race and passes pause/resume/return
+to menu; complete race and affected Android acceptance are still pending. See
 [`staging-map-lifecycle.md`](staging-map-lifecycle.md) for measurements and scope.
 Fixed-capacity admission/subdivision and full gameplay acceptance remain open.

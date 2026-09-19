@@ -51,9 +51,45 @@ Every readback is byte-identical to its unsplit control and expected pixels,
 with zero WebGPU validation errors. This exercises real mapping, copying,
 submission and readback; it is not the full Aurora FIFO/EFB/interpolation path.
 
-The first full Mac and iOS physical-SDK builds pass. The initial direct Android
-invocation stopped at configuration because its SDK environment was missing;
-the checked prototype entry point supplies that environment for the rerun.
+Full Android code130, Mac build54 and iOS physical-SDK build54 pass. The initial
+direct Android invocation stopped at configuration because its SDK environment
+was missing; the checked prototype entry point supplied that environment and
+the rerun passed. Clean-source packaging is tied to `df39712`; source parity,
+APK audit, iOS app audit, matching ELF/Mach-O symbols, and Mac package/ZIP
+readback checks pass. Exact hashes and limits are in
+[`staging-map-candidate-build.json`](staging-map-candidate-build.json).
+
+The maintained runtime branches and parent commit are published to draft PR
+#307. All three checks pass on `df39712` (boundaries 51s, regression 25s,
+receipts 10s). Public release signing and dependency promotion remain pending.
+
+## Native game integration
+
+A separately identified, ad-hoc signed portable copy of the audited Mac app
+used copied test data with networking disabled. No normal application defaults,
+saves or installed game data were changed. The copy reached Original's license
+creation, character and vehicle selection, and a 12-racer 50cc Luigi Circuit
+race. Pause, resume and quitting the race back to the main menu worked. Visible
+rendering and sampled presentation telemetry remained around 60 FPS. This was
+a stationary player with active CPU racers, not a completed race or a matched
+performance comparison; results, awards, Retro and endurance remain pending.
+
+The automation's short key presses previously failed to advance the default
+keyboard configuration. For this test only, an actual-format saved binding file
+disabled the duplicate GameCube keyboard port, allowing the existing Classic
+keyboard path to receive the presses. No input runtime code or production
+defaults were changed. This narrows a keyboard-path discrepancy and permits GPU
+integration checks; it does not establish normal keyboard acceptance or resolve
+the Wii Remote/Classic Pro report #306.
+
+One early menu session ended cleanly before the next automation action; its
+bounded session record confirms clean shutdown but the initiator is unknown.
+The next session ran the race checks and was explicitly closed with Command-Q.
+An initial sampling command targeted the exited process and failed; the retry
+sampled the verified live process. Its physical footprint was about 1.2 GB,
+with a 2.3 GB peak. This single sample is neither a memory plateau nor an Android
+memory estimate. No fatal, assertion or WebGPU validation error was found in
+the two retained runtime transcripts.
 
 ## Remaining work
 
