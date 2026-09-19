@@ -6,6 +6,26 @@ acknowledgment was posted to [issue 305](https://github.com/chrissotraidis/kartp
 All subsequent investigation is developer-owned. No additional reporter tests
 or logs have been requested.
 
+## Current checkpoint — September 20
+
+Clean `e787794` produced Android code132 and Apple build56, integrating the
+capacity, readback and Android controller fixes. The package identities and
+current acceptance are in [the candidate record](release-050-code132-build56.json).
+Mac build56 now passes repeated built-in ghost replay loops and a normal return
+to course selection; its prior test state and normal user data remain preserved.
+See [the replay record](macos-build56-replay.json). This does not establish full
+player-controlled cups, online endurance or affected-Android acceptance.
+
+A fresh issue refresh found [#308](https://github.com/chrissotraidis/kartpad/issues/308):
+Red Magic 11 Pro / nubia NX809J on Android16 reports vertex explosions when
+booting Original at 1x/4:3. Its reported app is **build65**, not code132, and no
+manual log attachment or follow-up comment was present. It remains a separate
+unreproduced hardware case; no reporter request or fix claim was sent.
+
+The dated sections below preserve the investigation history. Their older
+candidate IDs and pending-step descriptions are superseded by the linked
+current records and [active goal loop](android-release-goal-loop.md).
+
 ## What was independently established
 
 The reviewed Android command processor resolves to exactly the handoff's blob
@@ -24,7 +44,7 @@ with AddressSanitizer and UndefinedBehaviorSanitizer.
 | R5: incomplete primitives cross draw boundaries | Reproduced in candidate-before source | Emit complete list triangles; short strips/fans emit nothing. Short line draws are consumed before upload/instance-count arithmetic. |
 | R6: quad remainder references absent vertex | Reproduced in candidate-before source | Complete groups retain prior winding; a three-vertex remainder becomes one triangle; one/two vertices emit nothing. |
 | R7: 16-bit quad counter wraps | Old source fails; wide counter already present in candidate | Retained wide counter; combined tests cover output count, winding and bounds, including 65,520–65,535. |
-| R8: mapped staging slice aborts at capacity | Confirmed `ByteBuffer::resize` abort and the additional 3,840-byte final uniform tail | Integrated in September 20 source `2da33c5`: complete-operation admission, bounded retry, offscreen-prefix preservation, and readback generation handling. Real forced-capacity GPU comparisons pass. Oversized operations receive typed rejection; updated app packages and physical acceptance remain pending. See [capacity validation](staging-capacity-verification.md). |
+| R8: mapped staging slice aborts at capacity | Confirmed `ByteBuffer::resize` abort and the additional 3,840-byte final uniform tail | Integrated in September 20 source `2da33c5`: complete-operation admission, bounded retry, offscreen-prefix preservation, and readback generation handling. Real forced-capacity GPU comparisons pass. Oversized operations receive typed rejection; integrated code132/build56 packages now pass audits; wider physical acceptance remains pending. See [capacity validation](staging-capacity-verification.md). |
 
 The topology test samples small counts, counts spaced by 127, and every count
 from 65,520 through 65,535. It validates every emitted index in each sampled

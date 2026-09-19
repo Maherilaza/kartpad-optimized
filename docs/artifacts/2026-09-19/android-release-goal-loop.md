@@ -305,3 +305,25 @@ All three CI checks pass on the implementation revision. The primary checkout's
 worktree and draft PR #307. Full gameplay/affected-hardware acceptance and the
 coordinated source/notices/release packaging remain open. No new app release or
 issue closure was published.
+
+## September 20: integrated Mac replay and coordinated source
+
+Mac build56's exact signed executable ran in an isolated portable test copy.
+Keyboard input advanced the title, license, character/vehicle and course menus.
+The built-in Luigi Circuit Nintendo ghost replay reached five automatic scene
+restarts, with 63,600 total menu/replay presentations. Continue Replay and the
+End Replay confirmation returned normally to rendering and then course selection.
+Command-Q closed the test process. Nine RSS samples across 120 seconds span
+2,188,096–2,196,352 KiB. This is replay/transition evidence, not player-driven
+race/cup or lifetime-memory acceptance. The earlier test save/configuration and
+normal user data are unchanged. See [macos-build56-replay.json](macos-build56-replay.json).
+Neither physical Apple target is connected in the current read-only inventory.
+
+The exact core source snapshot contains 6,874 verified tracked files and matches
+both mobile artifacts' embedded source fingerprints. A coordinated source
+composer now binds the APK, IPA and Mac archive to that source and retains only
+verified dependency sources from the prior delivery, excluding old application
+snapshots and runtimes. It explicitly produces a candidate, not release approval.
+The release notes and rebuild guide are being prepared for one v0.5.0 release.
+The new #308 Red Magic report is from build65 with no attached log; it remains
+unreproduced and has not been presented as fixed by this candidate.
