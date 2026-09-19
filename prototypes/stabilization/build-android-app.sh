@@ -34,5 +34,5 @@ export CMAKE_BUILD_PARALLEL_LEVEL="${KARTPAD_PROTOTYPE_JOBS:-6}"
   -PkartpadTranslatedShardManifest="$translation/build_shards/shards.cmake" \
   -PkartpadAndroidNativeTarget=KartPadDual -PkartpadDiscIoJniRoot="$discio" \
   -PkartpadDiagnosticRelease=true -PkartpadProfileable=true \
-  -PkartpadVersionCode=126 -PkartpadVersionName=0.4.25-stabilization.4-prototype :app:assembleRelease
+  -PkartpadVersionCode=127 -PkartpadVersionName=0.4.25-stabilization.5-prototype :app:assembleRelease
 echo 'Local prototype only; verify the signer before considering any in-place device test.'

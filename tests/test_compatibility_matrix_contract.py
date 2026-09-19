@@ -1,4 +1,5 @@
 import unittest
+import re
 from pathlib import Path
 
 
@@ -31,7 +32,15 @@ class CompatibilityMatrixContractTests(unittest.TestCase):
 
         for row in rows:
             self.assertIn(row[4].strip("`"), VALID_STATES)
-            self.assertRegex(row[5], r"#\d+")
+            if not re.search(r"#\d+", row[5]):
+                # Owner testing may precede a GitHub issue, but must still link
+                # to a real, repository-contained evidence document.
+                links = re.findall(r"\[[^\]]+\]\((artifacts/[^)#]+\.md)(?:#[^)]*)?\)", row[5])
+                self.assertTrue(links, row[5])
+                for link in links:
+                    target = (MATRIX.parent / link).resolve()
+                    self.assertTrue(target.is_relative_to(MATRIX.parent.resolve()))
+                    self.assertTrue(target.is_file(), link)
             self.assertTrue(row[6])
 
     def test_matrix_declares_non_generalization_rule(self):
