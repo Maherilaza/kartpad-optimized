@@ -30,6 +30,7 @@ with tarfile.open(archive) as package:
         checked+=1
 (output/'baseline.json').write_text(json.dumps({'commit':'13abc3bc8ea2d3c2050f9e77a12d012108ceee24','archive_sha256':expected,'verified_baseline_files':checked},indent=2)+'\n')
 PY
+python3 prototypes/stabilization/verify-dawn-dependencies.py "$output/source" > "$output/dependencies.json"
 patch --batch -p1 -d "$output/source" < prototypes/stabilization/dependencies/dawn-optional-debug-utils.patch
 patch --batch -p1 -d "$output/source" < prototypes/stabilization/dependencies/dawn-swiftshader-dynamic-state.patch
 python3 prototypes/stabilization/pin-dawn-version.py "$output/source" \

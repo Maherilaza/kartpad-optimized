@@ -1,5 +1,14 @@
 # Local stabilization prototype
 
+Current integration work is in draft PR #307 on
+`codex/cross-platform-stabilization-20260919`. The dated sections below retain
+earlier experiment history. The latest changes add actual Aurora EFB readback
+verification and a rebuilt portable Android Dawn dependency, now selected by
+the draft production lock. Dependency publication and full application package
+validation remain pending. See
+[the EFB evidence](../../docs/artifacts/2026-09-19/efb-readback-verification.md) and
+[the Dawn rebuild](../../docs/artifacts/2026-09-19/android-dawn-rebuild.md).
+
 This is a local experiment based on KartPad `c9f425c` (the Android121 diagnostic line), not a release branch promotion. It preserves the existing checkout, diagnostic artifacts, public versions and device data. It has two independently testable parts: a full Android app candidate for classified defects, and a small GPU executable for the proposed renderer allocation refactor.
 
 ## Code126 regression correction (19 September)
