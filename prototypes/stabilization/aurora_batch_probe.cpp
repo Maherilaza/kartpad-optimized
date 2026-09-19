@@ -4,6 +4,8 @@
 #include "gfx/efb_ram_copy.hpp"
 #include "gfx/texture.hpp"
 #include "gx/gx.hpp"
+#include "gx/fifo.hpp"
+#include <dolphin/gx.h>
 #include <aurora/aurora.h>
 #include <array>
 #include <atomic>
@@ -20,6 +22,7 @@ std::atomic<unsigned> errors{};
 std::atomic<unsigned> guestWrites{};
 // Keep destinations alive through shutdown, including any failing wait.
 std::array<uint8_t, 16 * 16 * 4 + 32> guarded;
+std::array<uint8_t, 16 * 16 * 4 + 32> guardedBake;
 void require(bool value, const char* message) {
   if (!value) throw std::runtime_error(message);
 }
@@ -52,18 +55,73 @@ Pixels expected(unsigned extent) {
   return bytes;
 }
 
-Pixels run(unsigned splitEvery, bool async = false) {
+Pixels run(unsigned splitEvery, bool async = false, bool offscreen = false, unsigned geometry = 0) {
+  require(!async || !offscreen, "Combined probe mode is not supported");
+  guardedBake.fill(0xa5);
   gx::g_gxState.clearColor = {0.f, 0.f, 0.f, 1.f};
   require(gfx::begin_frame(), "Frame begin failed");
+  std::array<std::array<float, 3>, 4> positions{};
+  if (geometry) {
+    alignas(32) static std::array<uint8_t, 32768> fifo;
+    GXInit(fifo.data(), fifo.size());
+    gx::g_gxState.viewportPolicy = AURORA_VIEWPORT_NATIVE;
+    GXSetViewport(0.f, 0.f, 64.f, 64.f, 0.f, 1.f);
+    GXSetScissor(0, 0, 64, 64);
+    GXSetCullMode(GX_CULL_NONE);
+    GXSetZMode(false, GX_ALWAYS, false);
+    GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_COPY);
+    GXSetColorUpdate(true); GXSetAlphaUpdate(true);
+    GXSetNumTexGens(0); GXSetNumChans(1); GXSetNumTevStages(1);
+    GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
+    GXSetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
+    GXSetChanCtrl(GX_COLOR0A0, false, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
+    const float projection[]{1.f, 1.f, 0.f, 1.f, 0.f, 0.f, -0.5f};
+    GXSetProjectionv(projection);
+    GXClearVtxDesc();
+    GXSetVtxDesc(GX_VA_POS, geometry == 2 ? GX_INDEX8 : GX_DIRECT);
+    GXSetVtxDesc(GX_VA_CLR0, GX_DIRECT);
+    if (geometry == 2) GXSetArray(GX_VA_POS, positions.data(), sizeof(positions), sizeof(positions[0]), true);
+    GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
+    GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_CLR0, GX_CLR_RGBA, GX_RGBA8, 0);
+    gx::fifo::drain();
+  }
   const auto pipeline = gfx::pipeline_ref(gfx::clear::PipelineConfig{});
   for (unsigned band = 0; band < 4; ++band) {
     const auto c = colors[band];
+    if (geometry) {
+      const float top = 1.f - band * 0.5f;
+      const float bottom = top - 0.5f;
+      positions = {{{-1.f, top, 0.f}, {1.f, top, 0.f}, {1.f, bottom, 0.f}, {-1.f, bottom, 0.f}}};
+      // Keep the same array address/format and change only its bytes between draws.
+      if (geometry == 2) GXInvalidateVtxCache();
+      GXBegin(GX_QUADS, GX_VTXFMT0, 4);
+      for (unsigned index = 0; index < positions.size(); ++index) {
+        if (geometry == 2) GXPosition1x8(index);
+        else GXPosition3f32(positions[index][0], positions[index][1], positions[index][2]);
+        GXColor4u8(c[0], c[1], c[2], 255);
+      }
+      GXEnd();
+    } else {
     gfx::push_draw_command(gfx::clear::DrawData{
         .pipeline = pipeline,
         .color = {c[0] / 255., c[1] / 255., c[2] / 255., 1.},
         .depth = 0.5f,
         .useScissor = true,
         .scissor = {0, static_cast<int32_t>(band * 16), 64, 16}});
+    }
+    if (offscreen && band == 0) {
+      // Suspend a partially recorded EFB, bake an independently observable copy,
+      // then resume it before a possible capacity-boundary submission.
+      gfx::begin_offscreen(64, 64);
+      gfx::push_draw_command(gfx::clear::DrawData{
+          .pipeline = pipeline, .color = {1., 0., 1., 1.}, .depth = 0.25f});
+      auto baked = gfx::new_render_texture(64, 64, GX_TF_RGBA8, "Aurora probe offscreen bake");
+      gfx::resolve_pass(baked, {0, 0, 64, 64}, false, false, false,
+                        {0.f, 0.f, 0.f, 1.f}, 1.f, GX_TF_RGBA8, nullptr, false,
+                        nullptr, false, 1.f, false, false, true);
+      gfx::efb_ram::schedule(guardedBake.data() + 16, 16, 16, GX_TF_RGBA8, baked);
+      gfx::end_offscreen();
+    }
     if (splitEvery && band < 3 && (band + 1) % splitEvery == 0) submit(false);
   }
   auto texture = gfx::new_render_texture(64, 64, GX_TF_RGBA8, "Aurora probe persistent copy");
@@ -89,6 +147,17 @@ Pixels run(unsigned splitEvery, bool async = false) {
   require(std::all_of(guarded.begin(), guarded.begin() + 16, [](auto b) { return b == 0xa5; }) &&
           std::all_of(guarded.begin() + 16 + bytes, guarded.end(), [](auto b) { return b == 0xa5; }),
           "Readback wrote outside its destination");
+  if (offscreen) {
+    require(std::all_of(guardedBake.begin(), guardedBake.begin() + 16, [](auto b) { return b == 0xa5; }) &&
+            std::all_of(guardedBake.end() - 16, guardedBake.end(), [](auto b) { return b == 0xa5; }),
+            "Offscreen readback wrote outside its destination");
+    for (unsigned tile = 0; tile < 16; ++tile) for (unsigned pair = 0; pair < 16; ++pair) {
+      const auto offset = 16 + tile * 64 + pair * 2;
+      require(guardedBake[offset] == 255 && guardedBake[offset + 1] == 255 &&
+              guardedBake[offset + 32] == 0 && guardedBake[offset + 33] == 255,
+              "Offscreen bake did not preserve expected magenta pixels");
+    }
+  }
   Pixels pixels(guarded.begin() + 16, guarded.begin() + 16 + bytes);
   return pixels;
 }
@@ -135,6 +204,18 @@ int main(int argc, char** argv) {
       require(run(iteration % 3 + 1, true) == expected(4), "Async pixels differ from expected GX data");
       std::printf("Actual Aurora async iteration=%u matched native tiled readback\n", iteration);
     }
+    for (unsigned splitEvery = 0; splitEvery < 4; ++splitEvery) {
+      require(run(splitEvery, false, true) == expected(16), "Offscreen interlude changed the suspended EFB");
+      std::printf("Actual Aurora offscreen split=%u preserved bake and suspended EFB\n", splitEvery);
+    }
+    for (unsigned splitEvery = 0; splitEvery < 4; ++splitEvery) {
+      require(run(splitEvery, false, false, true) == expected(16), "GX FIFO quad pixels differ from expected output");
+      std::printf("Actual Aurora GX FIFO split=%u preserved direct vertices, indices and uniforms\n", splitEvery);
+    }
+    for (unsigned splitEvery = 0; splitEvery < 4; ++splitEvery) {
+      require(run(splitEvery, false, false, 2) == expected(16), "Invalidated GX array pixels differ from expected output");
+      std::printf("Actual Aurora GX invalidation split=%u refreshed the same array address\n", splitEvery);
+    }
     require(errors == 0, "Renderer reported an error");
   } catch (const std::exception& error) {
     std::fprintf(stderr, "FAIL: %s\n", error.what());
@@ -142,5 +223,6 @@ int main(int argc, char** argv) {
     return 4;
   }
   aurora_shutdown();
+  if (errors != 0) return 4;
   std::puts("Actual Aurora clear/resolve/snapshot/downsample/readback batches passed");
 }

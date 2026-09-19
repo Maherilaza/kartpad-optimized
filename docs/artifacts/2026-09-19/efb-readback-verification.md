@@ -23,9 +23,8 @@ actual Metal renderer reports no error or validation failure. Nine additional
 pooled destination. The test observes the production guest-write notification
 with release/acquire synchronization before inspecting those bytes. The same run
 passes after the callback lifetime corrections below. This is Aurora's real
-clear/resolve/snapshot/downsample/readback path; it does not yet exercise FIFO
-vertex-array uploads, interpolation, suspended offscreen passes, or automatic
-capacity admission. Manual batch splits are not a completed R8 repair.
+clear/resolve/snapshot/downsample/readback path; later extensions also exercise FIFO uploads and suspended offscreen work,
+as recorded below. Interpolation and automatic capacity admission remain open. Manual batch splits are not a completed R8 repair.
 
 ## Callback lifetime defects
 
@@ -78,3 +77,24 @@ reports working touch menus after disconnecting the ipega, continuing incorrect
 default-mode inputs, and uncertainty about the online menu failure. Preserve
 that distinction: it narrows local mapping/handoff work but neither proves the
 online failure fixed nor justifies asking for the same comparison again.
+
+## Actual FIFO and offscreen extensions
+
+Four additional real Metal cases (unsplit and three split intervals) suspend a
+partially recorded EFB, bake an independently checked magenta texture offscreen,
+resume the EFB, and submit at legal boundaries after returning from offscreen
+work. Both outputs and their destination guards remain correct. This proves
+preservation around those boundaries; it does not permit a flush while an
+offscreen pass is active.
+
+Four direct GX cases use GXInit/GXBegin/GXEnd, the actual FIFO decoder, quad
+index generation, shader/uniform construction, vertex upload and GPU encoding.
+Their four color bands match the independently expected tiled pixels. Four
+indexed cases keep the same position-array address and format, change its bytes
+between draws, and issue actual GX vertex-cache invalidations. Their outputs
+also match with and without batch splits, extending the R1 source test to
+actual storage uploads and rendering. No translated game code is linked.
+
+All earlier synchronous/asynchronous readback and clear/snapshot cases still
+pass in the extended executable. The current test does not implement automatic
+admission, force each staging capacity, or exercise interpolation/worker overlap.
