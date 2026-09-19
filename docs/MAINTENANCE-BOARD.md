@@ -26,6 +26,10 @@ in a background shader compiler. The owner also reports slowdowns and a pause.
 now take precedence over further candidate distribution. Existing owner gameplay
 is monitored without interruption; iOS gameplay remains untested.
 
+[Code126 correction](artifacts/2026-09-19/pixel-regression-correction.md) is built and
+audited: stable Dawn identity, bounded speculative replay and demand-work wakeups.
+Owner session completion and cold/warm physical acceptance remain pending.
+
 ## Current engineering sequence (19 September)
 
 Local cross-platform stabilization is recorded in the

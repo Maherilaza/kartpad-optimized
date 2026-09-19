@@ -85,3 +85,10 @@ The local capture process and thread heartbeat are active; they do not change
 the app or its settings. The first crash's full pre-crash timing history was
 not retained in the accessible log ring, so peak-memory attribution remains
 open. No additional reporter builds or messages were sent.
+
+
+## Correction prepared
+
+[Code126](pixel-regression-correction.md) corrects the discovered Dawn cache-version
+regression, bounds speculative pipeline replay, and fixes demand-work wakeups.
+Host and package checks pass; physical acceptance remains open.

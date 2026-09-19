@@ -34,13 +34,13 @@
         236
       ],
       "state": "ready-local",
-      "next_action": "Prioritize the separate owner Pixel 9 Pro XL/code125 failure: exact-symbol Scudo mapping OOM in a background shader worker, startup slowdowns and reported pauses. Preserve the active session and compare prewarm admission, shader/pipeline retention and exact old/new inputs. Reporter exit subcases remain separate; do not infer a shared cause or request repeat logs.",
+      "next_action": "Code126 corrects the parent-Git Dawn cache identity, bounds startup replay, and wakes demand compilers; host/package/signer checks passed. After the owner finishes the active game, validate preserved-data cold/warm runs and frame tails. Keep warmed thermal/CPU slowdown and reporter exits separate; do not distribute more reporter builds.",
       "acceptance": "Each classified failure passes its affected import/start, cup-awards or race boundary on the exact target. Similar exits are not assumed to share a cause.",
       "dependency": {
         "owner": "KartPad engineering",
         "needs": "Internal analysis of retained exact-build crash and ongoing owner-session evidence; no reporter input required for the Pixel subcase."
       },
-      "checkpoint": "docs/artifacts/2026-09-19/pixel-code125-memory-crash.md",
+      "checkpoint": "docs/artifacts/2026-09-19/pixel-regression-correction.md",
       "priority_reason": "Owner stability acceptance failed on the installed candidate with a classified native crash; this actionable blocker precedes further build distribution."
     },
     {
