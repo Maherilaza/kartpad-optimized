@@ -18,7 +18,7 @@ class DrawMergeBoundaries(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             cpp, exe = Path(tmp) / "test.cpp", Path(tmp) / "test"
             cpp.write_text(source)
-            subprocess.run([*shlex.split(compiler), "-std=c++20", "-fsanitize=address", str(cpp), "-o", str(exe)], check=True)
+            subprocess.run([*shlex.split(compiler), "-std=c++20", "-fsanitize=address,undefined", str(cpp), "-o", str(exe)], check=True)
             result = subprocess.run([str(exe)], capture_output=True, text=True, timeout=10)
             self.assertEqual(result.returncode, 0, result.stderr)
 
@@ -65,7 +65,7 @@ int main() {
 #include <cassert>
 #include <cstdint>
 constexpr int GX_LINES=1, GX_LINESTRIP=2, GX_POINTS=3, GX_TRIANGLES=4, GX_QUADS=5;
-struct Draw { uint32_t instanceCount=1, vtxCount=0; };
+struct Draw { uint32_t instanceCount=1, vtxCount=0; bool expandedPrimitive=false; };
 bool eligible(Draw* lastDraw, uint16_t vtxCount, int prim=GX_TRIANGLES) {
   return ''' + match.group(1) + r''';
 }
@@ -75,7 +75,7 @@ int main() {
   d.vtxCount=65530;
   assert(eligible(&d,6)); // highest generated index is exactly 65535
   assert(!eligible(&d,7) && "16-bit merged indices would wrap to vertex zero");
-  assert(!eligible(&d,6,GX_QUADS)); // partial quad template emits eight vertices
+  assert(eligible(&d,6,GX_QUADS)); // incomplete tail emits no extra vertices
   d.vtxCount=65536; assert(!eligible(&d,1));
   d.vtxCount=UINT32_MAX; assert(!eligible(&d,1));
   d.vtxCount=0; d.instanceCount=2; assert(!eligible(&d,3));
@@ -106,8 +106,8 @@ int main() {
   IndexBuffer b;
   for(unsigned count: {0u, 4u, 65532u, 65533u, 65534u, 65535u}) {
     const auto n=prepare_idx_template(b,GX_QUADS,count);
-    assert(n==((count+3)/4)*6);
-    if(count) assert(b.back()==((count-1)/4)*4);
+    assert(n==(count/4)*6+(count%4==3?3:0));
+    for(auto index:b) assert(index<count);
   }
 }
 ''')

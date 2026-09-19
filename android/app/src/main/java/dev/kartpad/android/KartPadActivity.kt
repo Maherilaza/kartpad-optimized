@@ -1797,6 +1797,16 @@ class KartPadActivity : SDLActivity() {
                 refreshControllerHandoff()
             }
         }
+        val autoAccelerate = Switch(this).apply {
+            text = "Auto-accelerate"
+            setTextColor(Color.WHITE)
+            isChecked = KartPadTouchSettings.autoAccelerate(this@KartPadActivity)
+            contentDescription = "Auto-accelerate: hold A for one second to lock; off uses normal hold controls"
+            setOnCheckedChangeListener { _, checked ->
+                KartPadTouchSettings.setAutoAccelerate(this@KartPadActivity, checked)
+                kartPadOverlay.reloadPresentationSettings()
+            }
+        }
         val modernCStick = Switch(this).apply {
             text = "Modern C-stick L/R"
             setTextColor(Color.WHITE)
@@ -1847,6 +1857,7 @@ class KartPadActivity : SDLActivity() {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(12), dp(8), 0, 0)
             addView(hide)
+            addView(autoAccelerate)
             addView(modernCStick)
             addView(moveControls)
             addView(resetTouchLayoutButton)

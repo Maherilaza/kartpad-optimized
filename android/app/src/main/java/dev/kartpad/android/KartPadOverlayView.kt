@@ -69,6 +69,7 @@ class KartPadOverlayView(context: Context) : View(context) {
     private var motionSteeringX = 0f
     private var controllerConnected = false
     private var gasHoldGeneration = 0
+    private var autoAccelerate = KartPadTouchSettings.autoAccelerate(context)
     private var gasLocked = false
     private var leftStickAnchor: PointF? = null
     private val floatingStickDrawingFrame = RectF()
@@ -743,6 +744,14 @@ class KartPadOverlayView(context: Context) : View(context) {
     }
 
     fun reloadPresentationSettings() {
+        autoAccelerate = KartPadTouchSettings.autoAccelerate(context)
+        if (!autoAccelerate) {
+            // Cancel the delayed latch, but preserve genuine pointer/button holds.
+            gasHoldGeneration += 1
+            gasLocked = false
+            updateGasAccessibility()
+            publishState(connected = !hiddenForController)
+        }
         controlOpacity = KartPadTouchSettings.opacity(context)
         controlSizeScale = KartPadTouchSettings.size(context)
         modernCStickHorizontal = KartPadTouchSettings.modernCStickHorizontal(context)
@@ -1161,9 +1170,10 @@ class KartPadOverlayView(context: Context) : View(context) {
             updateGasAccessibility()
             return
         }
+        if (!autoAccelerate) return
         val generation = gasHoldGeneration
         mainHandler.postDelayed({
-            if (generation != gasHoldGeneration ||
+            if (!autoAccelerate || generation != gasHoldGeneration ||
                 !pointerOwners.containsValue("A")) return@postDelayed
             gasLocked = true
             updateGasAccessibility()
@@ -1275,6 +1285,7 @@ class KartPadOverlayView(context: Context) : View(context) {
     }
 
     private fun toggleAccessibilityGasLock() {
+        if (!autoAccelerate) return
         gasHoldGeneration += 1
         gasLocked = !gasLocked
         updateGasAccessibility()
@@ -1369,7 +1380,7 @@ class KartPadOverlayView(context: Context) : View(context) {
                         ACTION_STICK_RIGHT, "Move right",
                     ))
                 }
-                if (control.id == "A") {
+                if (control.id == "A" && autoAccelerate) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                         stateDescription = if (gasLocked) "Acceleration locked" else "Unlocked"
                     }
@@ -1428,7 +1439,7 @@ class KartPadOverlayView(context: Context) : View(context) {
                     )
                     true
                 }
-                ACTION_TOGGLE_GAS_LOCK -> if (control.id == "A") {
+                ACTION_TOGGLE_GAS_LOCK -> if (control.id == "A" && autoAccelerate) {
                     toggleAccessibilityGasLock()
                     true
                 } else false
