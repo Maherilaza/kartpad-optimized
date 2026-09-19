@@ -15,7 +15,6 @@ import tarfile
 import zipfile
 
 REPO = Path(__file__).resolve().parents[1]
-RECORDS = REPO / 'docs/artifacts/2026-09-19'
 
 
 def identity(data):
@@ -64,16 +63,23 @@ def write_zip(output, extras, original=None):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    for name in ('artifacts', 'source', 'android-build', 'ios-build', 'mac-build', 'dolphin', 'dawn', 'output'):
+    for name in ('record', 'source-record', 'artifacts', 'source', 'android-build', 'ios-build', 'mac-build', 'dolphin', 'dawn', 'output'):
         parser.add_argument('--' + name, type=Path, required=True)
     args = parser.parse_args()
     if args.output.exists():
         parser.error('Output directory already exists; preserve prior assets')
-    record = json.loads((RECORDS / 'release-050-code132-build56.json').read_text())
-    source_record = json.loads((RECORDS / 'coordinated-source-candidate.json').read_text())
+    record = json.loads(args.record.read_text())
+    source_record = json.loads(args.source_record.read_text())
     checked(args.source, {k: source_record[k] for k in ('bytes', 'sha256')})
     for name, expected in record['artifacts'].items():
+        if PurePosixPath(name).name != name:
+            parser.error('Input artifact name must be a basename')
         checked(args.artifacts / name, expected)
+    def artifact(suffix):
+        matches = [name for name in record['artifacts'] if name.endswith(suffix)]
+        if len(matches) != 1:
+            parser.error(f'Expected exactly one {suffix} input artifact')
+        return args.artifacts / matches[0]
     with tarfile.open(args.source) as archive:
         manifest = json.load(archive.extractfile('SOURCE-MANIFEST.json'))
         if manifest['candidateArtifacts'] != record['artifacts'] or manifest['sourceRevision'] != record['source']:
@@ -152,12 +158,12 @@ def main():
     args.output.mkdir(parents=True)
     write_zip(args.output / 'KartPad-v0.5.0-notices.zip', extras)
     for original, target in {
-        'KartPad-v0.5.0-build56-local-unsigned.ipa': 'KartPad-v0.5.0-ios-unsigned.ipa',
-        'KartPad-v0.5.0-build56-local-macos-arm64.zip': 'KartPad-v0.5.0-macos-arm64.zip',
+        artifact('.ipa'): 'KartPad-v0.5.0-ios-unsigned.ipa',
+        artifact('.zip'): 'KartPad-v0.5.0-macos-arm64.zip',
     }.items():
-        write_zip(args.output / target, extras, args.artifacts / original)
+        write_zip(args.output / target, extras, original)
     for original, target in {
-        args.artifacts / 'KartPad-v0.5.0-code132-public-candidate.apk': 'KartPad-v0.5.0-android-arm64.apk',
+        artifact('.apk'): 'KartPad-v0.5.0-android-arm64.apk',
         args.source: 'KartPad-v0.5.0-source.tar.gz',
     }.items():
         shutil.copyfile(original, args.output / target)

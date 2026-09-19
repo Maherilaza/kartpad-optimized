@@ -6,6 +6,7 @@ on:
       - 'tests/test_draw_merge_boundaries.py'
       - 'tests/test_draw_topology.py'
       - 'tests/test_graphics_startup_failure.py'
+      - 'tests/test_imgui_partial_shutdown.py'
       - 'tests/test_staging_map_lifecycle.py'
       - 'tests/test_staging_capacity.py'
       - 'tests/test_android_controller_routing.py'
@@ -23,6 +24,7 @@ on:
       - 'tests/test_draw_merge_boundaries.py'
       - 'tests/test_draw_topology.py'
       - 'tests/test_graphics_startup_failure.py'
+      - 'tests/test_imgui_partial_shutdown.py'
       - 'tests/test_staging_map_lifecycle.py'
       - 'tests/test_staging_capacity.py'
       - 'tests/test_android_controller_routing.py'
@@ -53,6 +55,7 @@ jobs:
           python3 -B -m unittest discover -s tests -p test_draw_merge_boundaries.py -v
           python3 -B -m unittest discover -s tests -p test_draw_topology.py -v
           python3 -B -m unittest discover -s tests -p test_graphics_startup_failure.py -v
+          python3 -B -m unittest discover -s tests -p test_imgui_partial_shutdown.py -v
           python3 -B -m unittest discover -s tests -p test_staging_map_lifecycle.py -v
           python3 -B -m unittest discover -s tests -p test_staging_capacity.py -v
           python3 -B -m unittest discover -s tests -p test_android_controller_routing.py -v

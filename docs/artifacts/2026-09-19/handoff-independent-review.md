@@ -8,6 +8,8 @@ or logs have been requested.
 
 ## Current checkpoint — September 20
 
+A subsequent refresh found [#309](https://github.com/chrissotraidis/kartpad/issues/309). The real pinned ImGui backend reproduces its `0xb0` cleanup crash. All four maintained wrappers now guard partial initialization; [the verification record](imgui-partial-startup.md) describes the proof and limits. Code132/build56 below predate this correction and require replacement relinks before release.
+
 Clean `e787794` produced Android code132 and Apple build56, integrating the
 capacity, readback and Android controller fixes. The package identities and
 current acceptance are in [the candidate record](release-050-code132-build56.json).
