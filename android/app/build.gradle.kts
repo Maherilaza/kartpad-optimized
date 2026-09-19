@@ -12,6 +12,9 @@ val gameRuntimeSource = providers.gradleProperty("kartpadGameRuntimeSource").orN
 val translatedShardManifest = providers.gradleProperty("kartpadTranslatedShardManifest").orNull
 val androidNativeTarget = providers.gradleProperty("kartpadAndroidNativeTarget").orNull
 val discIoJniRoot = providers.gradleProperty("kartpadDiscIoJniRoot").orNull
+val kartpadDiagnosticRelease = providers.gradleProperty("kartpadDiagnosticRelease")
+    .map { it.toBooleanStrict() }
+    .getOrElse(false)
 val kartpadProfileable = providers.gradleProperty("kartpadProfileable")
     .map { it.toBooleanStrict() }
     .getOrElse(false)
@@ -116,9 +119,11 @@ android {
             if (kartpadFrameCapture) {
                 externalNativeBuild.cmake.arguments += "-DCMAKE_BUILD_TYPE=RelWithDebInfo"
             }
-            ndk { debugSymbolLevel = "FULL" }
+            // Full DWARF remains available for private diagnostics and in the
+            // unstripped native build. Public bundles carry the symbol table.
+            ndk { debugSymbolLevel = if (kartpadDiagnosticRelease) "FULL" else "SYMBOL_TABLE" }
             // Only the private owner-test candidate uses the existing local debug signer.
-            if (providers.gradleProperty("kartpadDiagnosticRelease").orNull == "true") {
+            if (kartpadDiagnosticRelease) {
                 signingConfig = signingConfigs.getByName("debug")
             }
         }
