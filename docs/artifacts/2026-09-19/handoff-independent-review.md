@@ -172,3 +172,14 @@ developer-owned graphics/input reproduction and matched workload validation,
 followed by production dependency promotion and coordinated release preparation.
 Current evidence does not justify promising zero issues, faster warmed gameplay
 on affected Android hardware, or closing all graphics/compatibility reports.
+
+## Actual Aurora EFB follow-up
+
+The ROM-free real Metal renderer reproduced a scaled-readback vertical clamp
+defect. Corrected source preserves the expected four-color GX tiles across
+repeated batch splits. Independent callback controls additionally reproduced
+use-after-return, expired error text, stale-lifecycle completion and shutdown
+reentry failures; corrected cases pass all four pins. See
+[`efb-readback-verification.md`](efb-readback-verification.md). Code130/build54
+predate these corrections. Fixed-capacity admission and device acceptance are
+still separate work.
