@@ -22,10 +22,10 @@ discio="${5:?Supply the existing DiscIO JNI directory}"
 : "${JAVA_HOME:?Set JAVA_HOME to the pinned JDK}"
 export ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$HOME/Library/Android/sdk}}"
 [[ -f android/app/libs/SDL3-3.4.4.aar ]] || { echo 'Prepare the pinned SDL AAR first.' >&2; exit 1; }
-runtime="$repo_root/build/prototype-android/runtime"
+runtime="$repo_root/build/stabilization-android-20260919/runtime"
 if [[ ! -e "$runtime" ]]; then
   bash scripts/prepare-android-game-runtime.sh "$translation" "$runtime" \
-    "$repo_root/build/prototype-android/unused-native-build" dual
+    "$repo_root/build/stabilization-android-20260919/unused-native-build" dual
 fi
 python3 scripts/stage-maintained-runtime.py --verify android "$runtime"
 export CMAKE_BUILD_PARALLEL_LEVEL="${KARTPAD_PROTOTYPE_JOBS:-6}"
@@ -34,5 +34,5 @@ export CMAKE_BUILD_PARALLEL_LEVEL="${KARTPAD_PROTOTYPE_JOBS:-6}"
   -PkartpadTranslatedShardManifest="$translation/build_shards/shards.cmake" \
   -PkartpadAndroidNativeTarget=KartPadDual -PkartpadDiscIoJniRoot="$discio" \
   -PkartpadDiagnosticRelease=true -PkartpadProfileable=true \
-  -PkartpadVersionCode=123 -PkartpadVersionName=0.4.25-stabilization.2-prototype :app:assembleRelease
+  -PkartpadVersionCode=125 -PkartpadVersionName=0.4.25-stabilization.3-prototype :app:assembleRelease
 echo 'Local prototype only; verify the signer before considering any in-place device test.'
