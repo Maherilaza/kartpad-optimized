@@ -19,7 +19,10 @@
     "signer_sha256": "61dfb51411efe50b2e7fb8d280fcfbba766792c275d1024013940760caa3afaf",
     "public_signer": false,
     "package_audit": "pass",
-    "physical_game_acceptance": "pending"
+    "physical_game_acceptance": "pending",
+    "swiftshader_full_game_intro_title": "pass_over_11700_presentations",
+    "swiftshader_race_and_input": "not_established_mirror_input_boundary",
+    "physical_update_identity_check": "matching_installed_code125_no_install"
   },
   "ios_ipados": {
     "version": "0.4.25",

@@ -93,6 +93,44 @@ the two retained runtime transcripts.
 
 ## Remaining work
 
+### Android full-runtime follow-up
+
+The exact clean code130 APK was installed in a disposable, read-only API36
+ARM64 emulator with four GB of guest RAM. A private copy of the existing
+extracted game data was staged directly into that test container; its main
+executable hash matched the app's required value. This bypassed import UI
+testing. Networking was disabled before launch. No physical device data was
+copied into the emulator.
+
+The full game initialized the real Dawn Vulkan backend on SwiftShader and
+rendered the intro/title sequence for over 11,700 presentations, creating 343
+pipelines without a startup or renderer abort. This extends the earlier
+ROM-free fixture result to the actual game renderer. SwiftShader is a CPU
+implementation; its timing is not handset GPU performance evidence. A single
+late sample reported 590,858 KiB PSS and 865,156 KiB RSS, which is not a plateau
+or a hardware memory budget.
+
+The mirrored launch-button click did not take effect, so the runtime was
+started through its explicit Android activity/profile intent after the chooser
+validated the staged data. Subsequent mirror clicks also failed to open the
+native settings menu. Android InputDispatcher logged inconsistent mouse/touch
+hover events; disabling scrcpy hover forwarding did not resolve the interaction
+in this run. This is an unresolved test-input boundary, not a demonstrated
+KartPad control failure. No Android race or new touch acceptance is claimed.
+The earlier actual touch fixtures and menu tests remain separately recorded.
+
+One AAudio disconnection occurred around the mirror restart. The transcript
+immediately reported low-latency audio initialization again and continued
+rendering; audible recovery was not assessed. Logs were preserved before the
+test app was stopped and the emulator's temporary overlay was discarded.
+
+A read-only check of the newly connected physical phone found installed code125
+with the same certificate as code130 and a valid forward-version relationship.
+The phone was in use and was left undisturbed. No APK was installed there, no
+save/configuration data was changed, and no new reporter request was sent.
+Fresh save preservation and actual workload validation remain necessary before
+the phone test. The local mirrors were closed.
+
 This removes the busy wait and stale-callback hazard. It does not fix fixed
 staging capacity, introduce safe draw subdivision, prove a memory plateau, or
 establish an overall timeout policy for a driver that reports neither completion
