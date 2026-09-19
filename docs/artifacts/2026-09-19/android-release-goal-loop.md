@@ -327,3 +327,19 @@ snapshots and runtimes. It explicitly produces a candidate, not release approval
 The release notes and rebuild guide are being prepared for one v0.5.0 release.
 The new #308 Red Magic report is from build65 with no attached log; it remains
 unreproduced and has not been presented as fixed by this candidate.
+
+The coordinated source candidate is now built: 361,480,529 bytes, SHA-256
+`cad39181c466ae710a4ec31ff93f5796344502e16a1b12dd971e039dbe1803e1`.
+All 85 members pass independent manifest coverage, size, hash and safe-path
+readback. Neither obsolete prepared runtimes nor retained old application core
+snapshots remain. The current rebuild guide identifies the separate Android
+Dawn patches and unchanged Apple dependency path. See
+[coordinated-source-candidate.json](coordinated-source-candidate.json).
+The source-boundary regression rejects extra/unaccounted content, a changed
+restoration helper and an escaping link; it is now included in CI. This remains
+a candidate archive, not permission to relabel old artifacts or publish before
+remaining package/runtime acceptance.
+
+A fresh read-only Pixel check no longer finds a KartPad game process. Its older
+owner session is therefore not assumed active for subsequent preflight, but no
+phone installation or input was performed during this replay/source cycle.
