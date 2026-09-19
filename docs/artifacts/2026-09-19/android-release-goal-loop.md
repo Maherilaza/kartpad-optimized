@@ -287,3 +287,21 @@ controls and hardware acceptance limits. The Auto-accelerate toggle remains in
 the candidate. Code132/build56 packaging will integrate these Android fixes and
 the all-platform staging-capacity work; older code131/build55 packages do not
 contain these newer changes.
+
+Clean source `e787794` now produces the integrated code132/build56 candidates.
+All app builds and package audits pass. The signed Android APK and AAB have
+identical native payloads; DiscIO matches code131 after Gradle stripping, and
+retained full symbols match the new main-library BuildID. iOS app/dSYM UUIDs
+match; both Apple archives pass exact content readback (including Mac symlinks
+and permissions). The public APK launches Original through the normal chooser
+on the disposable API36 ARM64 emulator. Its visible Auto-accelerate toggle is
+present, changes OFF, and remains visibly OFF after process stop, same-APK
+replacement and normal restart. The emulator was gracefully closed; no physical
+device input or installation occurred in this cycle. Package hashes and limits
+are recorded in [release-050-code132-build56.json](release-050-code132-build56.json).
+
+All three CI checks pass on the implementation revision. The primary checkout's
+100 existing changes remain untouched; work stays in the established integration
+worktree and draft PR #307. Full gameplay/affected-hardware acceptance and the
+coordinated source/notices/release packaging remain open. No new app release or
+issue closure was published.
