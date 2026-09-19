@@ -2,6 +2,39 @@
 
 This is a local experiment based on KartPad `c9f425c` (the Android121 diagnostic line), not a release branch promotion. It preserves the existing checkout, diagnostic artifacts, public versions and device data. It has two independently testable parts: a full Android app candidate for classified defects, and a small GPU executable for the proposed renderer allocation refactor.
 
+## Code126 regression correction (19 September)
+
+Code125 failed the owner Pixel test with a native allocator abort in a background
+shader compiler and noticeable stalls. The replacement under validation is
+`0.4.25-stabilization.4-prototype`, code126. This section supersedes older candidate
+numbers below; it does not promote a public release.
+
+- The archived Dawn source accidentally inherited the enclosing KartPad Git HEAD
+  as its internal version. Code116 embeds upstream `13abc3bc`; code125 embeds the
+  unrelated KartPad `c9f425c`. Dawn includes those bytes in its device cache keys.
+  `pin-dawn-version.py` now supplies an explicit content-derived version based
+  on the pinned source and reviewed loader patch, so unrelated app commits do
+  not invalidate compiler caches. A dependency change still gets a fresh key.
+- The runtime admits at most 128 earliest-use recipes for speculative startup
+  replay and one background compiler. It preserves the recipe database and
+  first-use compilation. Promotion to frame-critical work wakes idle compilers;
+  the shared condition variable notifies all to avoid waking only a renderer.
+- `test_pipeline_startup_budget.py` executes the actual production SQLite loader,
+  promotion helper and worker loop with controlled compiler jobs under ASan/UBSan.
+  It checks a 3,587-recipe database, shared admission across Clear/GX, exhausted
+  budget handling, unchanged saved rows, later access to omitted recipes, and
+  first-use progress while background compilation is blocked.
+- `test_dawn_version.py DAWN_SOURCE` checks the actual Dawn version generator
+  under two unrelated parent repositories and verifies patch changes affect the
+  identity. This is build/cache correctness, not physical performance proof.
+
+The prior dependency and prepared runtime are preserved under
+`build/dawn-code125-preserved-install` and
+`build/stabilization-android-20260919/runtime-code125-preserved`. Existing archived
+APKs, symbols and phone state backups remain intact. No cache deletion is part
+of this correction. One cold cache rebuild after changing dependency identity
+is expected and must pass the owner stability gate.
+
 ## Phone preparation follow-up
 
 The revised app candidate is `0.4.25-stabilization.2-prototype`, code123. Code122 remains archived unchanged. This revision fixes Android diagnostic-setting defects: silent `AtomicFile` publication failure is detected by readback, read failures cannot falsely confirm disabling validation or returning character indexing to Normal, and activity recreation retains the game process's actual validation mode instead of applying a pending preference to its report. Existing settings are preserved; changing the setting still takes effect on the next game-process launch. Fault-injected host regressions reproduce the old persistence failure and cover the corrected behavior.
