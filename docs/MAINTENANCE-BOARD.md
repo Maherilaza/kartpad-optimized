@@ -28,8 +28,10 @@ build requests. No further reporter builds or repeat-log requests are planned.
 1. Finish local package/source checks for the conservative candidate: verified
    Retro-WFC payload, shared timer/renderer corrections and Android loader fix.
    The payload repair includes a measured 4102-function profile gate.
-2. Validate on the owner's phone with compatible signing and preserved data.
-   Host build success does not close #301/#216/#303 or any geometry report.
+2. Complete owner gameplay acceptance. The iPhone 14/build52 and Pixel 9 Pro XL/code125
+   are installed in place; [signing, state preservation and launcher evidence](artifacts/2026-09-19/owner-phone-deployment.md)
+   are recorded. Original/Retro races, relaunch and warmed performance remain open.
+   These phones do not close #301/#216/#303 or any geometry report.
 3. Investigate PowerVR #304 as a separate adapter/device/pipeline capability
    contract, including graceful failure. Neither code125 nor the depth lab
    claims to support this device.

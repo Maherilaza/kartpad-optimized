@@ -219,3 +219,11 @@ not reset or used for native source edits. Reviewed documentation is reconciled
 back to that checkout; candidate code stays on the named integration branch.
 Do not merge away the experimental branch or publish these local binaries as a
 broad fix without the stated owner/device gates.
+
+
+## Owner phone deployment update
+
+The owner-authorized in-place updates are now installed on iPhone 14 (build52)
+and Pixel 9 Pro XL (code125). See the [deployment evidence](owner-phone-deployment.md)
+for signing, preservation and launcher checks. Race stability, rendering and
+performance acceptance remain open.
