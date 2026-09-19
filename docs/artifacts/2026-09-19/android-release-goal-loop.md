@@ -343,3 +343,11 @@ remaining package/runtime acceptance.
 A fresh read-only Pixel check no longer finds a KartPad game process. Its older
 owner session is therefore not assumed active for subsequent preflight, but no
 phone installation or input was performed during this replay/source cycle.
+
+## September 20: physical code132 update and coordinated asset packaging
+
+The Pixel was idle before an in-place code131 → code132 replacement. Its existing signer matches the locally signed candidate; all 131 non-signature ZIP entries match the public-signed candidate. Pulling the installed APK back confirms the exact local candidate SHA-256. Original and existing Retro Rewind 6.12.8 still launch normally and render their title/attract screens at the saved 2× setting. Both sessions exited cleanly through Android Back. See `android-code132-physical.json`.
+
+Physical settings and manual race acceptance remain open: the desktop mirror forwarded native keyboard/Back commands, but its touch input did not reliably activate launcher/game controls. Changing the mirror input backend did not establish valid touch acceptance. No owner settings or saves were reset. The code132 emulator toggle/persistence evidence is retained separately.
+
+`scripts/package-coordinated-assets.py` binds the exact audited candidate hashes and source delivery, collects notices, preserves every original Apple archive entry/mode/byte, keeps the signed Android APK unchanged, and emits one coordinated set of local assets and checksums. It neither publishes nor approves runtime acceptance. The historical release packagers retain their old accepted-artifact contracts.
