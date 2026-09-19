@@ -33,15 +33,15 @@
         216,
         236
       ],
-      "state": "awaiting-reporter",
-      "next_action": "Classify one actual OS/process exit per separate launch/cup/race case. #215 and #236 already confirm Android-home exit; do not re-ask that destination. Home exit alone does not distinguish native fault, Java exception or OS termination. Use the existing ApplicationExitInfo/report path; keep #208 canonical and avoid a speculative shared renderer fix.",
+      "state": "ready-local",
+      "next_action": "Prioritize the separate owner Pixel 9 Pro XL/code125 failure: exact-symbol Scudo mapping OOM in a background shader worker, startup slowdowns and reported pauses. Preserve the active session and compare prewarm admission, shader/pipeline retention and exact old/new inputs. Reporter exit subcases remain separate; do not infer a shared cause or request repeat logs.",
       "acceptance": "Each classified failure passes its affected import/start, cup-awards or race boundary on the exact target. Similar exits are not assumed to share a cause.",
       "dependency": {
-        "owner": "the named reporters in each linked issue",
-        "needs": "Already requested process-exit classification and exact profile/transition; preserve separate subcases."
+        "owner": "KartPad engineering",
+        "needs": "Internal analysis of retained exact-build crash and ongoing owner-session evidence; no reporter input required for the Pixel subcase."
       },
-      "checkpoint": "docs/MAINTENANCE-BOARD.md",
-      "priority_reason": "Classified crashes block stable play; distinct exits require separate evidence."
+      "checkpoint": "docs/artifacts/2026-09-19/pixel-code125-memory-crash.md",
+      "priority_reason": "Owner stability acceptance failed on the installed candidate with a classified native crash; this actionable blocker precedes further build distribution."
     },
     {
       "id": "ios27-startup",

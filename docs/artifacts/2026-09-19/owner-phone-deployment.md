@@ -82,3 +82,12 @@ installation alone.
 Candidate code remains on `codex/cross-platform-stabilization-20260919` in the
 existing stabilization worktree; the dirty primary checkout is preserved.
 This report and a build-review link are reconciled to that primary checkout.
+
+
+## Subsequent owner result: Android failed
+
+The owner subsequently reported a native crash and slowdowns on code125.
+[Exact-build crash and timing evidence](pixel-code125-memory-crash.md) confirms
+an out-of-memory abort during background shader compilation. Android stability
+acceptance failed; earlier install/launcher success is not gameplay acceptance.
+The owner has not yet tested iOS gameplay.

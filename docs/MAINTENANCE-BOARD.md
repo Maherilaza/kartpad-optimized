@@ -18,6 +18,14 @@ The [latest evidence review](artifacts/2026-09-19/recent-issues-and-build-eviden
 
 #275's new thanks/waiting reply is recorded without another prompt. Existing negative geometry results and CPU-heavy captures remain unresolved; no new device acceptance was supplied. See the dated review for every recent thread's disposition and the limits of the new upstream lead.
 
+## Owner Android acceptance failed (19 September)
+
+Pixel 9 Pro XL/code125 crashed with an exact-symbol native allocation failure
+in a background shader compiler. The owner also reports slowdowns and a pause.
+[Crash, timing, memory and regression comparison](artifacts/2026-09-19/pixel-code125-memory-crash.md)
+now take precedence over further candidate distribution. Existing owner gameplay
+is monitored without interruption; iOS gameplay remains untested.
+
 ## Current engineering sequence (19 September)
 
 Local cross-platform stabilization is recorded in the
