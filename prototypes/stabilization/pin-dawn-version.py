@@ -7,11 +7,13 @@ from pathlib import Path
 BASE_REVISION = "13abc3bc8ea2d3c2050f9e77a12d012108ceee24"
 
 
-def pin(source: Path, patch: Path) -> str:
+def pin(source: Path, patch: Path, *additional: Path) -> str:
     # Include the reviewed patch: never reuse incompatible upstream cache entries.
-    identity = hashlib.sha256(
-        b"kartpad-dawn-source-v1\0" + BASE_REVISION.encode() + b"\0" + patch.read_bytes()
-    ).hexdigest()[:40]
+    contents = b"kartpad-dawn-source-v1\0" + BASE_REVISION.encode() + b"\0" + patch.read_bytes()
+    for extra in additional:
+        data = extra.read_bytes()
+        contents += b"\0additional-patch\0" + len(data).to_bytes(8, "big") + data
+    identity = hashlib.sha256(contents).hexdigest()[:40]
     cmake = source / "src/dawn/CMakeLists.txt"
     original = '    EXTRA_PARAMETERS "--dawn-dir"\n         "${Dawn_SOURCE_DIR}"\n'
     pinned = original + '         "--version-file" "${Dawn_SOURCE_DIR}/KARTPAD_DAWN_VERSION"\n'
@@ -30,6 +32,6 @@ def pin(source: Path, patch: Path) -> str:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("source", type=Path)
-    parser.add_argument("patch", type=Path)
+    parser.add_argument("patch", type=Path, nargs="+")
     args = parser.parse_args()
-    print(pin(args.source, args.patch))
+    print(pin(args.source, *args.patch))

@@ -31,8 +31,10 @@ with tarfile.open(archive) as package:
 (output/'baseline.json').write_text(json.dumps({'commit':'13abc3bc8ea2d3c2050f9e77a12d012108ceee24','archive_sha256':expected,'verified_baseline_files':checked},indent=2)+'\n')
 PY
 patch --batch -p1 -d "$output/source" < prototypes/stabilization/dependencies/dawn-optional-debug-utils.patch
+patch --batch -p1 -d "$output/source" < prototypes/stabilization/dependencies/dawn-swiftshader-dynamic-state.patch
 python3 prototypes/stabilization/pin-dawn-version.py "$output/source" \
-  prototypes/stabilization/dependencies/dawn-optional-debug-utils.patch > "$output/version.txt"
+  prototypes/stabilization/dependencies/dawn-optional-debug-utils.patch \
+  prototypes/stabilization/dependencies/dawn-swiftshader-dynamic-state.patch > "$output/version.txt"
 sdk="${ANDROID_SDK_ROOT:-$HOME/Library/Android/sdk}"
 path_flags="-O3 -DNDEBUG -ffile-prefix-map=$repo_root=KartPad -fmacro-prefix-map=$repo_root=KartPad"
 cmake -S "$output/source" -B "$output/build" -G Ninja \

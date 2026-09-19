@@ -3932,7 +3932,7 @@ static NSString *const kKartPadPreferredGameKey = @"KartPadPreferredGame";
   __weak KartPadRuntimeOverlayHost *weakSelf=self;
   [sheet addAction:[UIAlertAction actionWithTitle:@"Export a Ghost…" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
     NSError *error=nil;NSArray *records=KartPadOriginalGhosts(license,&error);
-    if(records.count==0){[weakSelf showIntegrationAlert:@"No Saved Ghosts" message:error.localizedDescription ?: @"Complete and save an Original time trial first."];return;}
+    if(records.count==0){[weakSelf showIntegrationAlert:error != nil ? @"Ghost Export Unavailable" : @"No Saved Ghosts" message:error.localizedDescription ?: @"This Original license has no saved personal-best or downloaded ghosts. Choose the license used for your time trial. Retro Rewind custom-track ghosts are not listed here."];return;}
     UIAlertController *choose=[UIAlertController alertControllerWithTitle:@"Choose Ghost" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     for(NSDictionary *record in records)[choose addAction:[UIAlertAction actionWithTitle:record[@"name"] style:UIAlertActionStyleDefault handler:^(UIAlertAction *selected){
       NSURL *directory=[NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:NSUUID.UUID.UUIDString] isDirectory:YES];

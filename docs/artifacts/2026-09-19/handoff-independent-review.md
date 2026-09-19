@@ -1,0 +1,148 @@
+# Independent handoff review and release decision
+
+19 September 2026. This review treats the supplied builder handoff as research,
+not as authority to change release gates or contact reporters. The requested
+acknowledgment was posted to [issue 305](https://github.com/chrissotraidis/kartpad/issues/305#issuecomment-5741390645).
+All subsequent investigation is developer-owned. No additional reporter tests
+or logs have been requested.
+
+## What was independently established
+
+The reviewed Android command processor resolves to exactly the handoff's blob
+`7c8a9ac4596286b5de132ecda9cd0fedce632989`. Its runtime `ac32b7a` predates the
+existing integration candidate. The separate transcribed test kit was not
+attached. Local tests instead extract production functions from the maintained
+checkout, with explicitly stubbed surrounding services, and run on host ARM64
+with AddressSanitizer and UndefinedBehaviorSanitizer.
+
+| Finding | Independent result | Candidate action and remaining boundary |
+| --- | --- | --- |
+| R1: invalidation bypasses merge | Old source fails; candidate already dirties GX state on invalidation | Retained. Source tests pass; not matched to a handset crash. |
+| R2: format switch bypasses pipeline selection | Old source fails; candidate already marks a changed format dirty | Retained and tested across all four runtime pins. |
+| R3: expanded previous primitive accepts triangle merge | Reproduced in the candidate-before condition | Added explicit previous-draw expansion metadata to the merge key. Ordinary triangles remain batchable. |
+| R4: merged 16-bit indices wrap | Old source fails; candidate already bounds total vertices | Retained wide arithmetic and the 65,536-vertex ceiling. Output uses triangle-list indices without primitive restart, so index 65,535 is usable. |
+| R5: incomplete primitives cross draw boundaries | Reproduced in candidate-before source | Emit complete list triangles; short strips/fans emit nothing. Short line draws are consumed before upload/instance-count arithmetic. |
+| R6: quad remainder references absent vertex | Reproduced in candidate-before source | Complete groups retain prior winding; a three-vertex remainder becomes one triangle; one/two vertices emit nothing. |
+| R7: 16-bit quad counter wraps | Old source fails; wide counter already present in candidate | Retained wide counter; combined tests cover output count, winding and bounds, including 65,520–65,535. |
+| R8: mapped staging slice aborts at capacity | Confirmed `ByteBuffer::resize` abort and the additional 3,840-byte final uniform tail | Not repaired by topology changes. Reservation and real GPU split probes remain experiments, not integrated renderer protection. |
+
+The topology test samples small counts, counts spaced by 127, and every count
+from 65,520 through 65,535. It validates every emitted index in each sampled
+case; it is not an exhaustive full-FIFO/GPU test. The quad remainder behavior
+was checked against [Dolphin's index generator](https://github.com/dolphin-emu/dolphin/blob/master/Source/Core/VideoCommon/IndexGenerator.cpp).
+
+## Startup, compilation and memory
+
+The existing optional Vulkan debug-utils backport matches the signatures in
+#301, #303 and the newer A9+ subcase of #216. Controlled advertised/missing
+entrypoint tests pass. This does not resolve the older Tab A report by itself.
+The prior code125 Pixel failure is preserved as a failed candidate: driver
+compiler allocations exhausted memory. Stable Dawn identity, a 128-recipe
+speculative replay budget, one background compiler, demand-work promotion and
+malformed cache-row rejection are retained. The real SQLite/worker tests pass;
+the compiler in that scheduling test is a controlled stand-in.
+
+A new disposable Android emulator run reproduced a separate Dawn assertion:
+SwiftShader's ExtendedDynamicState toggle was force-set twice when its extension
+or feature was absent. A narrow backport of the guard present in
+[current upstream source](https://github.com/google/dawn/blob/99807f37d56c1dfe375807f108fe435d7ea303b5/src/dawn/native/vulkan/PhysicalDeviceVk.cpp)
+passes all eight vendor/extension/feature combinations; the original branch
+asserts. The corrected dependency then starts the actual Android fixture and
+passes its touch tests. The combined patch identity is
+`b0fd045b0a694eb07ac3fcf0d741f8697b935856`; the Android Dawn archive SHA-256 is
+`99cef2c445bb9fa9758dda2036887f29c6116629053d2b40b3107590881db43a`.
+Earlier dependency installs remain intact.
+
+All four runtimes return an explicit graphics-unavailable status rather than
+asserting when no backend starts. The first useful adapter/device error survives
+fallback/window cleanup and is copied before another SDL call. The runtime
+shows it and exits before installing renderer/input hooks. Controlled failure,
+direct-success and fallback-success tests pass. Returning from the runtime is
+not yet proof of the complete chooser/retry flow on an affected phone.
+
+For #304, the pinned Dawn already tries Compatibility limit calculation after
+Core fails. Core requires 16 interstage variables and Compatibility 15; with
+two reserved vec4 slots these require 72 and 68 Vulkan components. Merely
+requesting Compatibility cannot accommodate 64. Upstream has an opt-in ImgTec
+14-variable relaxation, but the pinned device's `ReifyDefaultLimits` raises a
+lower request back to its feature-level default. A physical-device check alone
+would therefore leave an inconsistent device contract. The actual Moto G54
+numeric limits and representative shader execution remain unavailable; no
+limit falsification or PowerVR-support claim is included.
+
+The handoff's 148 MiB arithmetic is correct for requested destination/staging
+sizes (37 + 3×37 MiB); it is not measured process residency. The map wait really
+has no deadline/backoff and its spontaneous callback shares global state.
+Adding an arbitrary timeout would risk accessing unavailable storage or losing
+one-shot texture work. A safe next change must join lifecycle generation,
+callback cancellation, pass ownership, and transactional reservation. It must
+cover offscreen/suspended EFB passes and one-shot bakes before integration.
+
+## Graphics and performance claims that remain unproved
+
+The existing diagnostic counters inspect selected matrix elements, not decoded
+vertex-array positions/normals. `draw_binding` records a CPU recipe before
+pipeline readiness, encoding and submission. Those counters cannot clear the
+whole vertex path. The no-improvement merging-disabled/literal-indexing result
+in #193 is preserved: R1–R7 do not explain all S24 corruption.
+
+The next S24 experiment needs a private exact-draw replay with actual vertex,
+index, uniform and texture bytes, lowered shader, pipeline/readiness outcome,
+submission and pixel output. A CPU reference and immutable dedicated buffers
+can then distinguish decode/layout, shader lowering and resource reuse. The
+Fold/whole-scene cases retain separate acceptance rows. No blanket PNMTX, SSBO,
+FIFO, native TLS or floating-point workaround has been promoted.
+
+Warmed #198/#275 captures show heavy main-thread occupancy after compilation,
+but do not identify an expensive function. The inspected audio path uses SDL,
+not Oboe, and drops incoming blocks when its queue budget is full. Better warmed
+race frame-time tails, guest speed, audio and thermal behavior still require
+matched workload measurement. Startup compilation improvements cannot be
+reported as a demonstrated warmed-race FPS improvement.
+
+## Recent settings and configuration reports
+
+| Report | Action and acceptance |
+| --- | --- |
+| #305 auto-accelerate | Added persistent Android/iPhone/iPad opt-out. Disable clears the latch/timer while preserving an actual held A. Android production callback tests and real emulator MotionEvent fixture pass, including stale timer and accessibility cases. |
+| #295 ghost discovery | Original import/export already shipped in code117/build49. Six available local save copies contain no ghost presence flags/records, so they cannot reproduce this report. Parser layout/CRC rules agree with the independent MKW decompilation. Fixed swallowed export-validation errors on Android/Apple; valid slots still export beside corrupt slots. JNI and save-preservation tests pass. Custom-track support and the reporter's discovery failure remain separate. |
+| #297 mapping | Expanded mapping already exists. Menu tests were stale about labels and the number of controls; they are being updated against the running UI. |
+| #197 held/released controller input | Existing native focus/removal controls pass. Popup-window key-up routing and changing device/source ownership remain unproved; clearing all input on resume is not justified. |
+| #273 motion | The report has no reproducible sequence. No speculative motion rewrite or new reporter request. |
+| #302 payload mismatch | Existing candidate already verified the new signed small WFC payload and regenerated its 4,102-function mod translation. Preserved authentication and exact size/hash checks. |
+| #299 release discovery | The next release must put APK, unsigned IPA and Mac archive under one tag; verify consumer asset selection before publication. No coordinated release has been published from this candidate. |
+
+The refreshed inventory contains 57 open issues. Race/cup exits, online
+endurance, unclassified launch failures, handheld insets, save/identity restores,
+older Apple platforms and new service/controller features remain separate
+families. Source-kernel or emulator results do not close those reports. The
+prior #248 continuation correction has shipped; it is not newly fixed here.
+
+## Integration evidence and release decision
+
+Changes live in the existing `codex/cross-platform-stabilization-20260919`
+worktree; the primary checkout's 99 pre-existing changes are preserved.
+Runtime startup commits: Android `606d3bc`, iOS `959ba99`, macOS `70dc938`,
+tvOS `b923726`. Topology changes precede these commits. The parent branch
+includes the prior candidate work and still requires final source integration.
+
+iOS/iPadOS build53 compiles against the physical-device SDK and passes the full
+app audit. Mac build53 compiles and its package passes the audit. An isolated
+Mac test copy completed over 31,000 intro/title frames, exercised native
+settings, persisted a resolution change and exited with code zero. Short
+automated game-key presses did not advance the title screen; race/input
+acceptance is therefore not claimed. The build ran alongside compilation and
+is not a performance comparison. User saves and normal application defaults
+were not used for this test.
+
+Android code128 passed the package audit but predates the later startup/ghost/
+Dawn changes. Code129 is the combined local candidate. Neither local prototype
+is approved for public signing/publication merely because it builds. Final
+artifact hashes, embedded provenance, release certificate compatibility and
+native symbol matching must be recorded after the clean-source build.
+
+The release goal remains active. The next steps are to finish combined-candidate
+audits and UI regression checks, retain exact symbols, publish reviewable source
+branches/PR, and complete only release lanes whose acceptance gates are met.
+Current evidence does not justify promising zero issues, faster warmed gameplay
+on affected Android hardware, or closing all graphics/compatibility reports.

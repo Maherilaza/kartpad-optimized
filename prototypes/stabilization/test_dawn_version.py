@@ -37,6 +37,13 @@ with tempfile.TemporaryDirectory(prefix='kartpad-dawn-identity-') as directory:
         assert pin.pin(archive,patch) == identity
         assert before == (archive/'src/dawn/CMakeLists.txt').read_bytes()
     assert identities[0] == identities[1]
+    second = root/'prototypes/stabilization/dependencies/dawn-swiftshader-dynamic-state.patch'
+    combined = pin.pin(archive, patch, second)
+    assert combined != identity
+    assert combined == pin.pin(archive, patch, second)
+    changed_second = Path(directory)/'changed-second.patch'
+    changed_second.write_bytes(second.read_bytes()+b'\nchanged additional dependency\n')
+    assert pin.pin(archive, patch, changed_second) != combined
     changed = Path(directory)/'changed.patch'
     changed.write_bytes(patch.read_bytes()+b'\nchanged dependency\n')
     assert pin.pin(archive,changed) != identity

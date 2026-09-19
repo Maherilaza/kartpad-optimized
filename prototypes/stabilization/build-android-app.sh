@@ -13,7 +13,7 @@ from pathlib import Path
 path = Path(sys.argv[1])
 with path.open('rb') as stream:
     digest = hashlib.file_digest(stream, 'sha256').hexdigest()
-if digest != '43f30a51139b7860b33e4c1a65e593ebf55be5e8c4329cfc0a27f8eb2980b0bf':
+if digest != '99cef2c445bb9fa9758dda2036887f29c6116629053d2b40b3107590881db43a':
     raise SystemExit('Dawn library differs from the reviewed prototype; review dependency evidence before building.')
 PY
 export MINIZIP_ANDROID_ROOT="${3:?Supply the pinned minizip source directory}"
@@ -34,5 +34,5 @@ export CMAKE_BUILD_PARALLEL_LEVEL="${KARTPAD_PROTOTYPE_JOBS:-6}"
   -PkartpadTranslatedShardManifest="$translation/build_shards/shards.cmake" \
   -PkartpadAndroidNativeTarget=KartPadDual -PkartpadDiscIoJniRoot="$discio" \
   -PkartpadDiagnosticRelease=true -PkartpadProfileable=true \
-  -PkartpadVersionCode=127 -PkartpadVersionName=0.4.25-stabilization.5-prototype :app:assembleRelease
+  -PkartpadVersionCode=129 -PkartpadVersionName=0.4.25-stabilization.7-prototype :app:assembleRelease
 echo 'Local prototype only; verify the signer before considering any in-place device test.'

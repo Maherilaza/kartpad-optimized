@@ -1324,12 +1324,26 @@ class KartPadActivity : SDLActivity() {
                     val save = runCatching { KartPadSaveStorage.readActive(filesDir) }.getOrNull()
                     if (save == null) { showParityBoundary("Ghost Export Failed", "No valid Original save is available."); return@setItems }
                     val choices = mutableListOf<Pair<Int, Boolean>>()
+                    var unreadable = 0
+                    var firstError: String? = null
                     for (downloaded in listOf(false, true)) for (slot in 0 until 32) {
                         val offset = 8 + ghostLicense * 0x8cc0 + if (downloaded) 8 else 4
                         val bitfield = java.nio.ByteBuffer.wrap(save, offset, 4).int
-                        if ((bitfield and (1 shl slot)) != 0 && nativeGhostTransfer(save, null, ghostLicense, slot, downloaded) != null) choices.add(slot to downloaded)
+                        if ((bitfield and (1 shl slot)) == 0) continue
+                        val exported = runCatching { nativeGhostTransfer(save, null, ghostLicense, slot, downloaded) }
+                        if (exported.getOrNull() != null) choices.add(slot to downloaded)
+                        else {
+                            unreadable += 1
+                            if (firstError == null) firstError = exported.exceptionOrNull()?.message
+                        }
                     }
-                    if (choices.isEmpty()) { showParityBoundary("No Saved Ghosts", "Complete and save an Original time trial first."); return@setItems }
+                    if (choices.isEmpty()) {
+                        if (unreadable > 0) showParityBoundary("Ghost Export Unavailable",
+                            "This license lists $unreadable saved ghosts, but they could not be exported. " +
+                                (firstError ?: "The ghost data could not be read.") + " Your save has not been changed.")
+                        else showParityBoundary("No Saved Ghosts", "This Original license has no saved personal-best or downloaded ghosts. Choose the license used for your time trial. Retro Rewind custom-track ghosts are not listed here.")
+                        return@setItems
+                    }
                     AlertDialog.Builder(this).setTitle("Choose Ghost")
                         .setItems(choices.map { "${GHOST_COURSES[it.first]} — ${if (it.second) "Downloaded" else "Personal Best"}" }.toTypedArray()) { _, choice ->
                             ghostSlot = choices[choice].first; ghostDownloaded = choices[choice].second
