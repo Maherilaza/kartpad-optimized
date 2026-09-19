@@ -1,4 +1,9 @@
 #include "batch_reservation.hpp"
+#ifdef __ANDROID__
+#include "../../vendor/runtimes/android/aurora-main/lib/gfx/staging_map.hpp"
+#else
+#include "../../vendor/runtimes/macos/aurora-main/lib/gfx/staging_map.hpp"
+#endif
 #include <webgpu/webgpu_cpp.h>
 #include <algorithm>
 #include <atomic>
@@ -68,13 +73,22 @@ struct GPU {
     require(errors==0,"GPU validation failed");
   }
   void map(wgpu::Buffer buffer,wgpu::MapMode mode,uint64_t size) {
-    struct MapResult { bool done=false,ok=false; };
-    auto result=std::make_shared<MapResult>();
-    buffer.MapAsync(mode,0,size,wgpu::CallbackMode::AllowProcessEvents,
-      [result](wgpu::MapAsyncStatus status,wgpu::StringView){
-        result->ok=status==wgpu::MapAsyncStatus::Success;result->done=true;
+    using aurora::gfx::BufferMapState;
+    auto result=std::make_shared<aurora::gfx::StagingMapState>();
+    const auto generation=result->request();
+    buffer.MapAsync(mode,0,size,wgpu::CallbackMode::AllowSpontaneous,
+      [result,generation](wgpu::MapAsyncStatus status,wgpu::StringView){
+        result->complete(generation,status==wgpu::MapAsyncStatus::Success
+            ? BufferMapState::Mapped : BufferMapState::Unmapped);
       });
-    wait(result->done);require(result->ok,"Buffer map failed");
+    const auto deadline=std::chrono::steady_clock::now()+30s;
+    while(result->state()==BufferMapState::Mapping) {
+      instance.ProcessEvents();
+      result->wait_for_progress();
+      require(std::chrono::steady_clock::now()<deadline,"GPU callback timed out");
+    }
+    require(result->state()==BufferMapState::Mapped,"Buffer map failed");
+    require(errors==0,"GPU validation failed");
   }
   wgpu::Buffer buffer(uint64_t size,wgpu::BufferUsage usage,bool mapped=false) {
     wgpu::BufferDescriptor desc{};desc.size=size;desc.usage=usage;desc.mappedAtCreation=mapped;

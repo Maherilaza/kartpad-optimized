@@ -6,6 +6,7 @@ on:
       - 'tests/test_draw_merge_boundaries.py'
       - 'tests/test_draw_topology.py'
       - 'tests/test_graphics_startup_failure.py'
+      - 'tests/test_staging_map_lifecycle.py'
       - 'tests/test_sleep_timer_reentry.py'
       - 'prototypes/stabilization/batch_reservation.hpp'
       - 'prototypes/stabilization/test_batch_reservation.cpp'
@@ -19,6 +20,7 @@ on:
       - 'tests/test_draw_merge_boundaries.py'
       - 'tests/test_draw_topology.py'
       - 'tests/test_graphics_startup_failure.py'
+      - 'tests/test_staging_map_lifecycle.py'
       - 'tests/test_sleep_timer_reentry.py'
       - 'prototypes/stabilization/batch_reservation.hpp'
       - 'prototypes/stabilization/test_batch_reservation.cpp'
@@ -45,6 +47,7 @@ jobs:
           python3 -B -m unittest discover -s tests -p test_draw_merge_boundaries.py -v
           python3 -B -m unittest discover -s tests -p test_draw_topology.py -v
           python3 -B -m unittest discover -s tests -p test_graphics_startup_failure.py -v
+          python3 -B -m unittest discover -s tests -p test_staging_map_lifecycle.py -v
           python3 -B -m unittest discover -s tests -p test_sleep_timer_reentry.py -v
       - name: Experimental atomic draw reservations
         run: |
