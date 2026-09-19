@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[2]
 source = (ROOT / 'vendor/runtimes/android/aurora-main/lib/gfx/pipeline_cache.cpp').read_text()
 loader = source[source.index('template <typename PipelineConfig, typename CreateFn>\nstatic void load_pipeline_cache_entries'):source.index('\nstatic void load_pipeline_cache()')]
 worker = source[source.index('static void pipeline_worker()'):source.index('\nstatic void build_synchronous_pipelines_for_frame()')]
+promotion = source[source.index('template <typename Queue>\nstatic auto find_pending_pipeline'):source.index('// A persistent resolve')]
 constants = '\n'.join(line for line in source.splitlines() if line.startswith('constexpr size_t Max') and any(n in line for n in ['MaxPipelineWorkers', 'MaxBackgroundPipelineWorkers', 'MaxPrewarmPipelineBuilds']))
 preamble = r'''
 #include <sqlite3.h>
@@ -42,7 +43,7 @@ uint64_t xxh3_hash_s(const uint8_t* data, size_t size, HashType type) {
 }
 std::vector<unsigned> loaded;
 template<class C,class F> void find_pipeline_impl(ShaderType,const C& c,F&&,bool,unsigned) { loaded.push_back(c.id); }
-struct PendingPipeline { unsigned id; };
+struct PendingPipeline { PipelineRef hash; };
 std::mutex g_pipelineMutex;
 std::condition_variable g_pipelineCv;
 std::deque<PendingPipeline> g_priorityPipelines,g_backgroundPipelines;
@@ -53,7 +54,7 @@ std::mutex compileMutex;
 std::condition_variable compileCv;
 bool releaseBackground=false;
 void compile_pending_pipeline(PendingPipeline p) {
- if(p.id==10000) { ++priorityEntered;compileCv.notify_all();return; }
+ if(p.hash==10000) { ++priorityEntered;compileCv.notify_all();return; }
  ++backgroundEntered;compileCv.notify_all();
  std::unique_lock l(compileMutex);compileCv.wait(l,[]{return releaseBackground;});
 }
@@ -91,8 +92,7 @@ int main() {
  for(unsigned i=0;i<128;++i)g_backgroundPipelines.push_back({i});
  std::vector<std::thread> threads;for(int i=0;i<6;++i)threads.emplace_back(pipeline_worker);
  {std::unique_lock l(compileMutex);assert(compileCv.wait_for(l,std::chrono::seconds(2),[]{return backgroundEntered.load()>0;}));}
- {std::lock_guard l(g_pipelineMutex);g_priorityPipelines.push_back({10000});}
- g_pipelineCv.notify_all();
+ {std::lock_guard l(g_pipelineMutex);g_backgroundPipelines.push_back({10000});assert(touch_pending_pipeline(10000,true)!=nullptr);}
  {std::unique_lock l(compileMutex);assert(compileCv.wait_for(l,std::chrono::seconds(2),[]{return priorityEntered.load()==1;}));}
  assert(backgroundEntered==1);
  {std::lock_guard l(g_pipelineMutex);g_pipelineThreadEnd=true;}g_pipelineCv.notify_all();
@@ -102,7 +102,7 @@ int main() {
 }
 '''
 with tempfile.TemporaryDirectory(prefix='kartpad-pipeline-budget-') as d:
-    p=Path(d); (p/'probe.cpp').write_text(preamble+'\n'+constants+'\n'+loader+'\n'+worker+'\n'+main)
+    p=Path(d); (p/'probe.cpp').write_text(preamble+'\n'+constants+'\n'+loader+'\n'+promotion+'\n'+worker+'\n'+main)
     subprocess.run(['clang++','-std=c++20','-O2','-pthread',str(p/'probe.cpp'),'-lsqlite3','-o',str(p/'probe')],check=True)
     subprocess.run([str(p/'probe')],check=True,timeout=10)
 print('Production cache admission/SQLite reuse/cache preservation and priority-worker progress passed.')
