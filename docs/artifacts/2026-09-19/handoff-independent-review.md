@@ -8,6 +8,8 @@ or logs have been requested.
 
 ## Current checkpoint — September 20
 
+**Latest binaries:** clean `a6fca28` now produces Android code133 and Apple build57, including the ImGui correction below. Native builds, package audits, symbol matching, the normal-shutdown real GPU probe, exact source fingerprint checks and coordinated asset readback pass. See [the new candidate record](release-050-code133-build57.json) and [coordinated assets](coordinated-assets-code133-build57.json). These binaries still require their own physical/gameplay acceptance; code132/build56 runtime observations below are historical evidence.
+
 A subsequent refresh found [#309](https://github.com/chrissotraidis/kartpad/issues/309). The real pinned ImGui backend reproduces its `0xb0` cleanup crash. All four maintained wrappers now guard partial initialization; [the verification record](imgui-partial-startup.md) describes the proof and limits. Code132/build56 below predate this correction and require replacement relinks before release.
 
 Clean `e787794` produced Android code132 and Apple build56, integrating the
