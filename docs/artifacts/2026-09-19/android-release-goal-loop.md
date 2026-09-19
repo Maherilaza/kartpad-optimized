@@ -152,7 +152,7 @@ packaging must regenerate that sidecar from verified prepared source.
 Android menu validation now checks the actual scrollable reporting screen,
 expanded mapping list and save-profile chooser. The settings-through-insets
 run passes, including persisted Auto-accelerate OFF after process restart.
-An end-to-end rerun of the corrected script is in progress. The debug APK used
+An end-to-end rerun of the corrected script passes. The debug APK used
 for UI tests is separate from the optimized full-game code129 APK.
 
 The Mac package passes its audit. A separately identified portable test copy
@@ -160,3 +160,24 @@ completed over 31,000 intro/title frames, persisted a native resolution setting
 across closing/reopening Settings, and exited zero. Automated short game-key
 presses did not advance the title screen; no race/input or Android performance
 acceptance is inferred. User state and the audited package were preserved.
+
+Clean source `0fe98c1` now has all three local packages and exact symbols;
+[`combined-candidate-build.json`](combined-candidate-build.json) records their
+hashes and boundaries. The Mac ZIP also passes an unpack-and-audit check.
+Android's production shell installs and opens on the disposable emulator.
+No game data was installed there; this is shell acceptance only. All runtime
+source commits are published, and draft [PR #307](https://github.com/chrissotraidis/kartpad/pull/307)
+reconciles the isolated integration checkout with the intended main branch.
+The checkout remains necessary for its candidate artifacts and further work.
+
+All three PR checks pass after correcting the existing REL-guard test's stale
+4,101-function expectation to the independently verified 4,102-function payload.
+No production validation was weakened. A final GitHub refresh found new #306:
+Mac Wii Remote + Classic Pro latency/D-pad/remapping. It is added to the next
+developer-owned input investigation; no reporter request or unsupported fix
+claim was sent. The latest inventory has 58 open issues.
+
+The next loop remains focused on real staging/pass ownership, map lifecycle,
+graphics replay, and the actual input/workload paths. Public release signing,
+dependency promotion and coordinated asset discovery remain pending. These
+local prototype packages are not the promised stable release.

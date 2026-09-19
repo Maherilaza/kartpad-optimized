@@ -112,7 +112,16 @@ reported as a demonstrated warmed-race FPS improvement.
 | #302 payload mismatch | Existing candidate already verified the new signed small WFC payload and regenerated its 4,102-function mod translation. Preserved authentication and exact size/hash checks. |
 | #299 release discovery | The next release must put APK, unsigned IPA and Mac archive under one tag; verify consumer asset selection before publication. No coordinated release has been published from this candidate. |
 
-The refreshed inventory contains 57 open issues. Race/cup exits, online
+The initial inventory contained 57 open issues. A final refresh found #306,
+reporting Wii Remote + Classic Pro delay, missing D-pad and failed remapping on
+Mac v0.4.22/macOS 27. The mapping/pairing UI is unchanged from that tag. Pinned
+SDL explicitly decodes all four Classic D-pad bits, including MotionPlus fixups,
+and KartPad exposes those mapped buttons. The experimental Wii HID backend is
+opt-in; actual backend/packet timing is unknown. Next is a local investigation
+of backend selection, packet-to-guest latency and mapping ownership. No reply
+or unsupported fix claim was sent. The current inventory has 58 open issues.
+
+Race/cup exits, online
 endurance, unclassified launch failures, handheld insets, save/identity restores,
 older Apple platforms and new service/controller features remain separate
 families. Source-kernel or emulator results do not close those reports. The
@@ -141,8 +150,25 @@ is approved for public signing/publication merely because it builds. Final
 artifact hashes, embedded provenance, release certificate compatibility and
 native symbol matching must be recorded after the clean-source build.
 
-The release goal remains active. The next steps are to finish combined-candidate
-audits and UI regression checks, retain exact symbols, publish reviewable source
-branches/PR, and complete only release lanes whose acceptance gates are met.
+Clean source `0fe98c1` now produces audited Android APK, unsigned iOS/iPadOS
+IPA and Mac ZIP candidates. Identities and acceptance states are recorded in
+[`combined-candidate-build.json`](combined-candidate-build.json). Android's native
+payload is byte-identical before/after the clean provenance refresh. Its release
+shell installs and displays the missing-game-data chooser in the disposable
+emulator; this is not full-game GPU acceptance. The unpacked Mac ZIP preserves
+its internal symlinks and passes the package/signature audit. Apple symbols match
+the app UUID. The local APK's certificate is not the public release certificate.
+
+The complete Android menu/inset rerun passes. Draft
+[PR #307](https://github.com/chrissotraidis/kartpad/pull/307) contains the integration,
+with all four runtime commits published on matching source branches. Its shared
+runtime and build-receipt checks pass. CI exposed one stale expected mod count
+in the existing REL-guard test; correcting the expected 4,102 count while
+retaining stale/unexpected-count rejection passes all 11 local tests and the
+subsequent CI regression job. That follow-up changes only a test.
+
+The release goal remains active. Next are staging/map lifecycle integration,
+developer-owned graphics/input reproduction and matched workload validation,
+followed by production dependency promotion and coordinated release preparation.
 Current evidence does not justify promising zero issues, faster warmed gameplay
 on affected Android hardware, or closing all graphics/compatibility reports.
