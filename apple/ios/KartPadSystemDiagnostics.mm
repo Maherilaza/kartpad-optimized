@@ -86,10 +86,13 @@ void KartPadSystemDiagnosticsStart(void) {
     static KartPadSystemDiagnosticSubscriber *subscriber;
     static dispatch_once_t once;
     dispatch_once(&once, ^{
-        if (KartPadSystemDiagnosticsIsCandidate()) {
-        setenv("KARTPAD_RENDERER_VALIDATION", "1", 1);
-        setenv("KARTPAD_FUNCTION_TIMING", "1", 1);
+        const BOOL diagnosticCandidate = KartPadSystemDiagnosticsIsCandidate();
+        if (diagnosticCandidate) {
+            setenv("KARTPAD_RENDERER_VALIDATION", "1", 1);
+            setenv("KARTPAD_FUNCTION_TIMING", "1", 1);
         }
+        fprintf(stderr, "[KartPadSession] diagnostic_candidate=%s\n",
+            diagnosticCandidate ? "enabled" : "disabled");
         fprintf(stderr, "[KartPadSession] version=%s build=%s\n",
             [[NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleShortVersionString"] UTF8String],
             [[NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleVersion"] UTF8String]);
