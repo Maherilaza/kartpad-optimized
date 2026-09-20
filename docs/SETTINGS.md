@@ -1,6 +1,6 @@
 # Mobile settings
 
-Android 0.4.24 Android 1 (117) and iOS/iPadOS 0.4.24 (49) share this menu order. Open **•••** while a game is running.
+Android 0.5.0 (135) and iOS/iPadOS 0.5.0 (59) share this menu order. Open **•••** while a game is running.
 
 | Menu | Options, in order |
 | --- | --- |

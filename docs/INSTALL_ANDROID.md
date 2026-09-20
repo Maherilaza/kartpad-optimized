@@ -2,33 +2,27 @@
 
 ## Current update
 
-[**0.4.24 Android 1 / code 117**](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.24-android.1)
-adds the racing launcher, HD icon, persistent dark/light mode, preferred-game
-selection, and clearer player identity controls with a missing-Mii repair.
-The owner accepted the interface and game operation on the tested Pixel.
-This is not a general Android FPS or stability fix. See the
-[release notes](releases/v0.4.24-android.1.md). Update in place using the same
-signing identity; do not uninstall or clear app data.
-
-For the character corruption comparison in #193, use the separate
-[**experimental code 91 APK**](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.21-android-matrix.1).
-Its [three-phase test instructions](releases/v0.4.21-android-matrix.1.md) compare
-original and compatibility indexing. It is not a confirmed graphics or FPS fix;
-Normal remains the default and code 117 is the general release.
+[**0.5.0 / code 135**](https://github.com/chrissotraidis/kartpad/releases/tag/v0.5.0)
+adds a persistent Auto-accelerate opt-out, fixes controller assignment, and
+corrects generated vehicle thumbnails, framebuffer copies and graphics-startup
+failures. The owner confirmed the thumbnail repair on the tested Pixel. This
+is not a general Android FPS or compatibility guarantee. See the
+[release notes](releases/v0.5.0.md). Update in place using the same signing
+identity; do not uninstall or clear app data.
 
 The latest update also aligns the mobile settings order and labels, adds **Game Data & Saves → Time Trial Ghosts** for Original `.rkg` transfers, expands controller remapping, and provides Small/Medium/Large FPS counters. The iPhone report form now scrolls correctly. See [mobile settings](SETTINGS.md) for supported workflows and platform differences.
 
 ## Download and first launch
 
-1. Open the [current Android release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.24-android.1).
-   Download `KartPad-v0.4.24-android.1-arm64.apk`, `SHA256SUMS`, and the companion
+1. Open the [current Android release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.5.0).
+   Download `KartPad-v0.5.0-android-arm64.apk`, `SHA256SUMS.txt`, and the companion
    notices ZIP. APK is Android's installable format; IPA is Apple-only. The AAB
    is a developer bundle and is not needed for installation (it is not published).
 2. Use an ARM64 phone/tablet with Vulkan and Android 9/API 28 or newer. The
    tested physical device is Pixel 9 Pro XL; the oldest OS/vendor GPU combinations
    and all other phones are not certified. Allow at least 6 GiB free for setup,
    plus space for the source image and optional Retro Rewind installation.
-3. Verify the APK against `SHA256SUMS` (`shasum -a 256 FILE.apk` on macOS,
+3. Verify the APK against `SHA256SUMS.txt` (`shasum -a 256 FILE.apk` on macOS,
    `sha256sum FILE.apk` on Linux, or `Get-FileHash FILE.apk -Algorithm SHA256`
    in PowerShell). Open it on the phone and, if requested, allow that browser or
    file manager to install this app. No USB debugging is required for normal

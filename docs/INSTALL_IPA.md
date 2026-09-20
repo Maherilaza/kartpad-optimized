@@ -1,13 +1,12 @@
 # Install the KartPad unsigned IPA
 
-KartPad `v0.4.24-ios.1` (0.4.24, build 49) is the current unsigned ARM64 IPA
-for iPhone and iPad, with the official Retro Rewind 6.12.8 profile. Re-sign it
-with your existing compatible Apple identity and update in place.
+KartPad **0.5.0 (build 59)** is the unsigned ARM64 IPA for iPhone and iPad,
+with the official Retro Rewind 6.12.8 profile. Re-sign it with your existing
+compatible Apple identity and update in place.
 
-This update adds the racing launcher, dark/light mode, preferred-game selection,
-and Choose Mii repair for licenses whose linked Mii is missing. The owner
-confirmed the repair and the interface on iPhone. See the
-[release notes](releases/v0.4.24-ios.1.md).
+This update adds a persistent Auto-accelerate opt-out and corrects shader
+startup pressure, framebuffer-copy crashes, and incomplete generated textures.
+See the [release notes](releases/v0.5.0.md).
 
 The IPA declares **iOS/iPadOS 16 or newer** and an ARM64 device with Metal.
 The generic ARM64 startup correction is retained. The A10X reporter confirmed
@@ -21,10 +20,10 @@ Older IPAs should remain offline. This does not erase incorrect serial history
 already held by a server or clear bans; affected accounts may need service-admin
 help. Never reset identities or delete saves as a workaround.
 
-1. Download `KartPad-v0.4.24-ios.1-unsigned.ipa` and `SHA256SUMS-ios` from the
-   [official iPhone/iPad release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.24-ios.1).
-2. Run `shasum -a 256 KartPad-v0.4.24-ios.1-unsigned.ipa` on a Mac and
-   compare it with the IPA row in `SHA256SUMS-ios`. The source download is optional for normal installation.
+1. Download `KartPad-v0.5.0-ios-unsigned.ipa` and `SHA256SUMS.txt` from the
+   [official iPhone/iPad release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.5.0).
+2. Run `shasum -a 256 KartPad-v0.5.0-ios-unsigned.ipa` on a Mac and
+   compare it with the IPA row in `SHA256SUMS.txt`. The source download is optional for normal installation.
 3. Re-sign and install it with AltStore Classic plus AltServer or another
    compatible IPA-signing workflow. AltStore PAL cannot import arbitrary
    unsigned IPA files.
