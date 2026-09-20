@@ -21,6 +21,10 @@ This release supports Original Mario Kart Wii courses. Retro Rewind custom-track
 
 Controller Button Mapping supports D-pad directions and triggers, optional shared physical actions, and the Use L1 for Items preset. Controller Player Setup remains separate. Touch layout controls and motion steering remain available.
 
+**Auto-accelerate** is under Controls → Touch Control Settings. OFF uses ordinary A press/hold/release; ON retains the one-second hold-to-latch behavior. The choice persists.
+
+Motion steering supports calibration and sensitivity. iPhone/iPad additionally offer shake-to-trick; Android currently has tilt steering only.
+
 FPS Counter Size offers Small, Medium and Large on both platforms. Render Resolution can reduce GPU workload; it does not fix a CPU bottleneck or guarantee a faster race. Start with 1x Native on Android.
 
 ## Saves and reports
