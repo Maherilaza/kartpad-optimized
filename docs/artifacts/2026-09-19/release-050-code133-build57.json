@@ -38,7 +38,7 @@
     "normalGpuShutdown": "Fresh actual Aurora/Metal GPU probe passes independent pixels, forced splits and normal initialized shutdown",
     "partialStartup": "Real pinned backend reproduces old null faults; corrected no-context and context-only cleanup pass; all four production-function sanitizer fixtures pass",
     "ci": "All three checks passed on a6fca28",
-    "physicalAcceptance": "These new binaries are not yet installed; earlier code132/build56 evidence remains separate"
+    "physicalAcceptance": "Android code133 installed on owner Pixel. Apple build57 installed in place on owner iPad Pro and launched; 33 backed-up user files match after installation. Mac build57 launched in isolated copy. Owner gameplay acceptance remains pending; see ipad-build57-deployment.md. Earlier code132/build56 gameplay evidence remains separate."
   },
-  "acceptance": "Local candidates; no public app release. Physical Apple, touch/manual racing and affected-hardware acceptance remain pending."
+  "acceptance": "Local candidates; no public app release. Owner testing and confirmation required before publication. Touch/manual racing and affected-hardware acceptance remain pending."
 }
