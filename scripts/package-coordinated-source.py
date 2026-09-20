@@ -75,6 +75,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('prior', 'core', 'record', 'artifacts', 'output'):
         parser.add_argument('--' + name, type=Path, required=True)
+    parser.add_argument('--prior-sha256', default=PRIOR_SHA256,
+                        help='Expected digest of the verified dependency source delivery')
+    parser.add_argument('--rebuild-notes', type=Path, default=REPO / 'docs/releases/v0.5.0-source.md')
     args = parser.parse_args()
     if args.output.exists():
         parser.error('output already exists')
@@ -104,7 +107,7 @@ def main():
             if manifest['source_revision'] != revision or manifest['source_dirty'] or manifest['kartpad_source'] != fingerprint:
                 parser.error('embedded app source fingerprint differs from source delivery')
     prior = args.prior.read_bytes()
-    if sha(prior) != PRIOR_SHA256:
+    if sha(prior) != args.prior_sha256:
         parser.error('prior source delivery identity differs')
     files = {}
     with tarfile.open(fileobj=io.BytesIO(prior), mode='r:gz') as archive:
@@ -124,12 +127,12 @@ def main():
             if name in RETAIN_FILES or name.startswith(RETAIN_PREFIXES):
                 files[name] = data
     files['KartPad-core-source.tar.gz'] = core
-    files['REBUILD.md'] = (REPO / 'docs/releases/v0.5.0-source.md').read_bytes()
+    files['REBUILD.md'] = args.rebuild_notes.read_bytes()
     files['packaging/package-coordinated-source.py'] = Path(__file__).read_bytes()
     manifest = {
         'schemaVersion': 2, 'status': 'candidate_not_release_approval',
         'sourceRevision': revision, 'sourceFingerprint': fingerprint,
-        'candidateArtifacts': record['artifacts'], 'retainedDependencySourceArchiveSHA256': PRIOR_SHA256,
+        'candidateArtifacts': record['artifacts'], 'retainedDependencySourceArchiveSHA256': args.prior_sha256,
         'files': {name: {'bytes': len(data), 'sha256': sha(data)} for name, data in sorted(files.items())},
     }
     files['SOURCE-MANIFEST.json'] = (json.dumps(manifest, indent=2, sort_keys=True) + '\n').encode()
