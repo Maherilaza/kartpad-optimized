@@ -40,5 +40,5 @@
     "ci": "All three checks passed on a6fca28",
     "physicalAcceptance": "Android code133 installed on owner Pixel. Apple build57 installed in place on owner iPad Pro and launched; 33 backed-up user files match after installation. Mac build57 launched in isolated copy. Owner gameplay acceptance remains pending; see ipad-build57-deployment.md. Earlier code132/build56 gameplay evidence remains separate."
   },
-  "acceptance": "Local candidates; no public app release. Owner testing and confirmation required before publication. Touch/manual racing and affected-hardware acceptance remain pending."
+  "acceptance": "Release blocked: owner iPad build57 crashed during background shader compilation with an unhandled allocation failure. See ipad-build57-startup-crash.md. Owner confirmation still required after correction and verification."
 }
