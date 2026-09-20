@@ -27,9 +27,10 @@
   "ios_ipados": {
     "build": 59,
     "uuid": "1FDEF47B-7C42-3913-A47B-B2B85407FA0B",
-    "installed": false,
-    "current_owner_ipad_build": 58,
-    "status": "Built, unsigned IPA audited, full dSYM matches; archive bytes and modes verified."
+    "installed": true,
+    "current_owner_ipad_build": 59,
+    "status": "Installed in place on physical iPad; signing profile and executable UUID verified. All 30 fresh backup files match after installation, WBFS remains present. Normal launch and both game-ready entries observed. No physical build59 gameplay claim.",
+    "preserved_files_verified": 30
   },
   "macos": {
     "build": 59,
@@ -45,9 +46,9 @@
     "four_platform_staging_and_readback_sanitizers": "passed",
     "ci": "all 3 checks passed on a2f41d5"
   },
-  "release_status": "All candidate binaries, coordinated source, notices and checksums prepared. Owner confirms Android thumbnail correction. Apple build59 device installation/check remains next; not published.",
+  "release_status": "Owner authorized coordinated public release. Android thumbnail correction accepted; iPad build59 installed and normal launch verified. Final documentation and packaging underway; not yet published.",
   "coordinated_delivery": {
-    "status": "candidate_not_release_approval",
+    "status": "historical_candidate_superseded_by_final_documentation_packaging",
     "packagingCommit": "b14414e5d3a1f170df92453869cd34b30f512bf7",
     "artifacts": {
       "KartPad-v0.5.0-android-arm64.apk": {

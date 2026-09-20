@@ -47,12 +47,12 @@ The projects are independently maintained.
 
 | Platform | Download | Setup |
 | --- | --- | --- |
-| Android ARM64 | [0.4.24 Android 1 · code 117](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.24-android.1) | [Android 9+ with Vulkan](docs/INSTALL_ANDROID.md) |
-| iPhone / iPad | [0.4.24 · build 49](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.24-ios.1) | [iOS/iPadOS 16+; re-sign the IPA](docs/INSTALL_IPA.md) |
-| Apple Silicon Mac | [0.4.22 · build 43](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.22-macos.1) | [macOS 14+](docs/INSTALL_MACOS.md) |
+| Android ARM64 | [0.5.0 · code 135](https://github.com/chrissotraidis/kartpad/releases/tag/v0.5.0) | [Android 9+ with Vulkan](docs/INSTALL_ANDROID.md) |
+| iPhone / iPad | [0.5.0 · build 59](https://github.com/chrissotraidis/kartpad/releases/tag/v0.5.0) | [iOS/iPadOS 16+; re-sign the IPA](docs/INSTALL_IPA.md) |
+| Apple Silicon Mac | [0.5.0 · build 59](https://github.com/chrissotraidis/kartpad/releases/tag/v0.5.0) | [macOS 14+](docs/INSTALL_MACOS.md) |
 | Apple TV experimental preview | [0.4.11 · build 9](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11-tvos.1) | [tvOS 17+; re-sign the IPA](docs/INSTALL_TVOS.md) |
 
-**0.4.24 aligns the mobile settings menus**, adds Original Time Trial ghost import/export, expands controller mappings and FPS counter sizing, and improves problem reports. It retains yesterday's racing launcher, HD icon, dark/light mode, preferred-game selector and license/Mii repairs. See the [mobile settings guide](docs/SETTINGS.md). Android performance remains an active area of work; this release does not establish a general FPS improvement.
+**0.5.0 combines Android, iPhone/iPad and Mac downloads in one release.** It adds a persistent Auto-accelerate switch, fixes Android controller assignment, preserves vehicle thumbnails while shaders compile, and corrects framebuffer-copy and graphics-startup failures. See the [release notes](docs/releases/v0.5.0.md) and [mobile settings guide](docs/SETTINGS.md). Device-specific graphics and performance limitations remain; this is not a universal FPS improvement claim.
 
 **0.4.22 moved KartPad to maintained WiiCompiled source** with pinned platform
 branches, preserving the existing game behavior and repository history. Source
@@ -108,7 +108,7 @@ known issues. Android's suggested starting point is **1x Native**. Sustained
 <details>
 <summary>Can I download an IPA or playable app?</summary>
 
-Yes—use the [platform downloads above](#downloads). The current public iPhone/iPad build is **0.4.24 build 49**; Mac and Apple TV have separate packages. Apple IPAs need re-signing. Every package requires your own supported game data. A [Personal IPA Builder](docs/BUILDER.md) is also available.
+Yes—use the [platform downloads above](#downloads). The current iPhone/iPad and Mac builds are **0.5.0 build 59**, alongside **Android code135** in the same release. Apple TV retains its separate experimental preview. Apple IPAs need re-signing. Every package requires your own supported game data. A [Personal IPA Builder](docs/BUILDER.md) is also available.
 
 </details>
 
