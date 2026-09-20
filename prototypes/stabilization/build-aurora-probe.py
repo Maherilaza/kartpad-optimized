@@ -24,6 +24,7 @@ def main():
     parser.add_argument('output', type=Path)
     parser.add_argument('--validation', action='store_true',
                         help='Keep Dawn validation enabled in the otherwise Release renderer')
+    parser.add_argument('--copy-gate', action='store_true', help='Deterministically gate compiler jobs for the copy regression probe')
     args = parser.parse_args()
     build, output = args.build.resolve(), args.output.resolve()
     ninja = (build / 'build.ninja').read_text()
@@ -58,6 +59,27 @@ def main():
                         '-I' + str(gpu_source.parent), '-c', str(checked_source),
                         '-o', str(checked_object)], cwd=build, check=True)
         overrides.append(str(checked_object))
+    if args.copy_gate:
+        cache_flags = block(ninja, 'build aurora-build/CMakeFiles/aurora_gx.dir/lib/gfx/pipeline_cache.cpp.o:')
+        cache_source = source / 'aurora-main/lib/gfx/pipeline_cache.cpp'
+        text = cache_source.read_text()
+        replacements = {
+            '  auto result = pending.create();': '  kartpad_probe_pipeline_gate(false);\n  auto result = pending.create();',
+            '    ZoneScopedN("wait_pipeline");': '    kartpad_probe_pipeline_gate(true);\n    ZoneScopedN("wait_pipeline");',
+        }
+        for before, after in replacements.items():
+            if text.count(before) != 1:
+                raise RuntimeError('Pipeline gate source boundary changed')
+            text = text.replace(before, after)
+        text = 'extern "C" void kartpad_probe_pipeline_gate(bool);\n' + text
+        gate_source = output.with_suffix('.gate.cpp')
+        gate_object = output.with_suffix('.gate.o')
+        gate_source.write_text(text)
+        subprocess.run(['clang++', *shlex.split(cache_flags['DEFINES']),
+                        *shlex.split(cache_flags['INCLUDES']), *shlex.split(cache_flags['FLAGS']),
+                        '-I' + str(cache_source.parent), '-c', str(gate_source),
+                        '-o', str(gate_object)], cwd=build, check=True)
+        overrides.append(str(gate_object))
     argv = ['clang++', *shlex.split(compile_flags['DEFINES']), *includes,
             *shlex.split(compile_flags['FLAGS']), '-I' + str(source / 'aurora-main/lib'),
             str(ROOT / 'prototypes/stabilization/aurora_batch_probe.cpp'),
@@ -70,7 +92,7 @@ def main():
     for name, path in sorted(maintained.maintained_files(runtime).items()):
         source_hash.update(name.encode() + b'\0')
         source_hash.update(path.read_bytes())
-    record = {'runtime_revision': revision, 'dawn_validation_enabled': args.validation,
+    record = {'runtime_revision': revision, 'dawn_validation_enabled': args.validation, 'copy_gate': args.copy_gate,
               'runtime_dirty': bool(subprocess.check_output(['git', 'status', '--porcelain'], cwd=runtime)),
               'maintained_source_sha256': source_hash.hexdigest(),
               'sha256': hashlib.sha256(output.read_bytes()).hexdigest(), 'command': argv}

@@ -20,6 +20,18 @@
 #include <thread>
 #include <vector>
 
+// Test-only compiler scheduling gate, linked only by --copy-gate. No delay or
+// hook is compiled into the application. A required draw releases the worker;
+// a skipped draw cannot. The test also releases it before shutdown on failure.
+std::atomic<bool> copyGateHeld{};
+extern "C" void kartpad_probe_pipeline_gate(bool requiredDraw) {
+  if (requiredDraw) copyGateHeld.store(false);
+  const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
+  while (copyGateHeld.load()) {
+    if (std::chrono::steady_clock::now() > deadline) std::abort();
+    std::this_thread::yield();
+  }
+}
 namespace {
 using namespace aurora;
 std::atomic<unsigned> errors{};
@@ -59,7 +71,7 @@ Pixels expected(unsigned extent) {
   return bytes;
 }
 
-Pixels run(unsigned splitEvery, bool async = false, bool offscreen = false, unsigned geometry = 0, bool capacityStress = false, bool interpolate = false, bool frameWorker = false) {
+Pixels run(unsigned splitEvery, bool async = false, bool offscreen = false, unsigned geometry = 0, bool capacityStress = false, bool interpolate = false, bool frameWorker = false, unsigned copyCase = 0) {
   require(!async || !offscreen, "Combined probe mode is not supported");
   guardedBake.fill(0xa5);
   gx::g_gxState.clearColor = {0.f, 0.f, 0.f, 1.f};
@@ -75,7 +87,11 @@ Pixels run(unsigned splitEvery, bool async = false, bool offscreen = false, unsi
     GXSetZMode(false, GX_ALWAYS, false);
     GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_COPY);
     GXSetColorUpdate(true); GXSetAlphaUpdate(true);
-    GXSetNumTexGens(0); GXSetNumChans(1); GXSetNumTevStages(1);
+    GXSetNumTexGens(0); GXSetNumChans(1); GXSetNumTevStages(copyCase ? copyCase : 1);
+    for (unsigned stage = 1; stage < copyCase; ++stage) {
+      GXSetTevOrder(static_cast<GXTevStageID>(stage), GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
+      GXSetTevOp(static_cast<GXTevStageID>(stage), GX_PASSCLR);
+    }
     GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
     GXSetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
     GXSetChanCtrl(GX_COLOR0A0, false, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
@@ -157,9 +173,18 @@ Pixels run(unsigned splitEvery, bool async = false, bool offscreen = false, unsi
     if (splitEvery && band < 3 && (band + 1) % splitEvery == 0) submit(false);
   }
   auto texture = gfx::new_render_texture(64, 64, GX_TF_RGBA8, "Aurora probe persistent copy");
+  static std::array<uint8_t, 64 * 64 * 4> copyDestination;
+  if (copyCase) {
+    gx::fifo::drain();
+    GXSetTexCopySrc(0, 0, 64, 64);
+    GXSetTexCopyDst(64, 64, GX_TF_RGBA8, GX_FALSE);
+    GXCopyTex(copyDestination.data(), GX_FALSE);
+    texture = gx::g_gxState.copyTextures.at(copyDestination.data()).handle;
+  } else {
   // A partial clear forces the real snapshot and clear-uniform paths after the copy.
   gfx::resolve_pass(texture, {0, 0, 64, 64}, true, true, true, {0.f, 0.f, 0.f, 1.f},
                     1.f, GX_TF_RGBA8, nullptr, false, nullptr, false, 1.f, false, false, true);
+  }
   guarded.fill(0xa5);
   const unsigned extent = async ? 4 : 16;
   const unsigned bytes = extent * extent * 4;
@@ -199,7 +224,7 @@ Pixels run(unsigned splitEvery, bool async = false, bool offscreen = false, unsi
 } // namespace
 
 int main(int argc, char** argv) {
-  if (argc != 2) return 2;
+  if (argc != 2 && argc != 3) return 2;
   std::filesystem::create_directories(argv[1]);
   AuroraConfig config{};
   config.appName = "KartPad Aurora batch verification";
@@ -218,11 +243,38 @@ int main(int argc, char** argv) {
   };
   const auto initialized = aurora_initialize(1, argv, &config);
   if (initialized.initializationStatus != AURORA_INITIALIZATION_SUCCESS) return 3;
-  aurora_set_skip_unready_pipelines(false);
+  aurora_set_skip_unready_pipelines(true);
   aurora_set_guest_write_hooks(nullptr, [](const void*, size_t) {
     guestWrites.fetch_add(1, std::memory_order_release);
   });
   try {
+    if (argc == 3 && std::string_view(argv[2]) == "--capacity-copy") {
+      aurora_set_skip_unready_pipelines(true);
+      const gfx::StagingSizes physical{gfx::VertexBufferSize, gfx::UniformBufferSize,
+                                     gfx::IndexBufferSize, gfx::StorageBufferSize};
+      auto limits = physical;
+      limits[0] = 128;
+      gfx::set_staging_capacity_limits_for_testing(limits);
+      copyGateHeld.store(true);
+      const auto pixels = run(0, false, false, 1, false, false, false, 1);
+      copyGateHeld.store(false);
+      require(gfx::staging_split_count() > 0, "Copy test never crossed capacity");
+      require(pixels == expected(16), "Capacity prefix lost shader draws before real GXCopyTex");
+      std::puts("Real GXCopyTex preserved capacity prefixes with skip enabled and blocked cold shader");
+      aurora_shutdown();
+      return errors == 0 ? 0 : 4;
+    }
+    if (argc == 3 && std::string_view(argv[2]) == "--copy-only") {
+      require(run(0, false, false, 1, false, false, false, 1) == expected(16), "Initial real GXCopyTex pixels failed");
+      aurora_set_skip_unready_pipelines(true);
+      copyGateHeld.store(true);
+      const auto pixels = run(0, false, false, 1, false, false, false, 2);
+      copyGateHeld.store(false);
+      require(pixels == expected(16), "Consecutive real GXCopyTex retained missing shader draws");
+      std::puts("Consecutive real GXCopyTex preserved all pixels with skip enabled and blocked cold shader");
+      aurora_shutdown();
+      return errors == 0 ? 0 : 4;
+    }
     const auto prewarmQueued = gfx::queued_pipeline_count();
     const auto prewarmDeadline = std::chrono::steady_clock::now() + std::chrono::seconds(60);
     while (gfx::queued_pipeline_count() != 0) {
@@ -341,6 +393,7 @@ int main(int argc, char** argv) {
     require(errors == 0, "Renderer reported an error");
   } catch (const std::exception& error) {
     std::fprintf(stderr, "FAIL: %s\n", error.what());
+    copyGateHeld.store(false);
     aurora_shutdown();
     return 4;
   }
