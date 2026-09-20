@@ -359,3 +359,21 @@ Clean `a6fca28` has now been fully rebuilt as code133/build57. Android AAB/publi
 The replacement coordinated source archive independently passes all 85 member checks and its 6,887-file core fingerprint matches both mobile binaries. The coordinated APK/IPA/Mac/source/notices assets and SHA256SUMS are generated locally; readback preserves every original app payload/mode and all 79 notice entries. Exact identities are recorded in `release-050-code133-build57.json`, `coordinated-source-code133-build57.json`, and `coordinated-assets-code133-build57.json`. The compilation commit's three CI checks passed.
 
 Next acceptance work is against code133/build57, not the superseded packages. The Pixel remains installed on code132 after this cycle, with no runtime or mirror process left running. Both physical Apple targets were freshly checked and remain disconnected. No new app release or issue reply/closure was published. The integration worktree is retained under Codex worktrees for its private build inputs, symbols and candidate artifacts, with maintained-source changes reconciled to draft PR #307.
+
+## September 20 — black thumbnail regression correction
+
+Owner code134 screenshots are a release blocker. Two actual-GPU negative
+controls reproduce lost texture pixels with unfinished shaders: ordinary EFB
+capacity prefixes and repeated-destination copies. Both corrected cases and
+the full skip-enabled renderer suite pass. See [the precise investigation and
+limits](android-black-vehicle-thumbnails.md). Code135 is installed in place and
+read back exactly; its first Retro Yoshi menu shows all twelve colored vehicle
+thumbnails. Apple build59 packages contain the same correction but are not
+installed. Original-mode and owner race acceptance remain pending; the phone
+was left available to the owner.
+
+All binaries, source, notices and checksums are prepared and verified in the
+new coordinated directory. [Exact identities](release-050-code135-build59.json)
+supersede old code134/build58 for release. No further speculative fixes or
+public release were made. Continue only for the remaining acceptance check or
+a concrete new failure.
