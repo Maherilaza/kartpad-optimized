@@ -1,12 +1,28 @@
 # Maintenance work and test board
 
-Scoped intake update: 19 September 2026; 56 open issues. The older family and release snapshots below retain their dates. Start at the
+Scoped intake update: 20 September 2026; 61 open issues. The older family and release snapshots below retain their dates. Start at the
 [support-agent hub](SUPPORT-AGENTS.md). The [priority source](maintenance-priorities.json)
 owns ordering, readiness, exact next actions and acceptance; this board records
 support decisions and evidence. Refresh GitHub and local ownership before acting.
 The [device matrix](COMPATIBILITY-MATRIX.md) preserves target-specific observations.
 
-## 19 September intake decisions
+## 20 September post-release priorities
+
+[Current issue and enhancement audit](artifacts/2026-09-20/post-release-issues-and-enhancements.md)
+supersedes the dated pre-release build/distribution instructions below.
+v0.5.0 is public. The new S24/code135 result in #104 still fails character
+rendering; #198 reports waiting, not improved performance. #302's pin correction
+is shipped and its release follow-up was missed.
+
+Explicit smaller follow-ups: Android shake-to-trick parity (Apple has it),
+Original ghost discovery (#295), and separate Mac Classic/Android ipega input
+paths. Auto-accelerate, shared D-pad/trigger mappings, the L1 item preset and
+combined release assets are already implemented. Larger NAND/identity, USA,
+cheat, DSU, external-display and older-OS requests remain explicitly scoped in
+the audit rather than hidden inside broad threads. No new binary is produced by
+this review and no reporter acceptance is inferred from source checks.
+
+## Historical: 19 September intake decisions
 
 The [latest evidence review](artifacts/2026-09-19/recent-issues-and-build-evidence.md) and [37-thread inventory](artifacts/2026-09-19/github-review-inventory.md) supersede older generic waiting states for the specific subcases below. Other historical rows are not newly validated. Additional build distribution is on hold; no new reporter capture is needed for these three decisions.
 
