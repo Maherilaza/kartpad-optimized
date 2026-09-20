@@ -21,7 +21,8 @@
     "installed_apk_readback_matches": true,
     "public_and_local_payloads_identical": true,
     "native_build_id": "ce82326003e7b0db832e931282f3f815195e60f2",
-    "device_check": "First post-update Retro Rewind offline 100cc Yoshi menu: all 12 vehicle thumbnails colored. Original mode and full-race owner acceptance remain pending."
+    "device_check": "First post-update Retro Rewind offline 100cc Yoshi menu: all 12 vehicle thumbnails colored. Original mode and full-race owner acceptance remain pending.",
+    "owner_confirmation": "September 20: owner says this appears to fix the reported black-thumbnail regression. No separate full-race/all-mode endurance acceptance inferred."
   },
   "ios_ipados": {
     "build": 59,
@@ -44,7 +45,7 @@
     "four_platform_staging_and_readback_sanitizers": "passed",
     "ci": "all 3 checks passed on a2f41d5"
   },
-  "release_status": "All candidate binaries, coordinated source, notices and checksums prepared. Not published. Original-mode, owner race and Apple build59 device acceptance remain pending.",
+  "release_status": "All candidate binaries, coordinated source, notices and checksums prepared. Owner confirms Android thumbnail correction. Apple build59 device installation/check remains next; not published.",
   "coordinated_delivery": {
     "status": "candidate_not_release_approval",
     "packagingCommit": "b14414e5d3a1f170df92453869cd34b30f512bf7",
