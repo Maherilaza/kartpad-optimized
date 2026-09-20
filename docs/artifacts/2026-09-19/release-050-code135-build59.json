@@ -46,33 +46,33 @@
     "four_platform_staging_and_readback_sanitizers": "passed",
     "ci": "all 3 checks passed on a2f41d5"
   },
-  "release_status": "Owner authorized coordinated public release. Android thumbnail correction accepted; iPad build59 installed and normal launch verified. Final documentation and packaging underway; not yet published.",
+  "release_status": "Final code135/build59 packages verified for owner-authorized publication; iPad installed with data preservation, Android thumbnail correction accepted. Publication and download readback pending.",
   "coordinated_delivery": {
-    "status": "historical_candidate_superseded_by_final_documentation_packaging",
-    "packagingCommit": "b14414e5d3a1f170df92453869cd34b30f512bf7",
+    "status": "verified_for_owner_authorized_publication",
+    "packagingCommit": "7502b1fa5690020dc6c17512d0199395da06f9db",
     "artifacts": {
       "KartPad-v0.5.0-android-arm64.apk": {
         "bytes": 111773259,
         "sha256": "63526e4d5ae6c7ec209276ce49e9332af861dfb4a06617b7431843cf9432da37"
       },
       "KartPad-v0.5.0-ios-unsigned.ipa": {
-        "bytes": 41996134,
-        "sha256": "9e8c49cda25176b31612b524182d8ed3c7cd5911bf5d0998d71496b1640b0a90"
+        "bytes": 41995797,
+        "sha256": "7c64144ea996f438aab853e700c8ffa3b8b9db205fdb8033714b07ca6186cadf"
       },
       "KartPad-v0.5.0-macos-arm64.zip": {
-        "bytes": 41883037,
-        "sha256": "c4e4aa51294c9e872b40a9df7b07c8393e8f2ecfdfb2f3cdce0350a6acd26b21"
+        "bytes": 41882700,
+        "sha256": "9f92e43cc3e5d15e9dcdea8c00c37150b00d0286e7445d0929ebaa9e435f5cea"
       },
       "KartPad-v0.5.0-notices.zip": {
-        "bytes": 240743,
-        "sha256": "7e5ea3aa53da60b6bcc2d6cea67fd88f70211325817fea6ae2a5d63d97f9415b"
+        "bytes": 240406,
+        "sha256": "9f348d95c25b2d4f96cbcffdc50c526b0b813ec17be09d87749ff435b9dedfbc"
       },
       "KartPad-v0.5.0-source.tar.gz": {
         "bytes": 361516349,
         "sha256": "70f1672b99d40114807fa36eb7c12f4d161b1d5a65c13636cf2451f7291a3457"
       }
     },
-    "directory": "build/coordinated-050-code135-build59-20260920",
-    "verification": "All final hashes independently read back; every original IPA/Mac app entry, mode and symlink preserved. Exact core fingerprint matches APK/IPA; Mac source commit matches. 85 source members composed and verified."
+    "directory": "build/release-050-20260920",
+    "verification": "Independent final checksum readback; all original IPA/Mac app entry bytes, modes and symlinks preserved. Embedded guides match packaging commit 7502b1f. Source archive retains exact compilation source a2f41d5."
   }
 }
