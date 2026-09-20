@@ -1,6 +1,6 @@
 # KartPad status
 
-**September 20 candidate checkpoint:** [0.5.0 fixes, evidence and release readiness](releases/v0.5.0-readiness.md). Android code134 is installed for owner testing; iPad build58 is installed; Mac build58 is packaged. Nothing from this candidate is published. The dated published-package snapshot below is historical.
+**September 20 candidate checkpoint:** [0.5.0 fixes, evidence and release readiness](releases/v0.5.0-readiness.md). Android code135 is installed with the thumbnail correction; its first Retro vehicle-menu check passes. Apple build59 packages are ready, while the physical iPad remains on build58. Nothing from this candidate is published. The dated published-package snapshot below is historical.
 
 [Coordinator runbook and implementation plan](MAINTENANCE-AUTOMATION.md) ·
 [Canonical active queue](MAINTENANCE-BOARD.md).

@@ -84,4 +84,11 @@ work/thumbnail-probe/probe work/thumbnail-probe/fresh-full
 
 Use a new cache directory for each cold-shader case. This is actual Metal
 renderer evidence, not a substitute for Vulkan first-entry acceptance on the
-phone. Android code135 packaging and that device check are the next gate.
+phone. Code135 is now installed in place with exact APK readback verified.
+Its first post-update Retro Rewind offline 100cc Yoshi menu shows all twelve
+vehicle thumbnails colored. No cache reset was used. Original-mode and full
+race checks remain pending. Apple build59 packages contain the same correction
+but have not replaced the currently installed iPad build58. All three CI checks
+and four-platform staging/readback sanitizer regressions pass.
+
+[Current artifact identities and acceptance](release-050-code135-build59.json).
