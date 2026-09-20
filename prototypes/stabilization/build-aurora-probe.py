@@ -22,6 +22,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('build', type=Path)
     parser.add_argument('output', type=Path)
+    parser.add_argument('--validation', action='store_true',
+                        help='Keep Dawn validation enabled in the otherwise Release renderer')
     args = parser.parse_args()
     build, output = args.build.resolve(), args.output.resolve()
     ninja = (build / 'build.ninja').read_text()
@@ -40,10 +42,26 @@ def main():
     # Retain renderer dependencies and framework order, excluding translated game archives.
     libraries = [item for item in shlex.split(link_flags['LINK_LIBRARIES'])
                  if not Path(item).name.startswith('libmkw_')]
+    overrides = []
+    if args.validation:
+        gpu_flags = block(ninja, 'build aurora-build/CMakeFiles/aurora_core.dir/lib/webgpu/gpu.cpp.o:')
+        gpu_source = source / 'aurora-main/lib/webgpu/gpu.cpp'
+        text = gpu_source.read_text()
+        skip = 'enableToggles.push_back("skip_validation");'
+        if text.count(skip) != 1:
+            raise RuntimeError('Expected exactly one Release validation toggle')
+        checked_source = output.with_suffix('.validation.cpp')
+        checked_source.write_text(text.replace(skip, '// Probe: retain Dawn validation.'))
+        checked_object = output.with_suffix('.validation.o')
+        subprocess.run(['clang++', *shlex.split(gpu_flags['DEFINES']),
+                        *shlex.split(gpu_flags['INCLUDES']), *shlex.split(gpu_flags['FLAGS']),
+                        '-I' + str(gpu_source.parent), '-c', str(checked_source),
+                        '-o', str(checked_object)], cwd=build, check=True)
+        overrides.append(str(checked_object))
     argv = ['clang++', *shlex.split(compile_flags['DEFINES']), *includes,
             *shlex.split(compile_flags['FLAGS']), '-I' + str(source / 'aurora-main/lib'),
             str(ROOT / 'prototypes/stabilization/aurora_batch_probe.cpp'),
-            *libraries, '-o', str(output)]
+            *overrides, *libraries, '-o', str(output)]
     subprocess.run(argv, cwd=build, check=True)
     revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'],
                                        cwd=ROOT / 'vendor/runtimes/macos', text=True).strip()
@@ -52,7 +70,7 @@ def main():
     for name, path in sorted(maintained.maintained_files(runtime).items()):
         source_hash.update(name.encode() + b'\0')
         source_hash.update(path.read_bytes())
-    record = {'runtime_revision': revision,
+    record = {'runtime_revision': revision, 'dawn_validation_enabled': args.validation,
               'runtime_dirty': bool(subprocess.check_output(['git', 'status', '--porcelain'], cwd=runtime)),
               'maintained_source_sha256': source_hash.hexdigest(),
               'sha256': hashlib.sha256(output.read_bytes()).hexdigest(), 'command': argv}

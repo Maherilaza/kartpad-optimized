@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 """Execute production cache admission and worker scheduling with SQLite/fake compiler jobs."""
 from pathlib import Path
+import argparse
 import subprocess
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[2]
-source = (ROOT / 'vendor/runtimes/android/aurora-main/lib/gfx/pipeline_cache.cpp').read_text()
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--source', type=Path,
+                    default=ROOT / 'vendor/runtimes/android/aurora-main/lib/gfx/pipeline_cache.cpp')
+source = parser.parse_args().source.read_text()
 loader = source[source.index('template <typename PipelineConfig, typename CreateFn>\nstatic void load_pipeline_cache_entries'):source.index('\nstatic void load_pipeline_cache()')]
 worker = source[source.index('static void pipeline_worker()'):source.index('\nstatic void build_synchronous_pipelines_for_frame()')]
 promotion = source[source.index('template <typename Queue>\nstatic auto find_pending_pipeline'):source.index('// A persistent resolve')]

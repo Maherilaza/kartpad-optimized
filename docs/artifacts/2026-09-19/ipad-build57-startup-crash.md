@@ -33,3 +33,35 @@ settings or active session. Do not treat a warm retry as the regression test.
 Build57 is blocked from release pending correction and verification. Raw device
 reports and logs are private in work/ipad-build57-20260920/incident. No app,
 cache, save, configuration or running session was changed during this inspection.
+
+## Subsequent gameplay crashes and correction
+
+Two further build57 reports at 10:00:04 and 10:05:12 +0900 are a different
+failure. Both abort through the WebGPU error callback during TexCopyConv Blit
+in asynchronous EFB RAM readback. The destination attachment is RGBA8Unorm,
+but the blit pipeline was created for the BGRA8Unorm presentation surface.
+These sessions had already completed prewarm. Their failures cannot be cleared
+by the successful warm startup observation above.
+
+The existing Release Mac probe disabled Dawn validation, unlike physical iOS.
+Rebuilding its GPU initialization with only skip_validation removed reproduces
+the exact attachment mismatch and abort using the old renderer. The original
+pixel-only passing result did not validate this pipeline contract.
+
+All four maintained runtimes now create RGBA and BGRA blit variants and select
+by the actual destination texture format. Initialization builds both before
+worker use; rendering only reads them. Apple runtimes also adopt the already
+implemented Android 128-recipe shared prewarm budget, one background compiler,
+and demand-promotion wakeups. Cache files and demand compilation remain intact.
+
+The validation-enabled real Metal probe now passes the formerly failing native
+readback plus all existing independent-pixel, offscreen, capacity, interpolation
+and frame-worker cases. A separate empty-Dawn-cache run seeded with the actual
+1,199-row bundled recipe database completes bounded prewarm and the full probe
+in 7.25 seconds; host maximum RSS is 355,926,016 bytes and reported peak memory
+footprint is 786,433,296 bytes. This is host renderer evidence, not an iPad memory
+or gameplay measurement. The SQLite/admission/worker production-function test
+passes under ASan/UBSan for all four runtime pins and is now included in CI.
+
+Artifacts and commands are private under work/ipad-repeat-fixes-20260920.
+Replacement app builds and physical gameplay acceptance remain pending.

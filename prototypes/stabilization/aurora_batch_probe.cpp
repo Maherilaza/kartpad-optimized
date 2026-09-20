@@ -2,6 +2,7 @@
 #include "gfx/common.hpp"
 #include "gfx/clear.hpp"
 #include "gfx/efb_ram_copy.hpp"
+#include "gfx/pipeline_cache.hpp"
 #include "gfx/texture.hpp"
 #include "gx/gx.hpp"
 #include "gx/fifo.hpp"
@@ -222,6 +223,14 @@ int main(int argc, char** argv) {
     guestWrites.fetch_add(1, std::memory_order_release);
   });
   try {
+    const auto prewarmQueued = gfx::queued_pipeline_count();
+    const auto prewarmDeadline = std::chrono::steady_clock::now() + std::chrono::seconds(60);
+    while (gfx::queued_pipeline_count() != 0) {
+      require(std::chrono::steady_clock::now() < prewarmDeadline, "Seeded pipeline prewarm did not finish");
+      webgpu::g_instance.ProcessEvents();
+      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+    std::printf("Actual Aurora completed seeded startup queue (%u observed pending)\n", prewarmQueued);
     const auto control = run(0);
     for (unsigned band = 0; band < 4; ++band) {
       const auto tile = band * 4 * 64;
