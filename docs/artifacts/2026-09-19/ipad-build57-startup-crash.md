@@ -65,3 +65,16 @@ passes under ASan/UBSan for all four runtime pins and is now included in CI.
 
 Artifacts and commands are private under work/ipad-repeat-fixes-20260920.
 Replacement app builds and physical gameplay acceptance remain pending.
+
+## Build58 installed for owner testing
+
+Clean source e8f2363 produced audited iPhoneOS build58. Its dSYM matches the
+app; a development-signed copy passed signature verification and was installed
+in place after the owner explicitly confirmed readiness. A fresh backup and
+post-install readback match all 30 save/settings files, including the current
+license/save data. The existing WBFS and extracted data remain. The app was
+launched and confirmed running. No owner cache was cleared. See
+release-050-build58-ipad.json for identities and remaining acceptance limits.
+
+Build58 is a replacement for testing, not release approval. Android code133 and
+Mac build57 have not been replaced by new app packages in this iPad handoff.
