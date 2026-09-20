@@ -1,11 +1,11 @@
 # KartPad status
 
-**September 20 candidate checkpoint:** [0.5.0 fixes, evidence and release readiness](releases/v0.5.0-readiness.md). Android code135 is installed with the thumbnail correction; its first Retro vehicle-menu check passes. Apple build59 is installed on the physical iPad: all 30 backed-up save/settings files match after installation and normal launch is verified. The owner authorized the coordinated public release; final packaging is underway. Nothing from this candidate is published yet. The dated published-package snapshot below is historical.
+**September 20 release checkpoint:** [KartPad 0.5.0](https://github.com/chrissotraidis/kartpad/releases/tag/v0.5.0) is the latest stable release, with Android code135 and iPhone/iPad/Mac build59 together. PR #307 is merged; all six release downloads are verified. Android thumbnail correction is owner-confirmed. The iPad update preserved all 30 backed-up save/settings files and normal launch is verified. [Fixes and remaining limits](releases/v0.5.0-readiness.md) · [Publication and issue follow-up](artifacts/2026-09-20/release-050-publication.json).
 
 [Coordinator runbook and implementation plan](MAINTENANCE-AUTOMATION.md) ·
 [Canonical active queue](MAINTENANCE-BOARD.md).
 
-Updated: 15 September 2026. This page summarizes acceptance, not a full test log.
+Updated: 20 September 2026. This page summarizes acceptance, not a full test log.
 Use the [maintenance board](MAINTENANCE-BOARD.md) for candidate ownership and
 next actions, and [known issues](KNOWN-ISSUES.md) for current reports.
 
@@ -20,9 +20,9 @@ pending. These older test builds are retained for historical comparison. Current
 
 | Platform | Package | Acceptance boundary |
 | --- | --- | --- |
-| Android | [0.4.22 Android 1, code 93](releases/v0.4.22-android.1.md) | Source migration, audited public signer and path-safe release packaging; owner accepted loading/running/game starts on the tested Pixel candidate; broader GPU and full online sequence remain unverified |
-| iPhone / iPad | [0.4.22, build 43](releases/v0.4.22-ios.1.md) | Same tested iPad executable; owner accepted loading/running/game starts and new-license Retro WFC login; old-license serial mismatch reproduces before and after migration |
-| Apple Silicon Mac | [0.4.22, build 43](releases/v0.4.22-macos.1.md) | Tested native payload retained; host smoke reached a race and pause/resume; sustained gameplay and broader controller/device acceptance remain unverified |
+| Android | [0.5.0, code135](releases/v0.5.0.md) | Owner confirms the black-thumbnail repair; exact installed APK and public payload verified. Broader handset geometry and sustained performance remain open. |
+| iPhone / iPad | [0.5.0, build59](releases/v0.5.0.md) | Physical iPad installed in place with verified data preservation and normal launch. Reproduced renderer crashes corrected; no build59 full-gameplay or current iPhone acceptance claim. |
+| Apple Silicon Mac | [0.5.0, build59](releases/v0.5.0.md) | App/ZIP signed and audited; actual renderer validation suite passes. Existing owner app preserved; broad controller and gameplay acceptance remain separate. |
 | Apple TV experimental | [0.4.11, build 9](releases/v0.4.11-tvos.1.md) | Published identity-fix and compiler-hardened package; exact-build hardware acceptance remains open |
 
 [Download and install](../README.md#downloads). All listed packages include the
@@ -33,7 +33,7 @@ The September 10 releases include the [joint source delivery](artifacts/2026-09-
 and [verified download ledger](artifacts/2026-09-10/platform-release-verification.md).
 Historical local candidates are retained in their dated records.
 
-## Current device acceptance
+## Earlier device acceptance
 
 The owner accepted the source-migration candidates for loading, running and
 starting games on iPad and Android, and explicitly chose not to require a

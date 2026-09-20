@@ -46,9 +46,9 @@
     "four_platform_staging_and_readback_sanitizers": "passed",
     "ci": "all 3 checks passed on a2f41d5"
   },
-  "release_status": "Final code135/build59 packages verified for owner-authorized publication; iPad installed with data preservation, Android thumbnail correction accepted. Publication and download readback pending.",
+  "release_status": "Published as latest stable v0.5.0 on September 20, 2026. All six downloaded assets verified; see ../2026-09-20/release-050-publication.json.",
   "coordinated_delivery": {
-    "status": "verified_for_owner_authorized_publication",
+    "status": "published_and_download_verified",
     "packagingCommit": "7502b1fa5690020dc6c17512d0199395da06f9db",
     "artifacts": {
       "KartPad-v0.5.0-android-arm64.apk": {
@@ -73,6 +73,7 @@
       }
     },
     "directory": "build/release-050-20260920",
-    "verification": "Independent final checksum readback; all original IPA/Mac app entry bytes, modes and symlinks preserved. Embedded guides match packaging commit 7502b1f. Source archive retains exact compilation source a2f41d5."
+    "verification": "Independent final checksum readback; all original IPA/Mac app entry bytes, modes and symlinks preserved. Embedded guides match packaging commit 7502b1f. Source archive retains exact compilation source a2f41d5.",
+    "release_url": "https://github.com/chrissotraidis/kartpad/releases/tag/v0.5.0"
   }
 }
