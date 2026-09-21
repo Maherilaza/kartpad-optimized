@@ -794,3 +794,26 @@ Code164 full API29 debug recompilation remains active in506165y6. No164
 artifact/install/performance claim yet. Current device remains163 with the
 FullRaceCpu marker enabled for ongoing private tests; remove it before normal
 owner play. Saves/settings backup162 remains retained.
+
+
+### TLS comparison preparation and new screenshot (04:55 JST)
+
+Code164 full recompilation completed in9m11s, without the obsolete private
+input-trace symbol or163 probe logging. APK SHA256
+`c5e1ae598e75fe9f00b0395286693d42ea9508a7efab4af4eddf6ab80816ac5d`;
+native SHA256 `2690dc048c631124790f3c5152f8e7529ab72963b885e6434dbfc9fb627b8231`;
+BuildID `afd3a5570f1fdcd5ae7dab2191665de4678f38a6`. Private debug audit passes:
+API29 manifest/native note,152TLSDESC relocations, expected signer and all
+allocated sections matched to506165y6 symbols. An API28 code165 control from
+the same source is now rebuilding with all prepared source timestamps refreshed.
+
+A second163 Moo Moo Meadows90-second run completed with13,687 samples,0lost,
+medianCPU15.927ms andFPS52.67 across14 steady intervals. Both thermal status3;
+this differs from the first14.943ms/55.93 run, so small differences must not be
+called a TLS improvement. Results table observed afterward.
+
+#316 provided the requested screenshot. Browser visual inspection shows huge
+displaced Mario-preview surfaces while menu text/icons remain intact. This
+confirms model geometry corruption rather than simple aspect stretching.
+Acknowledged without a repeat screenshot/settings/log request:
+https://github.com/chrissotraidis/kartpad/issues/316#issuecomment-5766561305
