@@ -962,3 +962,16 @@ continuous visual, manual-driving, audio-quality or comparative speed claim.
 Sent Android Home while replay was running, waited61.49seconds, and returned.
 The process survived and the screenshot shows replay rendering again. This is
 an additional normal-build lifecycle cycle after the earlier paused Retro check.
+
+Normal170's DiscIO JNI library is byte-identical to the library that performed
+the full RVZ import on166:
+`2e330c3c80095c0df393416e276fd317d8c8cad026c58ce64cccd7c3913a5286`.
+SDL3 and libc++ also match between those packages. The game native library differs
+because166 was the debug-fixture build; normal170 instead matches normal167.
+This carries the exact tested importer into the final package without pretending
+the full import was repeated after disabling debugging.
+
+At07:16, normal170 successfully loaded Retro's existing licence and selected the
+Rooster Island150cc staff ghost(blarn., Bowser,02:42.292) through Replay. A separate
+ten-minute normal-build observation is running. This is staff replay playback,
+not a player-driven time trial or a Retro ghost-import/export test.
