@@ -936,3 +936,11 @@ within an operation; eliminating the remaining lookup requires passing the
 existing generated-function context through the helper interface, preserving
 validation and FP semantics. A concrete next experiment is recorded in the
 Android handoff. No incompatible generator/runtime change was slipped into170.
+
+Normal170 source provenance: root build revision
+`06970877194e1d1b11b5523e2baa63e87c442b24`, maintained Android runtime
+`7560a3be16f15633f048db3e5c3be7b90721d93f`. The build log verifies that prepared
+runtime revision and the pinned dependency digests. All subsequent root changes
+through1809655 are documentation only. The native payload also matches167
+exactly, confirming the rejected function layout is absent from the installed
+normal package.
