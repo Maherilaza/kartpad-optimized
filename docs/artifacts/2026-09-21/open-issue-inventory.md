@@ -1,6 +1,6 @@
 # Open-issue inventory — 2026-09-21
 
-Initial live snapshot: **62 open issues**. Counts are issue tickets, not unique
+Initial live snapshot: **62 open issues**. September 22, 03:48 JST refresh: **63 open issues**, all reviewed and individually answered. Counts are issue tickets, not unique
 people or disjoint symptoms. Cross-platform and mixed reports retain subcases.
 No issue is closed merely because it was reviewed or a source test passed.
 
@@ -9,7 +9,7 @@ No issue is closed merely because it was reviewed or a source test passed.
 | Content installation / build inputs | 4 |
 | Android sustained performance | 9 |
 | Apple startup / performance / rendering | 8 |
-| Android geometry | 8 |
+| Android geometry | 9 |
 | Mac physical controller | 2 |
 | Compatibility / feature scope | 6 |
 | Android launch / compatibility | 11 |
@@ -19,6 +19,8 @@ No issue is closed merely because it was reviewed or a source test passed.
 | Android mixed performance / exit / saves | 2 |
 | Android online | 2 |
 | Android cup exit | 2 |
+
+Current platform grouping: 39 Android, 10 Apple, 14 cross-platform/features or insufficient platform detail.
 
 ## Per-issue response record
 
@@ -89,6 +91,7 @@ Unlinked rows are pending publication/refresh, not completed outreach.
 | [#310](https://github.com/chrissotraidis/kartpad/issues/310) | Apple startup / performance / rendering | [Reply](https://github.com/chrissotraidis/kartpad/issues/310#issuecomment-5762148080) |
 | [#313](https://github.com/chrissotraidis/kartpad/issues/313) | Android sustained performance | [Reply](https://github.com/chrissotraidis/kartpad/issues/313#issuecomment-5762148523) |
 | [#314](https://github.com/chrissotraidis/kartpad/issues/314) | Content installation / build inputs | [Reply](https://github.com/chrissotraidis/kartpad/issues/314#issuecomment-5762363961) |
+| [#316](https://github.com/chrissotraidis/kartpad/issues/316) | Android geometry | [Reply](https://github.com/chrissotraidis/kartpad/issues/316#issuecomment-5765736506) |
 
 ## Evidence that changes the queue
 
@@ -128,3 +131,15 @@ A fresh snapshot still has 62 open issues, with no new tickets.
   on the reporter's Galaxy A32. This supports investigating device/renderer
   differences but does not identify the failing operation.
   [Acknowledged in Portuguese](https://github.com/chrissotraidis/kartpad/issues/211#issuecomment-5763224007); no repeated ISO/mode/log request.
+
+
+## September 22, 03:48 JST refresh
+
+- New #316: OnePlus CPH2749/Android16, public135, Original,1x, Normal,
+  Fill Screen Experimental; vertex explosions reportedly throughout the game.
+  Classified as geometry, alongside104/193 without asserting identical cause.
+  Requested one screenshot to distinguish displaced vertices from aspect
+  stretching; no repeated1x/Normal/log sweep. CPU candidates are not claimed
+  as its fix.
+- #275: reporter acknowledged the update. No new failure evidence or repeated
+  request is needed; the retained code119 capture still drives the work.

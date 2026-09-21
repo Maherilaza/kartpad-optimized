@@ -594,3 +594,18 @@ timestamps, physical input, both stick scales and an event arriving between
 polls. A fresh inactive 512-scancode sweep makes zero clock reads. Full Android
 packaging is in progress; no device result or issue197 resolution is claimed.
 Both experiments remain uncommitted at this checkpoint.
+
+
+Code160 full build finished successfully in58s. Package, minimum API28, private
+signer, profileability and exact-symbol audits pass. APK SHA256:
+`600b0a0d641da6d8c3d623ee7a042e196857623b558ad001b9b9b94fe6c39cc0`;
+native SHA256:
+`1fb20d16901c1535d58f0b4a0ea4628042f2c9b695dab00e2842e21c74ef7aec`.
+It is retained locally, not yet installed. Code159 remains on the phone in
+staff replay. Next install160 in place, test menu input and replay CPU/clock
+samples, then broaden to moving multi-kart and Retro Rewind scenarios.
+
+The03:48 issue refresh found63 open tickets. New316 has been reviewed and
+answered with one decision-specific screenshot request;275's latest reply is
+an acknowledgment. The inventory now contains63 individual response links.
+The8+ hour goal remains active, with about4h25 elapsed at this checkpoint.
