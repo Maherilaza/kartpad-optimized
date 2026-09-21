@@ -367,3 +367,42 @@ and recipient-signer check. Its native SHA256 is identical to code143
 (`06b454d263d187b3807c857b810a466c56587c802fc79befa67223725c20286d`),
 confirming the private input instrumentation is absent. APK SHA256:
 `b8dade7d86e4ede910c268dd584764ddc91a7f607ecc971d4ec5c5a6882e8adb`.
+
+
+### Moving retail replay profile
+
+Code151 reached Original → Time Trials → Luigi Circuit → Nin★sato 1:29.670 →
+Watch Replay. Screenshots before and during capture show the translucent Luigi
+ghost at different course positions. This is retail replay validation, not
+human driving or player completion/save proof. At2x resolution, a29.9884-second
+profile recorded3,394 samples with0 lost. Both thermal snapshots reported3.
+Six five-second telemetry samples within the capture window gave median60.00FPS
+and9.146ms main-thread CPU per present (range9.018–9.797ms). Window endpoints
+are inferred from the recorder's completion timestamp, so this is initial
+attribution rather than a precisely synchronized A/B benchmark.
+
+Largest named self costs: GX display-list call4.33%, scalar-flag clear2.79%,
+Aurora FIFO processing2.46%, scalar-flag capture2.32%, native TLS resolver2.16%.
+The sample attribution supports testing the saved display-list array-reference
+change. It does not justify changing floating-point semantics. Code152 builds
+that single runtime change on the same API29/TLS configuration; source review
+confirms cache-hit references are consumed before drawing/possible recursion,
+and cache stores/evictions occur only in the miss branch before binding them.
+
+Code152 passes the same release/profileability/symbol/signer audits and renders
+the moving staff replay. Native SHA256:
+`4453dd56927573fe69c4dc3b542f9821b47733fc8f35b2f8947b5e128fdf6ff9`.
+Its29.9863-second capture has3,424 samples,0 lost. Thermal remains3. Seven
+telemetry samples give median59.95FPS and9.540ms CPU/present, versus9.146ms
+for151 in a different replay window. No performance benefit is established.
+The display-list self share is4.11% versus4.33%; this difference alone is not
+a speedup measurement. The array-reference change remains an uncommitted
+experiment pending stronger evidence.
+
+Mapping sampled instruction addresses to the exact retained152 symbols locates
+substantial work in hash-bucket lookup and vertex-snapshot construction, rather
+than assuming the five copies dominate. Cache telemetry shows about760 records
+and only roughly22% front-table hits. Code153 is testing1,024 direct-lookup
+slots instead of256 (12KiB additional thread-local storage), retaining full
+identity/content validation and clearing the front table on eviction. It is
+not yet accepted or included in the maintained runtime pin.
