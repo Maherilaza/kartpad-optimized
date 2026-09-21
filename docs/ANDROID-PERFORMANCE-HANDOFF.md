@@ -1,6 +1,6 @@
 # Android investigation handoff
 
-Refreshed September21,2026. Current public baseline: **Android 0.5.0/code135**. Apple 0.5.1-experimental.1/build60 is a separate diagnostic-overhead mitigation and does not update Android. See the [current issue inventory](artifacts/2026-09-21/open-issue-inventory.md), [evening evidence](artifacts/2026-09-21/evening-goal-loop.md) and [maintenance board](MAINTENANCE-BOARD.md). Older code63/code73/code83 assignments are historical.
+Refreshed September22,2026. Current public baseline: **Android 0.5.0/code135**. Apple 0.5.1-experimental.1/build60 is a separate diagnostic-overhead mitigation and does not update Android. See the [current issue inventory](artifacts/2026-09-21/open-issue-inventory.md), [evening evidence](artifacts/2026-09-21/evening-goal-loop.md) and [maintenance board](MAINTENANCE-BOARD.md). Older code63/code73/code83 assignments are historical.
 
 ## First: sustained frame time
 
@@ -11,6 +11,22 @@ Prepare a current, non-debuggable, shell-profileable diagnostic with exact nativ
 Capture a bounded approximately 20-second, 99-Hz symbolized sample during a warmed driven slowdown. Separate guest execution, GX CPU preparation and waits before choosing one correction. Use the owner's phone for a local baseline when available; it cannot establish Helio acceptance. Do not repeat #198's willingness/log requests, #167's completed resolution/aspect sweep or #103's already supplied build/settings questions. #204 is Cookie Land **battle**, not time trial. #135 A10X performance is an Apple comparison with no proven shared cause.
 
 For baseline/candidate, hold scene, settings, normal power mode and thermal range comparable. Record frame-time tails and gaps, effective cadence, audio and health; separate cold shader compilation. Prefer three matched runs per artifact. Improvement must exceed baseline variation without graphics, audio, save or lifecycle regressions. Finish with profiling disabled.
+
+## Local candidate evidence, September22
+
+The evening candidate retains three measured CPU-path reductions: avoid unused
+vertex-format construction, cache validated display-list CP-write effects, and
+skip clock reads for zero-expiry synthetic keys. State restoration and input
+expiry contract tests run under ASan/UBSan in CI. Code160's physical Pixel staff
+replay removes all57 keyboard-related clock samples observed in code159; CPU
+medians are9.397 versus9.535ms/present. Earlier snapshot candidate/control/repeat
+medians were9.828/10.070/9.947ms. These small observations are bounded to one
+device/course with unsynchronized phase and variable clocks, not general FPS or
+reporter-device acceptance. See the linked evening ledger for hashes and tails.
+
+API28/API29 replay comparisons have not isolated a useful native-TLS benefit
+from within-build variation. KeepAPI28 as default. Do not combine these CPU
+changes with a claim to fix Adreno vertex explosions.
 
 ## Second: actual failing character draw
 

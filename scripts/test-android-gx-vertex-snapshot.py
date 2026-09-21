@@ -73,7 +73,7 @@ int main() {
     for(unsigned reg=0;reg<256;++reg) {
       std::memset(&snapshot,0xA5,sizeof(snapshot));
       g_hleGxState=original;
-      CaptureGxVertexStateForCpWrites(snapshot,{{static_cast<uint8_t>(reg),0}});
+      CaptureGxVertexStateForCpWrites(snapshot,DescribeDlCpWrites({{static_cast<uint8_t>(reg),0}}));
       g_hleGxState=changed; RestoreGxVertexState(snapshot);
       expected=changed;
       if(reg==0x50 || reg==0x60)
@@ -93,7 +93,7 @@ int main() {
         writes.push_back({static_cast<uint8_t>(0x70+f),0});
         writes.push_back({static_cast<uint8_t>(0x90+f),123});
       }
-      g_hleGxState=original; CaptureGxVertexStateForCpWrites(snapshot,writes);
+      g_hleGxState=original; CaptureGxVertexStateForCpWrites(snapshot,DescribeDlCpWrites(writes));
       g_hleGxState=changed; RestoreGxVertexState(snapshot);
       expected=changed;
       for(unsigned f=0;f<8;++f) if(mask&(1<<f))

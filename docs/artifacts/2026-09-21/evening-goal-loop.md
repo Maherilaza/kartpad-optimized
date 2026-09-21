@@ -609,3 +609,27 @@ The03:48 issue refresh found63 open tickets. New316 has been reviewed and
 answered with one decision-specific screenshot request;275's latest reply is
 an acknowledgment. The inventory now contains63 individual response links.
 The8+ hour goal remains active, with about4h25 elapsed at this checkpoint.
+
+
+### Input clock avoidance accepted (September 22, 03:55 JST)
+
+Code160 installed in place, with version160/minimum28 confirmed. Short touch
+presses navigated the normal menus into the same Luigi Circuit staff replay.
+The89.9839-second sample recorded10,202 samples, zero lost, thermal status3
+before/after. Seventeen intervals give CPU median9.397ms/present and FPS60.08
+(minimum59.82), versus code159's9.535ms/60.03. That1.4% timing difference remains
+a single-device, unsynchronized-phase observation, not a broad FPS claim.
+
+The targeted mechanism is directly visible:57 sampled clock calls attributed
+to `IsKeyDown` in159 become zero in160. VI pacing clock samples remain102/103,
+which is consistent with specifically removing unnecessary input polling work.
+The production-function test passes73,728 comparisons under ASan/UBSan; existing
+controller-routing tests pass3/3. Normal menu touch input and the staff replay
+remain functional. Physical keyboard/controller and broader race acceptance
+remain separate. No issue197 fix is claimed.
+
+Retain the CP-effects summary as childb0e3349 and keyboard clock avoidance as
+child51b4c45. Both retainAPI28 and guest state/input semantics. The snapshot and
+keyboard contract tests are wired into CI. The built160 native source matches
+these changes; source receipts still reflect its pre-commit build. Next broaden
+physical validation to multi-kart and Retro Rewind scenes before final packaging.
