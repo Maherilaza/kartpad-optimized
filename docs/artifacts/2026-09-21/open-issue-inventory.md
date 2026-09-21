@@ -143,3 +143,5 @@ A fresh snapshot still has 62 open issues, with no new tickets.
   as its fix.
 - #275: reporter acknowledged the update. No new failure evidence or repeated
   request is needed; the retained code119 capture still drives the work.
+
+- #216 follow-up: correct0.5.0 APK / installed119 confirmed; fresh complete download and in-place update requested. [Reply](https://github.com/chrissotraidis/kartpad/issues/216#issuecomment-5766243862).

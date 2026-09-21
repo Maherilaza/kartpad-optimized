@@ -711,3 +711,42 @@ be debuggable for the private fixture and must not be mislabeled as a release
 profiler. Retain exact symbols from that configuration and audit manifest,
 signer and allocated sections explicitly. Do not reuse the API28 non-debug
 configuration's symbols. No hardware installation or fixture activation yet.
+
+
+### Private CPU fixture package and follow-up (September 22, 04:30 JST)
+
+Code162 completed in9m28s. Its private debug audit confirms API28, target36,
+shell profileability, expected in-place signer and exact allocated native
+sections against6q100252 unstripped symbols. APK SHA256
+`ce4bb79bc008d54fc29857b2517c50e86ef6feca6debbd2077275e449f526f0b`;
+native SHA256 `f6dc5b43133579e62e8503c6094c83aebdaa37325c83312a26a7d725bbf1cace`.
+The local audit initially rejected its own aapt2 spelling/namespace assumptions
+(minSdkVersion and fully qualified android:shell); those checks were corrected.
+The package had installed in place before that supplemental audit completed;
+no fixture/game launch occurred until the corrected audit passed.
+All7 preserved save/settings files are still byte-identical to the144 backup,
+and a fresh private tar/readback was retained. No diagnostic enable marker
+existed; onlyFullRaceCpu.enable was then created for this experiment.
+Hardware fixture activation and driving remain unverified at this point.
+
+#216 supplied the requested correct APK filename and installed119, plus a slow
+download. Responded with the verified official asset URL/111,773,259-byte size
+and a fresh-download/in-place-update check, without diagnosing corruption as
+fact or requesting repeated logs. Reply:
+https://github.com/chrissotraidis/kartpad/issues/216#issuecomment-5766243862
+
+
+Code162 fixture acceptance failed: a25-second video shows the local Mario
+stationary at the grid while opponents drive away; no full-race activation or
+probe appears in its console transcript. Excluded from CPU-driving/performance
+acceptance. The mode was Original100cc VS/Luigi Circuit. No completed race.
+Code163 adds only private native enable/pointer logging to distinguish the
+fixture launch flag from unavailable RaceConfig. Built in57s; exact signer and
+allocated-section audit passes. APK SHA256
+`4c331c5e28e171ee96301206014231aec7ee9e8776c3c4782665fdcca2c2e305`.
+The private patch and artifacts are retained; maintained source was restored
+exactly after build. The prepared tree still contains the private probe and
+must be refreshed before a normal candidate build. Code163's launch transcript
+confirms the flag equals1 and RaceConfig is nonzero, with mode0 at menus.
+This narrows the probe on this launch; the162 activation discrepancy remains
+unexplained. No CPU-driving acceptance yet.
