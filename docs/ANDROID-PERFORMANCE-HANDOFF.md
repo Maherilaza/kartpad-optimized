@@ -36,8 +36,18 @@ A separate29.95-second sample (4,447 samples,0lost, thermal status3) has median
 CPU14.544ms and FPS56.8 across five steady intervals. Scalar flag clear/capture
 account for7.79%/5.90% of sampled self cycles, and emulatedTLS/pthread_getspecific
 for3.62%/2.12%. Preserve floating-point semantics; this profile does not justify
-dropping exception handling. A matched native-TLS comparison is pending.
+dropping exception handling. Subsequent API29/API28 CPU-fixture captures
+also failed to isolate a useful native-TLS benefit from thermal/run variation.
 The earlier162 stationary-grid attempt is explicitly rejected.
+
+The retained audio change resolves the existing per-thread ARAM window once per
+voice instead of per sample byte. The same bounds, mapping generation and
+fallback checks remain. 786,432 sanitizer-checked sample/state comparisons pass.
+In API28 CPU-fixture captures, per-sample audio TLS samples fall from172 in the
+control to0 in each of two candidate runs, matching ARM disassembly. Candidate
+CPU medians14.7135/14.466ms bracket the control14.649ms; FPS medians54.195/57.865
+versus58.02 do not establish an overall speedup. Keep the claim to removal of
+specific audio overhead, with broader profile/device acceptance outstanding.
 
 ## Second: actual failing character draw
 
