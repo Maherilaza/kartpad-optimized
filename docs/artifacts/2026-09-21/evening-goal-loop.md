@@ -536,3 +536,61 @@ byte identical to156. APK SHA256:
 It is not installed at this checkpoint;157 remains on the phone. Next install158
 for the API29 repeat, then investigate remaining profiled GX costs with the same
 state-preservation and device-evidence requirements.
+
+
+### API29 repeat and CP-effects candidate (September 22, 03:40 JST)
+
+Code158, native-byte-identical to156, rendered the same staff replay at2x.
+The89.98-second capture recorded10,072 samples with zero lost; thermal status3
+before and after. Seventeen telemetry intervals give CPU median9.461ms/present
+and FPS60.01 (lowest interval56.67). This is5.2% below the intervening API28
+code157 median, but earlier identical API29 code156 gave9.947ms. That within-build
+variation prevents attributing the difference to TLS. Default API28 remains
+unchanged; native TLS stays opt-in. Screenshots show staff replay movement, not
+human driving or a completed player race.
+
+Candidate159 computes the CP-write effect mask once when storing a validated
+display-list cache record, avoiding the classification loop on subsequent hits.
+It still replays every CP write in order. Identity, digest/generation validation,
+eviction and nested-list exclusion are unchanged. The summary adds8 bytes per
+record, at most64KiB for8,192 entries. The16,416-case ASan/UBSan state restoration
+test passes; the full API28 Android build and package/profileability/signer/exact
+allocated-section audits pass. APK SHA256:
+`93fca44e28d3956486be31a9c94f0be4d8bb1e6c640b27a552fdfc44b2bc7ea7`;
+native SHA256:
+`5eebfc9548bbe7389df5911313c28e04b03f26713e2c53d5d1aca857ba558ead`.
+The experiment remains uncommitted pending physical comparison with API28 code157.
+
+
+A follow-up attribution of code158's clock samples identifies68 under
+`IsKeyDown` (KPAD keyboard polling),101 under VI `SleepPreciselyUntil`, and21
+under diagnostic thread-CPU sampling. The KPAD path scans all SDL scancodes
+and compares every synthetic expiry against `SDL_GetTicksNS()`, even when
+its atomic expiry is zero. A zero-expiry short circuit is the next bounded
+experiment; no input behavior change or issue197 fix is claimed. VI waiting
+samples are not automatically a useful-work bottleneck and will not be removed
+merely to reduce the sampled percentage. Private attribution is retained as
+`tls158-clock-callers.json`.
+
+
+### CP-effects replay and keyboard candidate (September 22, 03:47 JST)
+
+Code 159 installed in place with verified version/minimum and rendered the
+Original Luigi Circuit staff replay at 2x. The 89.9967-second capture recorded
+10,368 samples, zero lost, thermal status 3 before/after. Seventeen telemetry
+intervals give CPU median 9.535ms/present and FPS median 60.03 (minimum 59.75).
+GX display-list self share is 3.25%, 242 samples. The old classification loop
+no longer appears; the preserved CP-write replay loop still accounts for 32
+samples. Total GX cost is close to API28 code 157's 3.31%, and unsynchronized
+phase/clock variation still prevents a broad performance claim. Captured frames
+show no obvious geometry failure; this is bounded staff-replay validation.
+
+The separate code 160 candidate adds an inactive synthetic-key expiry short
+circuit. A held physical key returns immediately. A zero synthetic expiry skips
+the clock; nonzero expiries retain the exact strict-greater-than comparison and
+atomic acquire load. Synthetic stick scale is unchanged. An extracted-production
+ASan/UBSan test passes 73,728 key/axis comparisons, including exact expiry, maximum
+timestamps, physical input, both stick scales and an event arriving between
+polls. A fresh inactive 512-scancode sweep makes zero clock reads. Full Android
+packaging is in progress; no device result or issue197 resolution is claimed.
+Both experiments remain uncommitted at this checkpoint.
