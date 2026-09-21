@@ -1,6 +1,6 @@
 # Maintenance work and test board
 
-Scoped intake update: 21 September 2026; 62 open issues. The older family and release snapshots below retain their dates. Start at the
+Scoped intake update: 22 September 2026; 63 open issues. The older family and release snapshots below retain their dates. Start at the
 [support-agent hub](SUPPORT-AGENTS.md). The [priority source](maintenance-priorities.json)
 owns ordering, readiness, exact next actions and acceptance; this board records
 support decisions and evidence. Refresh GitHub and local ownership before acting.
@@ -8,7 +8,7 @@ The [device matrix](COMPATIBILITY-MATRIX.md) preserves target-specific observati
 
 ## 21 September evening loop
 
-[All 62 open issues](artifacts/2026-09-21/open-issue-inventory.md) have a new
+[All 63 open issues](artifacts/2026-09-21/open-issue-inventory.md) have a new
 issue-specific reply with a retained URL. No issues were automatically closed.
 [The active evening goal](artifacts/2026-09-21/evening-goal-loop.md) continues
 engineering after intake rather than waiting for another generic log collection.
@@ -18,12 +18,22 @@ engineering after intake rather than waiting for another generic log collection.
   stack; diagnostic-off is not its fix.
 - Honor X7c #235 now reaches races in the same reporter's #313; 15 FPS performance
   remains. #295 Original export works; Retro transfer is the remaining feature.
-- Android RVZ descriptor import is locally implemented. Actual synthetic RVZ
-  none/Zstd decompression, byte equality, descriptor lifetime/offset and damaged
-  header rejection passed on Pixel. Full app/import acceptance remains pending.
+- Android RVZ descriptor import passes the full Pixel system-picker import: all
+  2,043 extracted file hashes match, and both saves/five preferences are unchanged.
+  Normal private code167 subsequently launches Original and Retro, with a short
+  Original acceleration/pause/quit check. Not yet published; other providers/devices
+  and full player-driven acceptance remain separate.
 - A link-only control reproduces released code135 BuildID. Function-only local
   binding removes 10,873 internal jump slots while preserving dynamic exports
   and API28. This is artifact evidence, not an FPS improvement yet.
+
+- #216 A9+ now installs code135 after a fresh download and loads Original;
+  missing character bodies and lag remain. Retro is untested, and the older Tab A
+  is a separate unresolved case. #316's screenshot confirms displaced geometry.
+- [PR315](https://github.com/chrissotraidis/kartpad/pull/315) retains local binding,
+  background cache persistence, snapshot/CP-summary and inactive-key reductions,
+  and one ARAM TLS lookup per voice. Targeted work removal is verified; whole-frame
+  gains remain within run variation. API29 TLS stays opt-in, API28 is default.
 
 ## 20 September post-release priorities
 
