@@ -162,3 +162,40 @@ Code141 is building; lifecycle success is not yet claimed.
 
 Source evidence: [SDL events](https://github.com/libsdl-org/SDL/blob/release-3.4.4/src/events/SDL_events.c)
 and [Android event pump](https://github.com/libsdl-org/SDL/blob/release-3.4.4/src/video/android/SDL_androidevents.c).
+
+### Verified cache boundaries and TLS experiment preparation
+
+Code141 `0.5.1-cache.2` passed clean build, unsigned-bundle and release-APK
+audits. Its native SHA256 is
+`f0176ca0fde6f072c7f844da338618739b7cbe9d0e784b9dc814b360129cc04b`;
+private APK SHA256 is
+`d2da47df7e21b65918dfa9aabd819078ffb4d1a1c780f66164aa0c40af3a4867`.
+The first wrapper run had a post-Gradle syntax error because its script was edited
+while running; rerunning the unchanged wrapper succeeded in25s with cached native
+outputs. Do not edit active build scripts.
+
+Physical code141 evidence:
+- Both installed profiles remained present. Boot completed with303/303 Dawn blob
+  lookups hitting; idle flush0.338ms, zero new store callbacks.
+- Home at01:03:13 was followed by a background flush at01:03:14, before resume
+  at01:03:18. Flush0.007ms, no new store callback. Screenshots confirm Android
+  Home and a restored game title, not a race.
+- After navigating into game menus, Home triggered a154.370ms flush and one
+  blob-store callback (785hits/800lookups), followed by successful resume.
+  This validates the corrected hook and demonstrates warm cache reads plus
+  new-store activity; no isolated load-time/FPS improvement is claimed.
+- A1200ms title A hold advanced but engaged the existing gas-lock feature. A
+  subsequent short press released that lock before navigation. Earlier shorter
+  title-input observations remain ambiguous; no input fix is claimed.
+
+Code142 is a non-debuggable, shell-profileable API28 control. Its native hash
+exactly matches code141; the profiler audit verifies every allocated ELF section
+against retained unstripped symbols and verifies the device-compatible signer.
+
+Commit `c36187b` adds an explicit, default-off API29 native-TLS experiment. Both
+manifest minimum and native target change together; test version names must
+contain `-native-tls`. Invalid switch/name combinations fail before building,
+and the API29 package audit correctly rejects the API28 control. Ordinary builds
+remain API28. Code143 is compiling in a separate native configuration; all236
+translated-shard commands target Android29 without forcing emulated TLS. Final
+ELF/package and physical measurements are still pending.
