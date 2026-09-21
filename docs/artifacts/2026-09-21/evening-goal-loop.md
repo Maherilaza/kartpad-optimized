@@ -327,3 +327,19 @@ Classic controller shows that field copies raw buttons. It is not a trigger or
 proof that the page handler received an edge. The next trace corrects that label
 and inspects controller registration. No behavior fix or gameplay improvement
 is claimed from these title-only runs.
+
+
+Code148 passes the package/signature checks and installs in place. Its title
+trace confirms the UI state is marked valid (`0x80`) while A is held, and the
+player-one registration passes the game's current/expected-controller equality
+check. The registered controller proxy still needs to be followed to its
+selected pad; merely seeing A in the separately calculated Wii pad does not
+prove it is the pad the menu reads. Latest PR checks at `70aeda9` all pass
+(boundaries, receipts, regression).
+
+Code149 follows the registered player-one proxy to its selected pad. It points
+to the same Wii/Classic pad previously traced, with mapped A1, raw A16 and
+valid128. Reject wrong-controller selection as the explanation for this run.
+A subsequent private trace inspects active pages rather than changing the
+Android button route. Codes148/149/150 are transient optimized debug captures,
+not public binaries or FPS evidence.
