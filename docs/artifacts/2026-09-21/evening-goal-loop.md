@@ -677,3 +677,27 @@ Full build and package/profile/signer/symbol audits pass. It remains retained
 and uninstalled; code160 is still on the phone. Source worktrees are clean.
 The currently prepared tree contains161 control source and must be refreshed
 from maintained HEAD before building another candidate.
+
+
+### Touch-controlled 150cc movement check (September 22, 04:10 JST)
+
+On code160, Original150cc Mushroom Cup/Luigi Circuit with Mario/Standard Kart
+was entered via normal menus. A22-second recording shows the player initially
+stationary in12th, then accelerating from the grid, collecting an item, turning
+in response to floating-stick swipes, leaving the track and colliding with a
+signpost. Acceleration lock visibly turns cyan and clears after a shortA press.
+Start opens the race pause menu; Quit followed by Up/Yes/A returns to Main Menu.
+No completed race is claimed. This is a movement/input/item/rendering check, not
+a representative or controlled performance measurement; screen recording was
+active and the player did not stay with the opponents. Video and exact injected
+event times are retained privately as `input160-gp-movement.*`.
+
+The existing private offline CPU-driver hook is the next repeatability gate.
+Current extracted-production guard checks pass with ASan/UBSan: disabled mode,
+12 mode values, every malformed/missing player slot, null/absent singleton; only
+enabled offlineVS with the expected1-human/11-CPU lineup may write player-zero
+type. This proves bounds, not that the fixture actually drives on hardware.
+A private debuggable code162 build is in progress with the maintained candidate
+native source. The fixture must be visually/log verified before measurements
+are accepted and removed before returning to a normal build. No marker has
+yet been enabled and code160 remains installed at Main Menu.
