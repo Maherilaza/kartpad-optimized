@@ -871,3 +871,9 @@ In-place install succeeded; installed package reports code167/version0.5.1-eveni
 Return to KartPad Menu, select Retro for next launch, dismiss from Recents (verified no runtime PID), and reopen successfully reached Retro title and the existing licence's main menu on normal167. No online mode was entered. The seven-file exact readback occurred after RVZ import while166 remained debuggable; after167 installation normal app loading is evidence, not another shell readback claim. No AndroidRuntime/KartPadDiscImport errors were returned by the bounded tag check. All three CI jobs pass at a5019dd.
 
 The derived4.38GiB intermediate ISO and this test's phone RVZ copy/folder were removed after successful import and comparison; original WBFS and local RVZ/receipt remain private. No owner data or previous artifact was removed.
+
+### 06:16 — Remaining scalar path review and new reporter acceptance
+
+Inspected the exact code167 ARM implementation of FinishScalarFp (about3% sampled self cycles in the heavier fixture). It already branches directly around exception summary/enable work when exception==0. An extra C++ zero-exception fast path would duplicate an optimization already present in the artifact and is rejected without another build. Clear/Capture helpers already skip redundant FPSR writes while preserving unrelated QC state and keep opaque ordering boundaries; removing those boundaries is not a semantics-neutral quick fix. No scalar source change made. The review uses retained machine code, not source appearance alone.
+
+New #216 reporter reply confirms code135 re-download/install and Original startup on A9+; remaining missing-body geometry and lag are retained. Replied with accepted subcase and no repeated evidence request. Latest inventory still63 open.

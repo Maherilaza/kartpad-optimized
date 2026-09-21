@@ -146,3 +146,7 @@ A fresh snapshot still has 62 open issues, with no new tickets.
 - #216 follow-up: correct0.5.0 APK / installed119 confirmed; fresh complete download and in-place update requested. [Reply](https://github.com/chrissotraidis/kartpad/issues/216#issuecomment-5766243862).
 
 - #316 screenshot received and visually inspected: large displaced surfaces in Mario preview with intact menu/icons confirms model geometry corruption, not simple aspect stretching. [Acknowledgment](https://github.com/chrissotraidis/kartpad/issues/316#issuecomment-5766561305); no repeat evidence request.
+
+## September 22, 06:14 JST refresh
+
+- #216: reporter confirms the second code135 download installs and Original now loads on A9+. Record this device's installation/startup acceptance; Retro is untested. Character bodies remain missing and single-player lags. [Acknowledged](https://github.com/chrissotraidis/kartpad/issues/216#issuecomment-5767610011) without repeat evidence requests. Dolphin also lagging does not prove KartPad cannot improve. Geometry remains a separate open defect alongside104/211/316 without a proven common cause. Total remains63 open.
