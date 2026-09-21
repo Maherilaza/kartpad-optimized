@@ -144,3 +144,21 @@ making any speed claim.
 - Refreshed all-open-issue snapshot: still62. New #215 startup success and #211
   S24 Ultra/A32 comparison were acknowledged and added to the inventory/queue.
   All65 maintenance tests passed after those updates.
+
+### Cache lifecycle correction found by physical testing
+
+Code140 launched with both installed profiles retained. Boot-prewarm idle flush
+ran in9.989ms and recorded one blob-store callback. This confirms execution and a
+store attempt, not yet successful database persistence/reuse. Home/resume worked
+but two observed transitions produced no background flush.
+
+SDL3.4.4 `SDL_SendAppEvent` dispatches application lifecycle events only to event
+watchers, never to the normal event queue. The first candidate's normal event
+handler was therefore unreachable. Runtime commit `3850952` moves only this
+infrequent idle flush into the Android background watcher under the renderer
+mutex, before the Android event pump blocks. It does not reconfigure surfaces.
+It also includes cumulative blob lookup/hit counts for warm-relaunch validation.
+Code141 is building; lifecycle success is not yet claimed.
+
+Source evidence: [SDL events](https://github.com/libsdl-org/SDL/blob/release-3.4.4/src/events/SDL_events.c)
+and [Android event pump](https://github.com/libsdl-org/SDL/blob/release-3.4.4/src/video/android/SDL_androidevents.c).
