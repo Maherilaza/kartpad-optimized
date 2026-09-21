@@ -1,6 +1,6 @@
 # Overnight maintenance and Android performance work
 
-Status at September 22, 06:55 JST: work remains in progress. Public Android is
+Final validation on September 22, after overnight work beginning September 21 at 23:25 JST. Public Android is
 still **0.5.0 / code135**. None of the private profiling APKs below is a public
 performance release. Apple build60 is a separate diagnostic-overhead mitigation.
 
@@ -65,3 +65,29 @@ see the [Android handoff](../../ANDROID-PERFORMANCE-HANDOFF.md).
 
 The [feature follow-up](feature-follow-up.md) records the remaining shake and Retro
 ghost engineering scope; neither is claimed as implemented.
+
+## Final normal-build checks
+
+Normal170 is installed and its installed APK SHA-256 matches the audited local
+artifact. Its DiscIO library is byte-identical to the one that passed the full
+RVZ import. Original's ten-minute staff-replay observation kept the same process
+and thermal status 0. In the retained final main-log segment (07:04:20–07:06:57), median reported
+FPS was 60.015, but two intervals fell to
+46.20/46.11 FPS with p99 frame times 125.52/129.76 ms. Their cause remains
+unresolved. A 61.49-second Home/resume cycle returned to replay rendering with
+the same process.
+
+Retro loaded its existing licence and played the selected Rooster Island staff
+ghost to its 2:42.292 results screen. Subsequent checkpoints show that
+results overlay with the course scene still animating; this is not ten minutes of active racing. The game displayed a
+ghost-created message. No fresh save readback is available from the final
+non-debuggable build, and no byte-unchanged-save claim is made for this session.
+
+The private function-layout experiment reduced the selected functions' static
+page footprint but produced overlapping CPU medians (12.673/12.684 ms). It was
+rejected as a default and is absent from normal170. No broad FPS improvement,
+reporter-device resolution, or completed human-driven race is claimed.
+
+The full Retro observation kept the same process and thermal status 0 for ten
+minutes, including the results-overlay period. The phone was then returned to
+a fresh launcher with both profiles ready and Ask Every Time preserved.

@@ -950,8 +950,9 @@ normal package.
 Ten-minute staff-replay observation completed600.004seconds with11 minute
 checkpoints and the same process throughout. Thermal status was0 at all
 checkpoints. PSS varied1,950,876–2,094,084KiB and ended2,065,722KiB; this is not
-a leak-free claim. Retained logs contain32 post-six-second-window CPU/cadence
-intervals: CPU median12.6975ms(range11.394–13.074), FPS median60.015
+a leak-free claim. The retained main log covers07:04:20–07:06:57, not the whole ten-minute
+observation; an earlier system-buffer entry does not extend main-log coverage.
+It contains32 CPU/cadence intervals: CPU median12.6975ms(range11.394–13.074), FPS median60.015
 (range46.11–60.62). Two intervals fell below55FPS(46.20 and46.11), with
 p99 frame times125.52/129.76ms and no queued pipelines. Their cause was not
 isolated; these tails remain visible rather than being called uniformly smooth.
@@ -975,3 +976,28 @@ At07:16, normal170 successfully loaded Retro's existing licence and selected the
 Rooster Island150cc staff ghost(blarn., Bowser,02:42.292) through Replay. A separate
 ten-minute normal-build observation is running. This is staff replay playback,
 not a player-driven time trial or a Retro ghost-import/export test.
+
+### 07:28 — Final observation and acceptance
+
+The eight-hour threshold passed at07:25:19 JST. Retro observation finished
+600.004seconds,11 checkpoints, same process and thermal status0 throughout.
+PSS ranged1,730,694–1,794,866KiB. The selected staff replay reached its
+02:42.292 result; checkpoints180 onward display the results overlay while the
+course scene continues animating. This is not ten minutes of active racing.
+The game displayed a ghost-created message; no final non-debuggable save
+readback was possible, so this session is not claimed to leave saves unchanged.
+The retained main-log tail starts07:23:49 and contains no fatal-exception/signal,
+CRITICAL, runtime-fatal or device-lost matches. That bounded tail does not prove
+absence of all earlier errors or leak-free operation.
+
+Returned through KartPad's menu, dismissed the task through Android Recents,
+verified the old game process exited, then relaunched the selector. Both
+profiles show Ready to play and Ask Every Time remains selected. No game-data
+clear, uninstall, save restore or online session was performed.
+
+Final GitHub refresh still contains the same63 open issues, with no changed
+issue update timestamps since the previous refresh. All63 replies were read
+back earlier. Live main remains0d657f3. Both draft PRs remain open, Android's
+pinned head is7560a3b, and all three CI checks pass at3da4b24. Final changes
+following that checkpoint are documentation only. The normal170 build and its
+exact symbols remain private in the retained worktree; source is pushed.

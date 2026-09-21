@@ -1,6 +1,6 @@
 # Open-issue inventory — 2026-09-21
 
-Initial live snapshot: **62 open issues**. September 22, 03:48 JST refresh: **63 open issues**, all reviewed and individually answered. Counts are issue tickets, not unique
+Initial live snapshot: **62 open issues**. September 22, 07:24 JST final refresh: **63 open issues**, all reviewed and individually answered. Counts are issue tickets, not unique
 people or disjoint symptoms. Cross-platform and mixed reports retain subcases.
 No issue is closed merely because it was reviewed or a source test passed.
 
