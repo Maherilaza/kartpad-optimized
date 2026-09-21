@@ -633,3 +633,11 @@ child51b4c45. Both retainAPI28 and guest state/input semantics. The snapshot and
 keyboard contract tests are wired into CI. The built160 native source matches
 these changes; source receipts still reflect its pre-commit build. Next broaden
 physical validation to multi-kart and Retro Rewind scenes before final packaging.
+
+
+Root integration e43c208 pins Android51b4c45. All three CI checks pass, including
+the new keyboard sanitizer test on Linux. RootPR315 and childPR2 now describe
+the CP-summary and input changes,63 issue responses, and the inconclusive TLS
+comparison. Both worktrees are clean. Code160 remains installed; the staff
+replay/menu navigation is being exited for the next broader scene. No completed
+player race or broader acceptance is claimed at this checkpoint.
