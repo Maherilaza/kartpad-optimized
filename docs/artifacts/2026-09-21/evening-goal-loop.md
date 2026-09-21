@@ -406,3 +406,22 @@ and only roughly22% front-table hits. Code153 is testing1,024 direct-lookup
 slots instead of256 (12KiB additional thread-local storage), retaining full
 identity/content validation and clearing the front table on eviction. It is
 not yet accepted or included in the maintained runtime pin.
+
+
+### Larger front-table measurement (September22, 02:52 JST)
+
+Code153 passed release-package, non-debuggable shell-profileability, exact
+allocated-section/symbol and recipient-signer audits, then installed in place.
+The same Luigi Circuit staff replay rendered at2x before and after a29.98-second
+capture:3,567 samples,0 lost, thermal status3 at both endpoints. Seven telemetry
+samples in the device-timestamp window gave median59.98FPS and9.693ms CPU per
+present (9.392–9.739ms). The front-hit fraction increased to47.19% from roughly22%
+with256 slots, but GX display-list self cost remained4.08% and no CPU improvement
+is established. These different replay windows do not constitute matched A/B
+acceptance. Neither display-list experiment is included in the maintained pin.
+
+APK SHA256: `3e4519b269dfdf3e4c726cf8b17956171cf869605c5bb1eec201bf4b851c258b`.
+Exact native symbols and private screenshots/profile/thermal logs are retained
+locally. Next: remove unnecessary vertex-snapshot default construction with
+explicit state-restoration tests, then compare synchronized replay windows.
+PR315 boundaries, receipts and regression checks all passed at this checkpoint.
