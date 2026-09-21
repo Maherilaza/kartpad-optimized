@@ -83,3 +83,18 @@ one device or reporter does not stop other available engineering work.
 Private build products are under `build/evening-20260921/` in the retained
 worktree; raw screenshots, reports and receipts remain ignored task-local data.
 No APK release has been published by this loop.
+
+### Continued device navigation and review
+
+Draft PR: https://github.com/chrissotraidis/kartpad/pull/315 (receipts CI passed).
+A broader Android contract selection also passed: 65 tests.
+
+A private, temporary code137 input probe confirmed that a held A press reaches
+both the JNI publisher and native consumer with matching state. A fresh run
+advanced through the existing license, Single Player and VS selection screens.
+The earlier failed presses are not an established source defect; their cause
+remains undetermined. Temporary logging was restored out of tracked source.
+Uninstrumented code138 reproduces the exact code136 native SHA256
+`719c336fa56c12185c4b2e33ded09e40583a9449f3d801b651ab674a936df002`.
+No race measurement has yet been made. Continue matched scene work before
+making any speed claim.
