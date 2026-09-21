@@ -28,6 +28,17 @@ API28/API29 replay comparisons have not isolated a useful native-TLS benefit
 from within-build variation. KeepAPI28 as default. Do not combine these CPU
 changes with a claim to fix Adreno vertex explosions.
 
+A private code163 CPU-driver fixture has now completed Original100cc Luigi
+Circuit with all12 racers in the results table. Video verifies movement,
+items, position changes and laps; the camera alternates cinematic angles.
+This is an offline twelve-CPU workload, not human/player-camera gameplay.
+A separate29.95-second sample (4,447 samples,0lost, thermal status3) has median
+CPU14.544ms and FPS56.8 across five steady intervals. Scalar flag clear/capture
+account for7.79%/5.90% of sampled self cycles, and emulatedTLS/pthread_getspecific
+for3.62%/2.12%. Preserve floating-point semantics; this profile does not justify
+dropping exception handling. A matched native-TLS comparison is pending.
+The earlier162 stationary-grid attempt is explicitly rejected.
+
 ## Second: actual failing character draw
 
 Use the current maintained runtime and retained PNMTX evidence, rather than reconstructing the obsolete code83 candidate. #104 reports corrupt characters on code135 at1x/Normal with empty sampled shader queues. #211 independently reports failure on S24 Ultra while characters appear on Galaxy A32. Preserve selected-draw and pipeline identity, disable diagnostic draw merging when capturing, and compile the actual generated vertex shaders. Finite CPU matrices and generic passing probes do not validate the failing shader. Do not request another ISO replacement, mode sweep or duplicate log.

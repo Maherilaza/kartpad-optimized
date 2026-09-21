@@ -750,3 +750,31 @@ must be refreshed before a normal candidate build. Code163's launch transcript
 confirms the flag equals1 and RaceConfig is nonzero, with mode0 at menus.
 This narrows the probe on this launch; the162 activation discrepancy remains
 unexplained. No CPU-driving acceptance yet.
+
+
+### First verified twelve-CPU run (September22, 04:42 JST)
+
+Code163 private instrumentation confirms flag1, nonzero RaceConfig and guarded
+offlineVS conversion. A40-second video independently shows Mario driving
+through corners, collecting/using a golden mushroom, position changes and lap2
+with opponents present. Subsequent screenshots show lap3 and the normal results
+table with all12 racers, Mario fifth. This is a completed CPU-controlled
+Original100cc Luigi Circuit race, **not human gameplay**. The camera alternates
+cinematic angles, so it is also not the ordinary player-camera workload.
+
+After video recording stopped, a separate29.9516-second simpleperf capture
+recorded4,447 samples,0lost, thermal status3 before/after. Five steady
+intervals show median CPU14.544ms and FPS56.8 (53.52–58.96), compared with
+this evening's lighter capped ghost workload. No cross-workload speedup claim.
+Self-cycle shares: scalar clear7.79%, scalar capture5.90%, GX display list3.85%,
+emulatedTLS3.62%, pthread_getspecific2.12%. Exact symbols match code163.
+Private files: probe163-proof.mp4/contact, probe163-finish.png, cpu163-luigi.*.
+
+Code164/API29 private debug TLS comparison initially failed to link an obsolete
+private input-trace symbol from an older cached506165y6 object. Timestamp
+preservation across different native configurations was unsafe here. All858
+prepared regular files were touched and a full native rebuild started; no
+failed/stale164 package was installed. Future configuration switches must
+refresh source mtimes or prove that configuration's own previous source identity,
+rather than copying timestamps from the most recently used different config.
+The default API28 compatibility remains unchanged.
