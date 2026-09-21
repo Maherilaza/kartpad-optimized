@@ -343,3 +343,27 @@ valid128. Reject wrong-controller selection as the explanation for this run.
 A subsequent private trace inspects active pages rather than changing the
 Android button route. Codes148/149/150 are transient optimized debug captures,
 not public binaries or FPS evidence.
+
+
+### Apparent title input failure resolved as a test-state mistake
+
+Code150's active-page trace reveals OpeningMovie (page89) above Title (page87),
+although the screenshot still shows the title artwork. The held A press causes
+page transitions and removes the movie page; it does not represent an ignored
+button. Three short 300 ms A presses separated by 800 ms then reach the main
+menu, with intervening screenshots retained privately. This corrects the earlier
+claim that the title was ignoring A: delivery, selected-pad state, and page
+transition all worked. No input behavior change is warranted from this run.
+
+All private traces were saved as ignored patches and removed from maintained
+source. The task-created InputTrace marker was removed. A normal non-debuggable
+API29/TLS profiling candidate is rebuilding so title diagnostics cannot confound
+the next gameplay measurement.
+
+Preservation readback after150 matches all seven backed-up files byte-for-byte:
+both saves and all five preference files. Code151 passes the non-debuggable
+profiler audit, exact-symbol allocated-section comparison, API29 package audit,
+and recipient-signer check. Its native SHA256 is identical to code143
+(`06b454d263d187b3807c857b810a466c56587c802fc79befa67223725c20286d`),
+confirming the private input instrumentation is absent. APK SHA256:
+`b8dade7d86e4ede910c268dd584764ddc91a7f607ecc971d4ec5c5a6882e8adb`.
