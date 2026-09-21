@@ -509,3 +509,30 @@ release, profileability, signer and exact allocated-section audits pass. APK:
 `a76da8c2ea689c6d547c707137ff99893c2dca1616c957dd91a8f1d49d40e491`. Native:
 `a408a49316dc5c7b596be2b40c3acf31c4c25396daed07d50df9ef03d19a26b3`. It is retained locally and not yet installed;156 remains
 on the phone. Next: API28 replay comparison against156's native-TLS snapshot.
+
+
+### Default API28 replay (September 22, 03:27 JST)
+
+Code157 installed in place and rendered the same Original Luigi Circuit staff
+replay at 2x. The native Android identity note reports API28 (0x1c), matching the
+manifest minimum. This ran on the attached Android17 phone, not Android9 hardware.
+A 90.0104-second capture recorded 10,259 samples with zero lost. Thermal status
+was 3 before and after. Seventeen telemetry intervals after the six-second
+initial exclusion give median CPU 9.975ms/present and FPS 59.94. The previous
+API29 snapshot repeat gave 9.947ms: this comparison does not establish a useful
+native-TLS whole-frame improvement. Default API28 support stays intact.
+
+Do not hide the outlier: one FPS telemetry sample was 44.18, p99 149.03ms, worst
+175.16ms. The neighboring present-phase aggregate reports present_call maximum
+173.387ms and main CPU 8.860ms/present. No pipelines were queued. This locates a
+presentation stall in that interval but does not prove its cause or attribute it
+to the TLS configuration. Replay phase is not synchronized across builds.
+
+API28 self samples include emutls 2.17%, pthread_getspecific 1.04% (not exclusively
+attributable to emutls), and GX display-list 3.31%. Code158 is built and passes
+release/profileability/signer/exact-symbol audits; its native library is byte-for-
+byte identical to156. APK SHA256:
+`95cd9f1d52b349c6b9074fac45b427efb59afc3f047e2789853cfa693f46f934`.
+It is not installed at this checkpoint;157 remains on the phone. Next install158
+for the API29 repeat, then investigate remaining profiled GX costs with the same
+state-preservation and device-evidence requirements.
