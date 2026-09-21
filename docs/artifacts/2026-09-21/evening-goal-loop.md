@@ -199,3 +199,41 @@ and the API29 package audit correctly rejects the API28 control. Ordinary builds
 remain API28. Code143 is compiling in a separate native configuration; all236
 translated-shard commands target Android29 without forcing emulated TLS. Final
 ELF/package and physical measurements are still pending.
+
+
+### Native TLS artifact and initial CPU attribution
+
+Code143 `0.5.1-native-tls.1` completed the full build and passed bundle, APK,
+profileability, signer and allocated-symbol-section audits. Native SHA256:
+`06b454d263d187b3807c857b810a466c56587c802fc79befa67223725c20286d`.
+Private APK SHA256:
+`7006a823ef95dd783d097000c5485898d44d233fd8d99a678277392c05d4d49b`.
+The ELF Android note reports API29, with `.tdata`/`.tbss` and 152 TLSDESC
+relocations. The API28 control has no TLS sections or TLSDESC relocations.
+This proves the intended compiler/linker change, not a performance gain.
+Code143 installed in place with the existing signing identity; no app data was
+cleared. Physical runtime validation is next.
+
+Code142's exported session confirms 128 pipeline recipes warmed in 0.8 seconds,
+with 303/303 blob hits, zero stores and 4.7 MiB loaded. The same session contains
+native KPAD A-button edges despite intermittent title-screen navigation failure.
+No input fix is claimed. Its debug-only RKG fixture path is unavailable in this
+non-debuggable release candidate.
+
+A 19.987-second code142 **title/attract sequence** simpleperf capture recorded
+1,822 CPU-cycle samples with zero samples lost. This is not a race benchmark.
+Build-ID-matched unstripped symbols identify the largest self-costs as translated
+functions `801B4DA8` (13.02%), `801B5234` (5.83%) and `801B5B74` (4.43%).
+Emulated TLS lookup was 1.41%, with `pthread_getspecific` at 1.09%; these are
+sampled shares in this sequence, not predicted whole-game speedups. Frame-pointer
+unwinding reported 30.4% erroneous callchains, so inclusive/caller attribution is
+not reliable enough for conclusions. Self samples provide the next investigation
+targets. The supported `simpleperf record --app` path works without rooting or
+changing kernel security settings.
+
+A separate uncommitted display-list experiment replaces five per-hit array copies
+with const references to the thread-local cache record. Cache insertion/eviction
+remains confined to the miss branch, which uses local scratch arrays. Both versions
+compile with the production API28 flags; the affected function's machine code is
+7,216 bytes before and 7,172 bytes after. Runtime correctness and performance are
+still pending; this experiment is not in a pinned candidate or public release.
