@@ -270,3 +270,25 @@ input inspection and repeatable scene selection, preserving the normal native
 runtime and installed data. The display-list array experiment was saved to an
 ignored patch and removed from the maintained source while building this control,
 so it cannot confound the input/TLS investigation.
+
+
+### Diagnostic build and rejected debugger capture
+
+Code144 `0.5.1-native-tls-input-capture` built successfully with optimized native
+flags. Package identity, API29 minimum, ARM64/alignment checks and the existing
+private signer passed. Every allocated native section matches retained symbols.
+APK SHA256 `98a3036595bf42df96359a54c65f5494fe6b6bdd1c274a4cab37572f80a63fbc`;
+native SHA256 `0dc3f97b77247e6c65177ff23b2e0046f625919bab075a1474925be44c8c2459`.
+It is deliberately debuggable, so it is not a public release or a substitute for
+the non-debuggable profiler acceptance gate. Installation preserved both ready
+profiles. Before further diagnostics, both existing `rksys.dat` saves and all
+five preference files were copied to a private host backup with per-file hashes.
+No fixture or steering marker was present, and none was installed.
+
+A bounded LLDB input trace attached without root and observed one Unified WPAD
+read followed by one KPAD read in the same presentation frame. It then encountered
+a Vulkan device loss (`vkQueueSubmit` / `VK_ERROR_DEVICE_LOST`) after debugger
+pauses. The backtrace reaches Aurora's device-loss fatal path; the debugger was
+detached and its port forwarding removed. Reject this run as stability,
+performance or input-fix proof. The two neutral samples do not establish the
+input-loss hypothesis. Further input tracing must avoid stop-the-world pauses.
