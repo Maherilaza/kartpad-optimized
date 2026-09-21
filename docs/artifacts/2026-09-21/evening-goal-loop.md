@@ -881,3 +881,15 @@ New #216 reporter reply confirms code135 re-download/install and Original startu
 The remaining memcpy/memmove samples were attributed with the exact166 symbols: 155 samples had a libmain caller, of which107 were draw vertex/index/array staging paths. Array uploads already reuse unchanged backing data/size/endian state; explicit guest vertex-cache invalidation clears those ranges and breaks merging. No unsafe copy-elision change was made. This is sampled attribution, not a measured avoidable bandwidth cost.
 
 Normal167 Retro loaded Rooster Island200cc VS with the player camera, Yoshi/Mach Bike/Manual. Short touch acceleration moved from the grid at00:28.037 to a wall at00:36.582, then gas lock was cleared and the game paused. This is a movement/control smoke check, not successful course navigation or a completed race. Backgrounded through Android Home for61.34seconds; the runtime PID survived, foregrounding restored the same pause menu, Continue resumed the game timer (00:42.667), and Start paused again. This verifies one normal-build lifecycle cycle.
+
+### 06:35 — Bounded profile-derived function placement experiment
+
+Normal167 source passed all three CI jobs at fcae362. Built profileable, non-debuggable API28 control168 from the same source; its packaged native hash is byte-identical to167. This changes profiling access/version identity only. Installed168 in place on the same signer; owner data was not cleared.
+
+Derived a private512-symbol order from our exact166 Original Moo and Retro Rooster profiles:17,330 native samples mapped to function ranges,470 did not. Replayed the existing native link command with an ordering file and separate output/dependency paths. All512 selected functions moved; common function sizes remain identical. Symbol-name differences are exclusively linker-generated Cortex-A53 workaround stubs. This proves layout changed, not performance improved. The ordering file and translated symbols remain private.
+
+The first169 package attempt reused Gradle's old merged-native intermediate; the exact allocated-section audit rejected it before installation. Retained that rejected artifact separately, then rebuilt the private ZIP with the ordered/stripped native library,16KiB alignment and the same local debug signer. Corrected169 passes non-debuggable/profileable/version/signer and all-allocated-section symbol matching. The normal native build output was restored. This manually packaged experiment is not a public release artifact or a source-default change; device comparison remains pending.
+
+layout168: APK `3a3ef20cc4baff302c78a68c6aa90a3a42191a20ec4e0332549ebb6fceb8b6e6`; native `c5ded75b90367aedba27b66a67c1ec3f04377348190c177913213be2470d64a0`; symbols `92597108fbc654065828fb4953f950da9bd37b1b2ae415be9020bbfba59f1a09`.
+
+layout169: APK `848a51913c5681e3b81d79752bf94aa1dfe60b8709cf4df17faab2c7aa45496b`; native `b5e8f6bbc83e63d7bde8c9cfba1c63a87a92306a05c35723745c2af3fe7b872f`; symbols `f19087028571e7bf5b3e591a5c637f17f4c2ba911c25652142c541c64ab64d2c`.
