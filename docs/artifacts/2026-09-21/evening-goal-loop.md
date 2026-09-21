@@ -98,3 +98,49 @@ Uninstrumented code138 reproduces the exact code136 native SHA256
 `719c336fa56c12185c4b2e33ded09e40583a9449f3d801b651ab674a936df002`.
 No race measurement has yet been made. Continue matched scene work before
 making any speed claim.
+
+### Second cycle: physical scene and cache candidate
+
+- Uninstrumented code138 navigated through license, Single Player, VS, Mario,
+  Standard Kart M, manual drift, and Luigi Circuit. Rules were read without
+  changing them: 100cc, Normal CPUs, all vehicles, recommended items, four races.
+  Existing resolution scale is 2x.
+- Started an offline race and left the player stationary at the grid while CPUs
+  circulated. Screenshots show the course introduction, lap1/time16.930, and
+  eventually 12th-place results after CPUs finished. This is not a driven or
+  player-completed race. Results returned to course selection successfully.
+- Initial 50-second capture: nine FPS samples, median57.23 (43.63–59.66),
+  ten main-thread CPU samples median14.4065ms/present, all sampled shader queues
+  empty. Thermal status changed from1 before the race to2 during/after it.
+  A later capture crossed toward automatic results, so it cannot support a
+  matched race comparison. No linker speedup is established from these numbers.
+- Built code139 with the unchanged native control; its native SHA256 exactly
+  reproduces public code135 (`fd457f61e1e4ef1884ee876f8d6fc7cebd2807bcbaf002ef3f16d2a5b36a475d`).
+  Installed in place. Title-screen A presses initially failed again. Returning to the native menu
+  and resuming allowed input to advance; this remains an unresolved lifecycle/input
+  observation, not a proven linker fix.
+- Runtime branch `codex/android-evening-20260921`, commit `802bee0`, adds the
+  missing static-Dawn Android Vulkan idle flush and a renderer-mutex-serialized
+  background event-pump flush. Existing startup prewarm limits remain unchanged.
+  Both modified files compiled with the current Android toolchain; the full native
+  build completed successfully. Packaging/device cache validation is in progress. Idle-flush timing/blob-store counters will support real
+  cache validation. A GitHub504 archive fetch was recovered using retained
+  dependency archives and their existing CMake hash checks, then native configure.
+
+- Control code139 reached the same stationary Luigi Circuit 100cc scene. The
+  first capture had 11 FPS samples (median60.01, range36.89–60.47) and 12 CPU
+  samples (median14.2935ms/present). Screenshots at race times3.018 and29.575
+  confirm stationary race state. Thermal status was3 before and after, versus
+  candidate1→2; captures include different amounts of loading/countdown time.
+  These sequential, thermally unmatched samples establish no performance win.
+
+- Runtime cache change is reviewable in [wiicompiled PR2](https://github.com/chrissotraidis/wiicompiled/pull/2),
+  stacked on the previously pinned maintained runtime. Code140 `0.5.1-cache.1`
+  completed the native build and release bundle/package audit. Native SHA256:
+  `9baeca49234bc808fe21500c2d47cac5a47a0552d18e0fe0f05cb3a94214f119`.
+  Private device APK SHA256:
+  `45654d257d6280d528dc0b8306efde99d80056c7604b1651e404136ca9f9b2a2`.
+  This is a private test artifact, not a published release.
+- Refreshed all-open-issue snapshot: still62. New #215 startup success and #211
+  S24 Ultra/A32 comparison were acknowledged and added to the inventory/queue.
+  All65 maintenance tests passed after those updates.

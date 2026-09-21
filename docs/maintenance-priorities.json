@@ -34,7 +34,7 @@
         236
       ],
       "state": "ready-local",
-      "next_action": "v0.5.0/code135 is published with bounded shader replay, startup and framebuffer fixes. Owner thumbnail acceptance does not close unclassified handset launch, cup-end or race exits. Classify retained exact-session evidence; do not repeat superseded code126 packaging or install work. #216 now has an APK install rejection before runtime testing; #235 same-reporter #313 reaches races on 0.5.0, with slowdown tracked separately.",
+      "next_action": "v0.5.0/code135 is published with bounded shader replay, startup and framebuffer fixes. Owner thumbnail acceptance does not close unclassified handset launch, cup-end or race exits. Classify retained exact-session evidence; do not repeat superseded code126 packaging or install work. #216 now has an APK install rejection before runtime testing; #235 same-reporter #313 reaches races on 0.5.0, with slowdown tracked separately. #215 reporter now confirms working startup on Xiaomi 25057RN09G; installed build and fixing change are unspecified. No repeat launch/log request.",
       "acceptance": "Each classified failure passes its affected import/start, cup-awards or race boundary on the exact target. Similar exits are not assumed to share a cause.",
       "dependency": {
         "owner": "KartPad engineering",
@@ -88,7 +88,7 @@
         211
       ],
       "state": "ready-local",
-      "next_action": "New #104 release retest is negative: S24 Ultra/Adreno750, Original 0.5.0/code135, 1x/Normal, Vulkan ready and empty shader queues in sampled frames. Reproduce the actual corrupt character draw internally and test one discriminating correction. No repeated mode sweep or log request.",
+      "next_action": "New #104 release retest is negative: S24 Ultra/Adreno750, Original 0.5.0/code135, 1x/Normal, Vulkan ready and empty shader queues in sampled frames. Reproduce the actual corrupt character draw internally and test one discriminating correction. No repeated mode sweep or log request. #211 now independently confirms persistent character rendering failure on S24 Ultra while characters appear on the reporter's Galaxy A32; do not ask for another ISO or mode sweep.",
       "dependency": {
         "owner": "KartPad engineering",
         "needs": "Internal diagnosis from retained evidence; reporter outreach is on hold."

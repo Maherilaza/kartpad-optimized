@@ -117,3 +117,14 @@ Unlinked rows are pending publication/refresh, not completed outreach.
 The worktree's evening goal record owns this session's sequence. Existing
 maintenance priorities/board remain the project queue; reconcile accepted
 subcases and new issues there as candidates gain evidence.
+
+## Second-cycle reporter updates
+
+A fresh snapshot still has 62 open issues, with no new tickets.
+
+- #215: reporter confirms working startup on Xiaomi 25057RN09G. Build and causal
+  change remain unspecified. [Acknowledged](https://github.com/chrissotraidis/kartpad/issues/215#issuecomment-5763220907); no repeated test requested.
+- #211: character rendering remains broken on S24 Ultra, while characters appear
+  on the reporter's Galaxy A32. This supports investigating device/renderer
+  differences but does not identify the failing operation.
+  [Acknowledged in Portuguese](https://github.com/chrissotraidis/kartpad/issues/211#issuecomment-5763224007); no repeated ISO/mode/log request.
