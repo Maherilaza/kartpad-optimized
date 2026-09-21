@@ -701,3 +701,13 @@ A private debuggable code162 build is in progress with the maintained candidate
 native source. The fixture must be visually/log verified before measurements
 are accepted and removed before returning to a normal build. No marker has
 yet been enabled and code160 remains installed at Main Menu.
+
+
+Code162 uses version `0.5.1-fullcpu-capture`, profileable1 and frame-capture1
+(the script correctly rejected an initial name without the required-capture
+suffix before building). It selects native configuration6q100252/API28 and is
+rebuilding translated shards; the process is verified active. This package will
+be debuggable for the private fixture and must not be mislabeled as a release
+profiler. Retain exact symbols from that configuration and audit manifest,
+signer and allocated sections explicitly. Do not reuse the API28 non-debug
+configuration's symbols. No hardware installation or fixture activation yet.
