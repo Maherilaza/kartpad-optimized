@@ -317,3 +317,13 @@ the caller may clear those outputs before calculation; that is not evidence of
 lost input. A further private trace samples the completed UI state at presentation
 instead. This narrows the investigation beyond Android delivery and raw KPAD
 consumption without introducing a speculative input fix.
+
+
+Code147 samples after controller calculation at presentation. During the 500 ms
+press it observes mapped UI A (`0x0001`) and raw Classic A (`0x0010`) through
+frames1617–1644, then release at1645. The title still ignores the press. The
+private trace initially named UI offset6 `trigger`; inspection of the translated
+Classic controller shows that field copies raw buttons. It is not a trigger or
+proof that the page handler received an edge. The next trace corrects that label
+and inspects controller registration. No behavior fix or gameplay improvement
+is claimed from these title-only runs.
