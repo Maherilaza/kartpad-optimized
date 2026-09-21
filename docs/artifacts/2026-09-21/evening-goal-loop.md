@@ -778,3 +778,19 @@ failed/stale164 package was installed. Future configuration switches must
 refresh source mtimes or prove that configuration's own previous source identity,
 rather than copying timestamps from the most recently used different config.
 The default API28 compatibility remains unchanged.
+
+
+The same code163 fixture subsequently traversed Moo Moo Meadows100cc with
+nearby opponents and reached the post-race Next Race/Quit menu. A20-second
+video verifies the driving start; a separate89.9385-second profile has13,167
+samples,0lost, thermal status3. Fifteen steady intervals have medianCPU14.943ms
+andFPS55.93; CPU range14.069–21.577ms, FPS39.87–60.21. The two early slow
+intervals had zero sampled queued pipelines, but newly created pipeline totals
+increased598→599, so this is not a clean fully-warmed comparative run.
+Self-cycle shares repeat the heavier pattern: clear7.42%, capture5.94%,
+emulatedTLS3.27%, pthread_getspecific1.85%, GX display list3.01%.
+Luigi profile clock attribution has no inactive-keyboard caller samples.
+Code164 full API29 debug recompilation remains active in506165y6. No164
+artifact/install/performance claim yet. Current device remains163 with the
+FullRaceCpu marker enabled for ongoing private tests; remove it before normal
+owner play. Saves/settings backup162 remains retained.
