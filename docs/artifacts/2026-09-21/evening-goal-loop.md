@@ -308,3 +308,12 @@ checks against the retained control: 857 unchanged files, with `kpad.cpp` alone
 changed. Source verification still runs normally. This lets the native build
 recompile the actual changed input unit without rebuilding unchanged translated
 shards; it does not reuse changed source or weaken the preparation check.
+
+
+Code146's additional read-only trace shows the guest controller connected and
+retaining raw Classic A (`0x10`) across the held press. The title still does not
+advance. UI fields sampled at the start of controller calculation are zero, but
+the caller may clear those outputs before calculation; that is not evidence of
+lost input. A further private trace samples the completed UI state at presentation
+instead. This narrows the investigation beyond Android delivery and raw KPAD
+consumption without introducing a speculative input fix.
