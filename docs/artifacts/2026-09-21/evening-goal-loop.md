@@ -656,3 +656,24 @@ than claiming broader input acceptance from successful main-menu navigation.
 Private screenshots `input160-replay-exit-select.png` and
 `input160-exit-selected.png` retain the before/after selection. Code160 remains
 installed in that replay menu; no profiler or build is running.
+
+
+### Replay-exit correction (September 22, 04:05 JST)
+
+A12-second screen recording captures the full interaction: Start opens the
+menu, three Down presses select End Replay, and A opens the confirmation
+“Return to the course selection screen?” with No selected. Up then A returns
+to Select Course on code160 (`input160-exit-yes.png`). The earlier screenshot-only
+attempts did not establish an exit failure; the confirmation step was missed.
+This corrects the previous unresolved interpretation. Exit is now physically
+observed on the candidate, with no runtime patch needed.
+
+A control161 was built while investigating, with the two new source changes
+reverted locally during staging/build and then restored exactly to maintained
+HEAD. Its native SHA256 is byte-identical to API28 control157:
+`a408a49316dc5c7b596be2b40c3acf31c4c25396daed07d50df9ef03d19a26b3`.
+APK SHA256 `d137425f75aa7aa6a0574314efeec390e9a3a2ecdee51faf1407223093872d03`.
+Full build and package/profile/signer/symbol audits pass. It remains retained
+and uninstalled; code160 is still on the phone. Source worktrees are clean.
+The currently prepared tree contains161 control source and must be refreshed
+from maintained HEAD before building another candidate.
