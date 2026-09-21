@@ -1,6 +1,6 @@
 # Android investigation handoff
 
-Current public baseline: **Android 0.4.18/code 83**. Its APK, source, notices and checksums are published and independently downloaded/verified. See the [release evidence](artifacts/2026-09-13/android-code83-public-release.md), [priority review](artifacts/2026-09-13/high-impact-priority-review.md) and [maintenance board](MAINTENANCE-BOARD.md). Older code63/code73 assignments are historical.
+Refreshed September21,2026. Current public baseline: **Android 0.5.0/code135**. Apple 0.5.1-experimental.1/build60 is a separate diagnostic-overhead mitigation and does not update Android. See the [current issue inventory](artifacts/2026-09-21/open-issue-inventory.md), [evening evidence](artifacts/2026-09-21/evening-goal-loop.md) and [maintenance board](MAINTENANCE-BOARD.md). Older code63/code73/code83 assignments are historical.
 
 ## First: sustained frame time
 
@@ -14,9 +14,24 @@ For baseline/candidate, hold scene, settings, normal power mode and thermal rang
 
 ## Second: actual failing character draw
 
-Recover the retained PNMTX experiment into a clean current-code83 source tree. Preserve selected-draw and pipeline identity, disable diagnostic draw merging and compile the actual generated vertex shaders. Old scratch APK names are not provenance. Finite CPU matrices and generic passing probes do not validate the failing shader.
+Use the current maintained runtime and retained PNMTX evidence, rather than reconstructing the obsolete code83 candidate. #104 reports corrupt characters on code135 at1x/Normal with empty sampled shader queues. #211 independently reports failure on S24 Ultra while characters appear on Galaxy A32. Preserve selected-draw and pipeline identity, disable diagnostic draw merging when capturing, and compile the actual generated vertex shaders. Finite CPU matrices and generic passing probes do not validate the failing shader. Do not request another ISO replacement, mode sweep or duplicate log.
 
-Use an affected device for dynamic → selected literal → dynamic comparison on the same observed character draw. A Pixel pass cannot accept S24/Adreno840 corruption. Only after the comparison discriminates the cause should a narrow correction be tested on affected and known-working hardware.
+Use an affected device for dynamic → selected literal → dynamic comparison on the same observed character draw. A Pixel pass cannot accept corruption on affected Adreno devices. Only after the comparison discriminates the cause should a narrow correction be tested on affected and known-working hardware.
+
+## Native TLS experiment
+
+Ordinary builds retain Android API28. Set `KARTPAD_ANDROID_NATIVE_TLS_EXPERIMENT=1`
+and an explicit `KARTPAD_ANDROID_VERSION_NAME` containing `-native-tls` to build
+an API29-only candidate. Gradle uses that minimum for both the manifest and NDK
+target; changing `targetSdk` alone does not enable native TLS. Use a fresh native
+configuration and retain the API28 control and exact native symbols.
+
+Package/bundle audits default to API28. Set `KARTPAD_ANDROID_EXPECTED_MIN_SDK=29`
+only when auditing this experiment. Also inspect the actual native Android note,
+TLS sections and `R_AARCH64_TLSDESC` relocations before attributing a result to TLS.
+Use matching scene/settings and thermal range, with both profiles and lifecycle
+checks. This option is not a decision to drop Android9 from the public release,
+and build or relocation evidence alone is not a performance improvement.
 
 ## Ownership and release gate
 
