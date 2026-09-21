@@ -893,3 +893,7 @@ The first169 package attempt reused Gradle's old merged-native intermediate; the
 layout168: APK `3a3ef20cc4baff302c78a68c6aa90a3a42191a20ec4e0332549ebb6fceb8b6e6`; native `c5ded75b90367aedba27b66a67c1ec3f04377348190c177913213be2470d64a0`; symbols `92597108fbc654065828fb4953f950da9bd37b1b2ae415be9020bbfba59f1a09`.
 
 layout169: APK `848a51913c5681e3b81d79752bf94aa1dfe60b8709cf4df17faab2c7aa45496b`; native `b5e8f6bbc83e63d7bde8c9cfba1c63a87a92306a05c35723745c2af3fe7b872f`; symbols `f19087028571e7bf5b3e591a5c637f17f4c2ba911c25652142c541c64ab64d2c`.
+
+Static follow-up: all19,702 dynamic export names are preserved. The512 ordered functions occupy760 distinct4KiB address pages versus1,139 before; top16 occupy9 versus23. These are static layout counts, not measured cache misses or performance gains. Private package comparison finds changed manifest/version-bearing DEX/profile, native library and signing metadata; game/runtime assets are identical.
+
+Control168 Luigi Circuit staff replay:90.0045seconds,12,063 samples,0lost,17 post-six-second-warmup intervals. Main-thread CPU median12.673ms per present(range11.951–12.814), FPS median60.02(range59.07–60.31), thermal0→0. Screenshots show the staff ghost moving around the course; no manual driving claim. Ordered169 comparison pending. Fresh issue snapshot remains63open with no new reporter update since the addressed#216 reply.
