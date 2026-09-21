@@ -944,3 +944,21 @@ runtime revision and the pinned dependency digests. All subsequent root changes
 through1809655 are documentation only. The native payload also matches167
 exactly, confirming the rejected function layout is absent from the installed
 normal package.
+
+### 07:09 — Normal170 Original extended observation
+
+Ten-minute staff-replay observation completed600.004seconds with11 minute
+checkpoints and the same process throughout. Thermal status was0 at all
+checkpoints. PSS varied1,950,876–2,094,084KiB and ended2,065,722KiB; this is not
+a leak-free claim. Retained logs contain32 post-six-second-window CPU/cadence
+intervals: CPU median12.6975ms(range11.394–13.074), FPS median60.015
+(range46.11–60.62). Two intervals fell below55FPS(46.20 and46.11), with
+p99 frame times125.52/129.76ms and no queued pipelines. Their cause was not
+isolated; these tails remain visible rather than being called uniformly smooth.
+No fatal-exception/signal, CRITICAL, runtime-fatal or device-lost matches occurred
+in the bounded log. Periodic screenshots show the staff ghost/course; no
+continuous visual, manual-driving, audio-quality or comparative speed claim.
+
+Sent Android Home while replay was running, waited61.49seconds, and returned.
+The process survived and the screenshot shows replay rendering again. This is
+an additional normal-build lifecycle cycle after the earlier paused Retro check.
