@@ -425,3 +425,28 @@ Exact native symbols and private screenshots/profile/thermal logs are retained
 locally. Next: remove unnecessary vertex-snapshot default construction with
 explicit state-restoration tests, then compare synchronized replay windows.
 PR315 boundaries, receipts and regression checks all passed at this checkpoint.
+
+
+### Vertex snapshot candidate (September22, 03:01 JST)
+
+Code154 returns to the maintained256-slot/cache-array-copy behavior and changes
+only vertex snapshots: format/array storage holds object bytes without default
+constructing208 formats, and capture fills its destination directly. Descriptor
+storage stays typed because the fallback vertex submitter reads it directly;
+the full Android compiler caught that dependency in the first draft, which was
+corrected before packaging. Partial restoration still uses the original presence
+flags and format-row mask. Trivially-copyable assertions guard the copied types.
+
+The production capture/restore functions pass16,416 isolated state cases under
+ASan/UBSan:32 state patterns, full restoration, every CP register, and all256
+format-row combinations including duplicate writes and empty writes. This does
+not substitute for renderer acceptance. Full dual-runtime Android build passes,
+as do release/signer/profileability/exact-symbol audits. The ARM64 display-list
+function is0x1a3c bytes. Code154 is installed in place and reaches the menus;
+longer replay performance comparison remains pending. Fourth issue refresh still
+shows62 open issues and no new reporter update since the previous review cycle.
+
+APK SHA256: `fed37223970738e7c25a2ceb5147481b4e7d603180d22e1145e6bbd925c6acff`.
+Native SHA256: `bb13961dd3f9ec7302c3fa4e8ddba48856ebdcbf113fdb97a615bb25bff7b224`.
+Runtime change and the new contract test remain local experiments pending device
+comparison; the maintained child pin is unchanged.
