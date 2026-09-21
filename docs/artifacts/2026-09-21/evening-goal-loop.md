@@ -237,3 +237,17 @@ remains confined to the miss branch, which uses local scratch arrays. Both versi
 compile with the production API28 flags; the affected function's machine code is
 7,216 bytes before and 7,172 bytes after. Runtime correctness and performance are
 still pending; this experiment is not in a pinned candidate or public release.
+
+
+Code143 physical follow-up: both profiles remained ready, Original launched and
+rendered the title/attract sequence, and a second 19.986-second CPU profile captured
+1,817 samples with zero lost. The same three translated functions were largest
+self costs (17.94%, 9.46%, 4.47%). Emulated TLS lookup fell to two samples/0.10%
+and `pthread_getspecific` had no self samples in this capture. Scene timing,
+thermal conditions and sample counts are insufficient to infer a whole-game
+speedup. Callchain errors were 2.37% in this capture, versus 30.4% in code142;
+do not attribute that difference to TLS without a controlled unwinding test.
+Title A navigation remained intermittent with both 500 ms and 1,200 ms presses;
+the latter's intentional cyan gas lock was cleared with a short tap. No race
+was reached on codes142/143. The next optimization work should retain this
+boundary while investigating the measured translated CPU hotspots.
