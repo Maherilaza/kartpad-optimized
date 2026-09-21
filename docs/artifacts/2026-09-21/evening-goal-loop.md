@@ -905,3 +905,18 @@ Documentation audit found android/README.md still presentedv0.4.17 as current. L
 Normal170 with the corrected RVZ hint builds and passes package/signer/allocated-section audits: non-debuggable, shell profiling disabled, API28. APK `638acca411e30b0c03ed6a51160f513333dbdbaba99f4f94cedaa224bada8fa5`; native `c5ded75b90367aedba27b66a67c1ec3f04377348190c177913213be2470d64a0` (identical to167); symbols `92597108fbc654065828fb4953f950da9bd37b1b2ae415be9020bbfba59f1a09`. Not installed yet; phone remains on169 while checking the replay-exit uncertainty.
 
 Replay-exit recheck on169: Start, select End Replay, A opens a Yes/No confirmation defaulting to No. One bundled Up/A attempt returned to the replay menu. Repeated with separate observation after Up: screenshot verifies Yes highlighted; the subsequent A returned to Time Trials course selection. Therefore the earlier160 input sequence did not establish a runtime exit defect. No code fix is attributed to this successful UI navigation, and no controller-report acceptance is inferred.
+
+### 06:55 — Live issue-reply audit and remaining feature assessment
+
+Read all63 linked comment IDs back from GitHub:63 exist, all belong to their
+intended issue, all have nonempty bodies, and all are authored by the maintainer.
+This verifies publication/association, not issue resolution. Installed package
+reports normal170/API28/0.5.1-evening without DEBUGGABLE, and both profiles remain
+Ready to play. Exact package audit already confirms shell profiling disabled.
+
+The initial shake/ghost investigation items now have an explicit
+[feature follow-up](feature-follow-up.md) based on current app code, the iOS
+motion implementation and a pinned retained rr-pulsar research checkout. Neither
+is a simple switch to existing input/save paths. Settings copy now correctly
+states that Retro ghost transfer excludes original Wii courses played in Retro,
+not only custom tracks. No extra reporter data was requested.

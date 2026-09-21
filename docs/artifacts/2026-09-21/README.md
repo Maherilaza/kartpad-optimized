@@ -1,6 +1,6 @@
 # Overnight maintenance and Android performance work
 
-Status at September 22, 06:40 JST: work remains in progress. Public Android is
+Status at September 22, 06:55 JST: work remains in progress. Public Android is
 still **0.5.0 / code135**. None of the private profiling APKs below is a public
 performance release. Apple build60 is a separate diagnostic-overhead mitigation.
 
@@ -50,9 +50,10 @@ pass; two physical captures remove the targeted lookup samples while whole-frame
 timing remains within control variation.
 
 The primary checkout and private game data are preserved. Private APKs, symbols,
-recordings and save backups remain local. The CPU-driver marker has been removed. Normal code167 passed installation with
-debugging and shell profiling disabled; the phone is temporarily on an audited,
-non-debuggable profileable control168 for a separate function-placement comparison. Post-import save/settings readback
+recordings and save backups remain local. The CPU-driver marker has been removed. Normal code170 is now installed with
+debugging and shell profiling disabled; its native library is identical to167.
+The separate function-layout experiment did not establish a benefit and is not
+included in170. Post-import save/settings readback
 passed before that install. Normal167 loads Original and Retro licences/menus,
 with short Original/Retro acceleration/pause/quit checks and a61-second Retro
 background/resume cycle; this is not a completed
@@ -61,3 +62,6 @@ human-driven race or reporter-device acceptance.
 For exact hashes, run counts, rejected candidates and current measurements, see
 the [evidence ledger](evening-goal-loop.md). For the next engineering actions,
 see the [Android handoff](../../ANDROID-PERFORMANCE-HANDOFF.md).
+
+The [feature follow-up](feature-follow-up.md) records the remaining shake and Retro
+ghost engineering scope; neither is claimed as implemented.
