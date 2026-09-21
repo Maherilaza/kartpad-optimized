@@ -251,3 +251,22 @@ Title A navigation remained intermittent with both 500 ms and 1,200 ms presses;
 the latter's intentional cyan gas lock was cleared with a short tap. No race
 was reached on codes142/143. The next optimization work should retain this
 boundary while investigating the measured translated CPU hotspots.
+
+
+### Profile interpretation corrected before optimization
+
+The public [RMCP01 symbol map](https://github.com/doldecomp/mkw/blob/main/config/RMCP01/symbols.txt)
+identifies the three title-profile hotspots as `__THPInverseDCTNoYPos`,
+`__THPInverseDCTY8`, and `__THPHuffDecodeDCTCompY`. They decode the THP movie;
+they are not evidence of the race simulation bottleneck. Keep this profile as
+startup/movie attribution and obtain an actual race or explicit retail replay
+profile before selecting gameplay optimizations.
+
+The existing September 3 Android replay investigation also rejects assuming
+that injected RKG player input naturally completes a race: it diverged on three
+courses. Retail Watch Replay was useful rendering evidence but did not prove
+player results/save. An optimized private capture build is being prepared for
+input inspection and repeatable scene selection, preserving the normal native
+runtime and installed data. The display-list array experiment was saved to an
+ignored patch and removed from the maintained source while building this control,
+so it cannot confound the input/TLS investigation.
