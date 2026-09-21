@@ -450,3 +450,21 @@ APK SHA256: `fed37223970738e7c25a2ceb5147481b4e7d603180d22e1145e6bbd925c6acff`.
 Native SHA256: `bb13961dd3f9ec7302c3fa4e8ddba48856ebdcbf113fdb97a615bb25bff7b224`.
 Runtime change and the new contract test remain local experiments pending device
 comparison; the maintained child pin is unchanged.
+
+
+Code154's89.9943-second retail staff replay capture records12,186 samples,0 lost.
+Before/during/after screenshots show the ghost at different course positions.
+Excluding the first6 seconds of telemetry to avoid a partial initial interval,
+17 samples give median59.88FPS and9.828ms CPU/present (8.666–10.471ms), with
+thermal status3 before/after. GX display-list self share is3.20%. This is a
+longer attribution capture, not yet evidence of an overall speedup. The exact
+function shrinks from0x1c9c bytes in151 to0x1a3c bytes in154.
+
+Control155 is built and audited, with native SHA256 byte-identical to151. Its
+APK SHA256 is `67f8678e4374c74cc49b13ed4bbc98488dbbf8a2686b7f1deee99e615eb6c53c`.
+It is not installed at this checkpoint. The child checkout is temporarily back
+at its clean maintained source for that control build; the154 candidate source,
+patch, prepared tree, symbols and package are retained locally. The contract
+test is pending alongside that experiment and expects the candidate signatures.
+Next step: install155 in place and collect the same longer staff-replay profile,
+then repeat the candidate before accepting or rejecting it.
