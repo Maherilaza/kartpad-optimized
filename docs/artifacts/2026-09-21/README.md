@@ -1,6 +1,6 @@
 # Overnight maintenance and Android performance work
 
-Status at September 22, 05:35 JST: work remains in progress. Public Android is
+Status at September 22, 06:07 JST: work remains in progress. Public Android is
 still **0.5.0 / code135**. None of the private profiling APKs below is a public
 performance release. Apple build60 is a separate diagnostic-overhead mitigation.
 
@@ -17,7 +17,7 @@ not being requested without a specific unresolved decision.
 
 | Change | Evidence | Remaining boundary |
 |---|---|---|
-| Android RVZ import through the picker descriptor | Physical DiscIO checks of synthetic ISO, plain/Zstd RVZ, borrowed descriptor lifetime/offset and malformed input | Full game RVZ picker/import acceptance |
+| Android RVZ import through the picker descriptor | Full Zstd RVZ system-picker import on Pixel; all 2,043 extracted file hashes match; both saves and five preferences unchanged; descriptor/malformed-input probes pass | Normal candidate launch checks and broader device coverage |
 | Bind internal native functions locally | Internal function jump slots reduced from 10,873 to zero; external imports and exports retained | No isolated FPS claim |
 | Persist Dawn cache on backgrounding | Physical flush/relaunch and cache-hit evidence | Broader device/lifecycle coverage |
 | Avoid unused vertex-format snapshot construction | 16,416 sanitizer-checked restore cases; physical profiles remove constructor samples | Small timing differences are workload-specific |

@@ -114,7 +114,7 @@ Unlinked rows are pending publication/refresh, not completed outreach.
   before asking for a game retest. The original Tab A remains a separate case.
 - #104: code135 S24 Normal-mode geometry is still broken; do not claim broad
   renderer acceptance or ask for the same settings sweep.
-- #314: Android picker omits RVZ reader dispatch despite linked DiscIO support.
+- #314: Android picker RVZ dispatch corrected in the candidate. Full Zstd RVZ import on Pixel passes with all 2,043 game-data hashes identical and both saves/five preferences unchanged; [verification reply](https://github.com/chrissotraidis/kartpad/issues/314#issuecomment-5767498720). Not yet in public code135.
   A local correction and native descriptor/decompression validation are underway.
 
 The worktree's evening goal record owns this session's sequence. Existing
