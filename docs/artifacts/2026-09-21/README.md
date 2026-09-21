@@ -17,7 +17,7 @@ not being requested without a specific unresolved decision.
 
 | Change | Evidence | Remaining boundary |
 |---|---|---|
-| Android RVZ import through the picker descriptor | Full Zstd RVZ system-picker import on Pixel; all 2,043 extracted file hashes match; both saves and five preferences unchanged; descriptor/malformed-input probes pass | Normal candidate launch checks and broader device coverage |
+| Android RVZ import through the picker descriptor | Full Zstd RVZ system-picker import on Pixel; all 2,043 extracted file hashes match; both saves and five preferences unchanged; descriptor/malformed-input probes pass | Normal167 Original course/short input check and Retro title/menu pass; broader device/provider coverage remains |
 | Bind internal native functions locally | Internal function jump slots reduced from 10,873 to zero; external imports and exports retained | No isolated FPS claim |
 | Persist Dawn cache on backgrounding | Physical flush/relaunch and cache-hit evidence | Broader device/lifecycle coverage |
 | Avoid unused vertex-format snapshot construction | 16,416 sanitizer-checked restore cases; physical profiles remove constructor samples | Small timing differences are workload-specific |
@@ -50,9 +50,11 @@ pass; two physical captures remove the targeted lookup samples while whole-frame
 timing remains within control variation.
 
 The primary checkout and private game data are preserved. Private APKs, symbols,
-recordings and save backups remain local. Before returning the phone to ordinary
-play, remove the CPU-driver marker and install a normal non-debuggable build with
-shell profiling disabled, then verify saves/settings and launch behavior.
+recordings and save backups remain local. The CPU-driver marker has been removed and normal code167 is installed with
+debugging and shell profiling disabled. Post-import save/settings readback
+passed before that install. Normal167 loads Original and Retro licences/menus,
+with a short Original acceleration/pause/quit check; it is not a completed
+human-driven race or reporter-device acceptance.
 
 For exact hashes, run counts, rejected candidates and current measurements, see
 the [evidence ledger](evening-goal-loop.md). For the next engineering actions,
