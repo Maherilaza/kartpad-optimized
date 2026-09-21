@@ -421,7 +421,7 @@ open class KartPadLaunchActivity : Activity() {
             column.addView(label(body, 16f, true), layout(dp(24)))
         }
         section("1. Import Mario Kart Wii",
-            "Use your own PAL (Europe) ISO or WBFS: RMCP01, revision 0. An extracted DATA folder also works. RVZ files must be converted before importing.")
+            "Use your own PAL (Europe) ISO, WBFS or RVZ: RMCP01, revision 0. An extracted DATA folder also works. Disc images are extracted into private storage.")
         section("2. Add Retro Rewind, if you want it",
             "Import Mario Kart Wii first, then choose Retro Rewind. KartPad can download and install the official ${RetroRewindRelease.VERSION} pack. You do not need to import a second disc.")
         section("Stuck on a step?",
