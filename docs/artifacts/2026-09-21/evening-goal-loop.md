@@ -468,3 +468,34 @@ patch, prepared tree, symbols and package are retained locally. The contract
 test is pending alongside that experiment and expects the candidate signatures.
 Next step: install155 in place and collect the same longer staff-replay profile,
 then repeat the candidate before accepting or rejecting it.
+
+
+### Snapshot candidate/control/repeat (September22, 03:15 JST)
+
+All three runs use Original, the same Luigi Circuit staff ghost,2x resolution,
+API29 native TLS, non-debuggable profileable packaging, and thermal status3 at
+both endpoints. Each records90 seconds at99Hz. Telemetry excludes the initial6
+seconds to avoid counting an initial partial five-second interval. The replay
+loops; these are retail staff-replay observations, not driven races or save proof.
+
+| Build | Native behavior | CPU median ms/present | FPS median | GX DL self share | Samples/lost |
+| --- | --- | ---: | ---: | ---: | ---: |
+|154|Snapshot candidate|9.828|59.88|3.20%|12186/0|
+|155|Original snapshot control|10.070|59.99|3.86%|10636/0|
+|156|Byte-identical candidate repeat|9.947|59.89|2.76%|9883/0|
+
+The control's45 samples in vertex-format default constructors disappear in both
+candidate captures. Estimated sampled display-list cycles fall from6.260 billion
+in the control to5.243 billion in154;156 again has lower display-list self cost.
+The source change removes that work rather than changing guest state semantics.
+CPU medians are1.2–2.4% lower in the two candidate runs, but this is a small local
+observation with unsynchronized replay phase, variable scheduling/clocks, and
+one device/course. It is not a general Android FPS improvement claim. Whole-game,
+Retro Rewind and reporter-device acceptance remain outside this evidence.
+
+Retain the snapshot optimization in the Android runtime pin, with the16,416-case
+ASan/UBSan restoration test wired into shared-runtime CI. The earlier array-reference
+and1,024-slot experiments remain excluded. Code156 APK SHA256:
+`920e8047eb97f1bb678fe5a4700034a1ffc55670c631f3aa852ebbdc9cc1c3c5`;
+its native SHA256 is identical to154. Next measure the retained change in the
+API28/default build and separate native-TLS effects using the same replay method.
