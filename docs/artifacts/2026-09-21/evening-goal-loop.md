@@ -292,3 +292,19 @@ pauses. The backtrace reaches Aurora's device-loss fatal path; the debugger was
 detached and its port forwarding removed. Reject this run as stability,
 performance or input-fix proof. The two neutral samples do not establish the
 input-loss hypothesis. Further input tracing must avoid stop-the-world pauses.
+
+
+Code145 adds bounded, private, marker-enabled logging without debugger pauses.
+It passed the package audit and device-signer check and installed in place.
+A 500 ms title A press was observed by both Unified and KPAD readers from
+presentation frame1436 onward. KPAD generated Classic A trigger `0x10` at1436,
+then reported A held through1458 and released at1462. The title did not advance.
+Thus a consumed short edge does not explain this held-press failure; the next
+trace observes the guest controller's stored raw state and UI output. No input
+behavior has been changed. These transient diagnostics remain outside the PR.
+
+Fresh preparation preserved file timestamps only after byte-for-byte equality
+checks against the retained control: 857 unchanged files, with `kpad.cpp` alone
+changed. Source verification still runs normally. This lets the native build
+recompile the actual changed input unit without rebuilding unchanged translated
+shards; it does not reuse changed source or weaken the preparation check.
