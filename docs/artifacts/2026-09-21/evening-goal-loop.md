@@ -920,3 +920,19 @@ motion implementation and a pinned retained rr-pulsar research checkout. Neither
 is a simple switch to existing input/save paths. Settings copy now correctly
 states that Retro ghost transfer excludes original Wii courses played in Retro,
 not only custom tracks. No extra reporter data was requested.
+
+### 07:03 — Installed artifact identity and remaining scalar cost
+
+Read the installed base APK through ADB and hashed the bytes without retaining
+another APK copy: SHA256 exactly matches normal170's audited
+`638acca411e30b0c03ed6a51160f513333dbdbaba99f4f94cedaa224bada8fa5`.
+All three CI jobs pass at eff41eb. Normal-build replay observation is live;
+its six-minute checkpoint has the same process and thermal status0.
+
+Reviewed the generator/runtime scalar-context boundary against exact166 TLS
+caller attribution. Multiply/add/subtract account for63/34/22 observed TLS
+samples in the heavy Moo repeat. Wrappers already reuse their resolved pointer
+within an operation; eliminating the remaining lookup requires passing the
+existing generated-function context through the helper interface, preserving
+validation and FP semantics. A concrete next experiment is recorded in the
+Android handoff. No incompatible generator/runtime change was slipped into170.

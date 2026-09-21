@@ -56,6 +56,23 @@ CPU per present, both near60FPS. This proves changed placement, not a benefit;
 no function-ordering default is retained. See the ledger for exact artifacts
 and the rejected stale-package audit caught before installation.
 
+### Next narrow CPU experiment: explicit scalar context
+
+In the exact166 Moo repeat trace, sampled TLS callers include63 multiply,
+34 add and22 subtract scalar adapters. Generated functions already receive
+`CpuContext* ctx`, but `CxxLinearCodeGenerator.Inlines.cs` emits stateful arithmetic
+calls without that argument, so `ppc_runtime.h` resolves the context again.
+The runtime already reuses one resolved pointer within each operation; simply
+adding another local variable does not remove this remaining cost.
+
+A coordinated generator/runtime overload could pass the existing context while
+preserving null/guest-stack validation, FPSCR destination suppression and host
+rounding/exception ordering. Keep old signatures for already-generated graphs,
+test generated call sites and context-scope nesting, rebuild the actual graph,
+and compare the same heavy workload before adopting it. This is a candidate
+boundary change, not a proven speedup or permission to drop scalar semantics.
+The normal170 candidate does not include it.
+
 ## Second: actual failing character draw
 
 Use the current maintained runtime and retained PNMTX evidence, rather than reconstructing the obsolete code83 candidate. #104 reports corrupt characters on code135 at1x/Normal with empty sampled shader queues. #211 independently reports failure on S24 Ultra while characters appear on Galaxy A32. Preserve selected-draw and pipeline identity, disable diagnostic draw merging when capturing, and compile the actual generated vertex shaders. Finite CPU matrices and generic passing probes do not validate the failing shader. Do not request another ISO replacement, mode sweep or duplicate log.
