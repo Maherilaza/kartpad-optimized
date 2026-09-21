@@ -34,7 +34,7 @@
         236
       ],
       "state": "ready-local",
-      "next_action": "v0.5.0/code135 is published with bounded shader replay, startup and framebuffer fixes. Owner thumbnail acceptance does not close unclassified handset launch, cup-end or race exits. Classify retained exact-session evidence; do not repeat superseded code126 packaging or install work. #216 now has an APK install rejection before runtime testing; #235 same-reporter #313 reaches races on 0.5.0, with slowdown tracked separately. #215 reporter now confirms working startup on Xiaomi 25057RN09G; installed build and fixing change are unspecified. No repeat launch/log request.",
+      "next_action": "v0.5.0/code135 is published with bounded shader replay, startup and framebuffer fixes. Owner thumbnail acceptance does not close unclassified handset launch, cup-end or race exits. Classify retained exact-session evidence; do not repeat superseded code126 packaging or install work. #216 A9+ fresh code135 download now installs and Original loads; missing character bodies and lag remain, Retro untested, older TabA separate; #235 same-reporter #313 reaches races on 0.5.0, with slowdown tracked separately. #215 reporter now confirms working startup on Xiaomi 25057RN09G; installed build and fixing change are unspecified. No repeat launch/log request.",
       "acceptance": "Each classified failure passes its affected import/start, cup-awards or race boundary on the exact target. Similar exits are not assumed to share a cause.",
       "dependency": {
         "owner": "KartPad engineering",
@@ -184,13 +184,13 @@
         303
       ],
       "state": "awaiting-reporter",
-      "next_action": "The optional debug-utils correction is published in v0.5.0/code135. Await the already requested exact-device launch result for #301/#303 and TabA9+ #216. Preserve original TabA as a separate case. Do not rerun code123/124 packaging or send duplicate requests.",
+      "next_action": "The optional debug-utils correction is published in v0.5.0/code135. #216 A9+ now installs after a fresh download and loads Original; geometry/performance remain open and Retro is untested. #301 startup also works but retains rendering/idle-freeze symptoms. Await #303 exact-device startup acceptance without a duplicate request. Preserve original TabA as a separate unresolved case.",
       "acceptance": "The exact affected driver initializes the hardware backend and reaches gameplay on an identified compatible artifact, with mandatory loader failures still rejected and existing data preserved.",
       "checkpoint": "docs/artifacts/2026-09-20/post-release-issues-and-enhancements.md",
       "priority_reason": "Three separately recorded device cases identify the same actionable loader mechanism; this subset is no longer waiting for generic logs.",
       "dependency": {
-        "owner": "#301/#303 and Tab A9+ #216 reporters",
-        "needs": "Existing September20 code135 launch requests; success or a reviewed log from a remaining failure."
+        "owner": "#303 reporter; KartPad engineering for remaining distinct symptoms",
+        "needs": "Existing exact-device #303 launch result; #216 A9+ Original startup is reporter-confirmed and does not need another generic launch request."
       }
     },
     {
