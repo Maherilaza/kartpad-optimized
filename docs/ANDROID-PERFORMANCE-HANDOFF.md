@@ -49,6 +49,13 @@ CPU medians14.7135/14.466ms bracket the control14.649ms; FPS medians54.195/57.86
 versus58.02 do not establish an overall speedup. Keep the claim to removal of
 specific audio overhead, with broader profile/device acceptance outstanding.
 
+A private profile-derived512-function layout experiment preserved dynamic exports
+and reduced the selected functions' occupied4KiB pages from1,139 to760.
+A same-course, thermal0 control/ordered replay pair measured12.673/12.684ms
+CPU per present, both near60FPS. This proves changed placement, not a benefit;
+no function-ordering default is retained. See the ledger for exact artifacts
+and the rejected stale-package audit caught before installation.
+
 ## Second: actual failing character draw
 
 Use the current maintained runtime and retained PNMTX evidence, rather than reconstructing the obsolete code83 candidate. #104 reports corrupt characters on code135 at1x/Normal with empty sampled shader queues. #211 independently reports failure on S24 Ultra while characters appear on Galaxy A32. Preserve selected-draw and pipeline identity, disable diagnostic draw merging when capturing, and compile the actual generated vertex shaders. Finite CPU matrices and generic passing probes do not validate the failing shader. Do not request another ISO replacement, mode sweep or duplicate log.

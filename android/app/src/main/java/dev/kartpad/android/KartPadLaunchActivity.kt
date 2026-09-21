@@ -282,7 +282,7 @@ open class KartPadLaunchActivity : Activity() {
                 if (retroInstalled) "Installed pack · ${RetroRewindRelease.VERSION}"
                 else "Official pack · ${RetroRewindRelease.VERSION} · downloaded in the app"
             } else if (gameDataReady) "Game data imported"
-            else "PAL (Europe) · ISO / WBFS · RMCP01 rev 0"
+            else "PAL (Europe) · ISO / WBFS / RVZ · RMCP01 rev 0"
             button.update(badge, action, note, current == profile || (current == null && !isRetro))
         }
     }
