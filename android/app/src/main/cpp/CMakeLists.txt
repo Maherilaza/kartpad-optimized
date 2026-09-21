@@ -99,6 +99,9 @@ if(KARTPAD_GAME_RUNTIME_SOURCE)
   else()
     message(FATAL_ERROR "Prepared game runtime has no Android product target")
   endif()
+  # Keep JNI exports, but bind calls to functions defined in this same product
+  # locally. Function-only binding preserves external data-symbol semantics.
+  target_link_options(${KARTPAD_GAME_RUNTIME_TARGET} PRIVATE "-Wl,-Bsymbolic-functions")
   target_sources(${KARTPAD_GAME_RUNTIME_TARGET} PRIVATE
     kartpad_touch_input_jni.cpp
     kartpad_runtime_settings_jni.cpp

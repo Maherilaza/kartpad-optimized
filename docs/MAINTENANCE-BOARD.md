@@ -1,10 +1,29 @@
 # Maintenance work and test board
 
-Scoped intake update: 20 September 2026; 61 open issues. The older family and release snapshots below retain their dates. Start at the
+Scoped intake update: 21 September 2026; 62 open issues. The older family and release snapshots below retain their dates. Start at the
 [support-agent hub](SUPPORT-AGENTS.md). The [priority source](maintenance-priorities.json)
 owns ordering, readiness, exact next actions and acceptance; this board records
 support decisions and evidence. Refresh GitHub and local ownership before acting.
 The [device matrix](COMPATIBILITY-MATRIX.md) preserves target-specific observations.
+
+## 21 September evening loop
+
+[All 62 open issues](artifacts/2026-09-21/open-issue-inventory.md) have a new
+issue-specific reply with a retained URL. No issues were automatically closed.
+[The active evening goal](artifacts/2026-09-21/evening-goal-loop.md) continues
+engineering after intake rather than waiting for another generic log collection.
+
+- Build60 has reported A10X/iPad improvements (#135/#310), with remaining stalls
+  and #310 online-transition crash. #196 supplied a build60 missing-guest-target
+  stack; diagnostic-off is not its fix.
+- Honor X7c #235 now reaches races in the same reporter's #313; 15 FPS performance
+  remains. #295 Original export works; Retro transfer is the remaining feature.
+- Android RVZ descriptor import is locally implemented. Actual synthetic RVZ
+  none/Zstd decompression, byte equality, descriptor lifetime/offset and damaged
+  header rejection passed on Pixel. Full app/import acceptance remains pending.
+- A link-only control reproduces released code135 BuildID. Function-only local
+  binding removes 10,873 internal jump slots while preserving dynamic exports
+  and API28. This is artifact evidence, not an FPS improvement yet.
 
 ## 20 September post-release priorities
 
@@ -15,7 +34,7 @@ rendering; #198 reports waiting, not improved performance. #302's pin correction
 is shipped and its release follow-up was missed.
 
 Explicit smaller follow-ups: Android shake-to-trick parity (Apple has it),
-Original ghost discovery (#295), and separate Mac Classic/Android ipega input
+Retro ghost transfer (#295; Original export is now reporter-confirmed), and separate Mac Classic/Android ipega input
 paths. Auto-accelerate, shared D-pad/trigger mappings, the L1 item preset and
 combined release assets are already implemented. Larger NAND/identity, USA,
 cheat, DSU, external-display and older-OS requests remain explicitly scoped in
