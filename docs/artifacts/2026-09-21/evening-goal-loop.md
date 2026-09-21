@@ -641,3 +641,18 @@ the CP-summary and input changes,63 issue responses, and the inconclusive TLS
 comparison. Both worktrees are clean. Code160 remains installed; the staff
 replay/menu navigation is being exited for the next broader scene. No completed
 player race or broader acceptance is claimed at this checkpoint.
+
+
+### Replay-exit acceptance boundary (September 22, 04:01 JST)
+
+After profiling160, touch Start opens the replay menu and Down/left-stick input
+visibly selects End Replay. A subsequent short touch A returns selection to
+Continue Replay without leaving the replay. This was observed repeatedly and
+is not accepted as successful exit. Earlier controls were replaced in place
+between captures, so their replay-exit behavior has not been established.
+Next compare this exact operation on the earlier maintained baseline before
+attributing it to either new optimization. Preserve this observation rather
+than claiming broader input acceptance from successful main-menu navigation.
+Private screenshots `input160-replay-exit-select.png` and
+`input160-exit-selected.png` retain the before/after selection. Code160 remains
+installed in that replay menu; no profiler or build is running.
