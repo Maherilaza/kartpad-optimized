@@ -499,3 +499,13 @@ and1,024-slot experiments remain excluded. Code156 APK SHA256:
 `920e8047eb97f1bb678fe5a4700034a1ffc55670c631f3aa852ebbdc9cc1c3c5`;
 its native SHA256 is identical to154. Next measure the retained change in the
 API28/default build and separate native-TLS effects using the same replay method.
+
+
+The retained Android runtime is nowb864121, integrated in root0dae4bf. All three
+PR checks pass, including the new snapshot test on Linux CI. PR315 and childPR2
+descriptions now include the actual replay results and limitations. Code157
+builds the retained optimization with the normal API28 minimum/native target;
+release, profileability, signer and exact allocated-section audits pass. APK:
+`a76da8c2ea689c6d547c707137ff99893c2dca1616c957dd91a8f1d49d40e491`. Native:
+`a408a49316dc5c7b596be2b40c3acf31c4c25396daed07d50df9ef03d19a26b3`. It is retained locally and not yet installed;156 remains
+on the phone. Next: API28 replay comparison against156's native-TLS snapshot.
