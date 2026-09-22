@@ -5,7 +5,8 @@
 Post-RC1 source correction: [socket send errors](socket-send-error.md) now survive
 diagnostic logging across all four runtimes. RC1 does not contain that correction.
 [Clean RC2](clean-rc2.md) now contains it and passes compilation/package/source
-audits; exact-package runtime acceptance remains pending.
+audits. Exact-package emulator upgrade/title/attract observation and isolated Mac
+identity-migration/startup checks also pass; online acceptance remains unresolved.
 
 Hold formal publication until the observed iPad Retro WFC login failure is
 reproduced with diagnostics and either corrected or shown not to be a regression.
