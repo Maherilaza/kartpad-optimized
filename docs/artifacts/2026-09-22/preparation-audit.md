@@ -20,8 +20,10 @@ documentation changes do not relabel it.
 ## Work not established by this audit
 
 - Exact Mac RC2 Retro startup is now visually observed with a newly downloaded,
-  hash-verified6.12.8 fixture; see clean-rc2.md. Android/iOS final-candidate Retro
-  startup remains separate. Older local Retro extracts were not substituted.
+  hash-verified6.12.8 fixture; Android code175 also visibly reaches the Retro title
+  in the isolated emulator with all3,643 staged files hash-verified. See clean-rc2.md.
+  Physical iOS final-candidate Retro startup remains separate. Older local Retro
+  extracts were not substituted.
 - There is no new iPad WFC attempt with diagnostics, no explanation of94020 and
   no proven repair of the second Android profile's registration mismatch.
 - Android GPU geometry and Moto G85 idle behavior remain reporter-specific open

@@ -73,3 +73,23 @@ restored through the same menu afterward, and the app exited with status0.
 No owner saves, online login or driven race were used. Android/iOS exact-candidate
 Retro acceptance remains separate from this Mac result. Private receipt:
 work/mobile-network-repair-20260922/mac64-retro-receipt.json.
+
+## Version-matched Retro startup on Android emulator
+
+The exact public-signer code175 APK also visibly reaches the Retro Rewind title
+in the disposable API36 ARM64 emulator. All3,643 staged Retro6.12.8 files were
+hashed on the emulator and matched the verified local fixture. The launcher
+validated the installed pack and populated its relative root in Config.toml;
+the normal runtime-profile intent selected retro_rewind. The runtime log records
+requested=retro_rewind and installed=valid. Networking and Discord were disabled.
+The same game process remained alive at three checkpoints over30seconds; the
+title was inspected directly. This is startup evidence, not a driven race or WFC
+login test, and staging files does not test the in-app downloader/importer.
+
+The first staging attempt exhausted the emulator's6GB data partition. Generated
+data for three unused emulator apps (Google search, Android System Intelligence
+and Messaging) was cleared; KartPad data was retained. The resumed copy was then
+fully hash-verified before launch. No physical device was accessed. The emulator
+was shut down after the observation. Private receipts/logs are under
+work/mobile-network-repair-20260922/emulator175-retro-files.json and
+emulator-retro175/.
