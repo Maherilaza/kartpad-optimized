@@ -25,6 +25,15 @@ built file exactly. Apple/Android use SDK zlib rather than the unused upstream
 zlib source-download fallback. Android's separately supplied SDL AAR remains
 3.4.4, with corresponding source in the delivery.
 
+The offline Gradle releaseRuntimeClasspath resolves 39 external Maven components,
+exactly matching the source-delivery manifest. All 38 archived source JARs match
+the cached originals byte-for-byte and pass ZIP CRC validation. The remaining
+component is the Kotlin coroutines BOM (metadata only). WorkManager's KTX2.11.1
+source JAR contains only metadata/licensing; its matching AAR contains no class
+files, so this is an empty compatibility artifact, not missing implementation.
+The local SDL AAR is covered separately above. See
+[maven-source-audit.json](maven-source-audit.json) for the per-component hashes.
+
 Artifacts live in the ignored build/release-051-rc1-20260922 directory: public-
 signer APK, unsigned IPA, Mac ZIP, complete source archive, notices ZIP and
 SHA256SUMS.txt. Matching Android symbols, iOS dSYM and the unsigned AAB are

@@ -66,13 +66,14 @@ with install -r. The app UID and four synthetic identity/save/preference byte
 sentinels survived the update and subsequent chooser launch. UI hierarchy shows
 Mario Kart Wii and Retro Rewind. The harness was corrected to check the separate
 :launcher process and the actual Mario Kart Wii label; neither mismatch was an
-app crash. No game was imported or raced in this emulator.
+app crash. No game was imported or raced during this upgrade check. The later code174
+offline title/attract-mode observation is recorded in [RC1 evidence](clean-rc1.md).
 
 Mac profile persistence/virtual SDL mapping, port assignment and host scheduler
 tests pass; scheduler sanitizer tests also pass. These are host correctness
 checks, not claims of improved latency or phone FPS.
 
-## Remaining loop work
+## Initial work queue (see completed follow-up below)
 
 1. Audit complete dependency/source delivery against the exact binaries; the
    core source snapshot alone is not the full release source package.
@@ -98,3 +99,14 @@ relax that check or relabel the binaries. Freeze reviewed source and produce a
 clean, consistently versioned Android/Apple/Mac RC, then compose the full source
 delivery with exact dependency coverage. Existing173/62 packages remain useful
 validation controls, not falsely relabelled clean builds.
+
+## Completed follow-up
+
+[Clean RC1](clean-rc1.md) supersedes the initial source/signing gaps above.
+Android174/Apple63 were compiled from a clean source snapshot and full package,
+source-member, 29 native-dependency-tree and 39 Maven-component checks pass.
+The final Android174 emulator upgrade and bounded no-input runtime observation
+also pass. The host event-service test is now in CI, with both hosted jobs passing
+at d9f3221. These checks leave the hardware-specific rendering reports and iPad
+WFC94020 unresolved; [release confidence](release-confidence.md) remains the
+current publication decision.
