@@ -3,9 +3,13 @@
 from pathlib import Path
 import subprocess
 import tempfile
+import argparse
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--platform', choices=['android', 'ios', 'macos', 'tvos'], default='android')
+platform = parser.parse_args().platform
 root = Path(__file__).resolve().parent.parent
-source = (root / 'vendor/runtimes/android/runtime/src/hle/audio/ax_internal.h').read_text()
+source = (root / f'vendor/runtimes/{platform}/runtime/src/hle/audio/ax_internal.h').read_text()
 windows = source[source.index('constexpr uint32_t kAramWindowShift'):source.index('enum class MailState')]
 types = source[source.index('struct VolumeData'):source.index('enum class PBLayout')]
 accelerator = source[source.index('class Accelerator {'):source.rindex('\n}')]

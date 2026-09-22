@@ -7,9 +7,13 @@ preservation. This is a state-copy contract test, not renderer/device acceptance
 from pathlib import Path
 import subprocess
 import tempfile
+import argparse
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--platform', choices=['android', 'ios', 'macos', 'tvos'], default='android')
+platform = parser.parse_args().platform
 root = Path(__file__).resolve().parent.parent
-source = (root / 'vendor/runtimes/android/runtime/src/hle/gx/gx_dl.cpp').read_text()
+source = (root / f'vendor/runtimes/{platform}/runtime/src/hle/gx/gx_dl.cpp').read_text()
 functions = source[source.index('struct HleGxVertexStateSnapshot {'):source.index('struct ScanAttrStep {')]
 functions += source[source.index('struct DlCpWrite {'):source.index('struct DlScanCacheEntry {')]
 prelude = r'''
