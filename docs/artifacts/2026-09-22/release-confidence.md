@@ -41,3 +41,11 @@ identity automatically and risk that working profile.
 
 Private evidence: work/mobile-network-repair-20260922. Do not publish its backups,
 logs or device identifiers. Current candidates are local and unreleased.
+
+## Device-free follow-up
+
+See [device-free review](device-free-release-review.md) for the fresh issue review,
+Classic driver contract tests, and corrected public-signing Android candidate.
+The private APK is not a public upgrade asset. The new public-signer APK passed
+an isolated emulator update from public135 with unchanged byte sentinels and
+app UID; this does not replace physical gameplay or iPad WFC acceptance.
