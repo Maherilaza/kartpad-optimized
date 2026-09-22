@@ -31,6 +31,22 @@ documentation changes do not relabel it.
 - Source PR reconciliation/merging and public release promotion remain separate
   work after acceptance; no formal release is authorized by this audit alone.
 
-Continue with a version-matched isolated Retro fixture where obtainable. Keep the
-physical/online evidence gaps explicit and do not replace them with passing unit
-tests, build success or an increased package version.
+## Device-free preparation outcome
+
+The requested device-free preparation deliverables are complete: issue review,
+actionable source corrections, preservation and shared-runtime host checks,
+exact local RC2 packages/source, and explicit publication blockers. A final
+readback rechecked all five artifact hashes and the four emulator/Mac receipts;
+the live issue set remains63 with no newer reporter evidence. Version-matched
+Retro startup is now observed on Mac and Android emulator.
+
+This is not approval for a formal release. The iPad94020 diagnostic attempt and
+physical final-build acceptance remain outside what these host checks can prove.
+Do not use the completed preparation audit to claim those failures are fixed.
+The next release decision depends on that evidence, not additional repetitions
+of the same offline checks. Source review/merge and promotion remain gated.
+
+The existing isolated worktree is retained with required private test data,
+packages and symbols. Source and documentation are pushed to PR317 and the linked
+runtime PRs. The dirty primary checkout is preserved; no extra checkout was
+created or silently discarded during this preparation pass.
