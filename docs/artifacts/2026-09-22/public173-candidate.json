@@ -17,5 +17,6 @@
     "chooserObserved": true,
     "emulatorOnly": true,
     "gameplayTested": false
-  }
+  },
+  "independentDerivationsByteIdentical": true
 }

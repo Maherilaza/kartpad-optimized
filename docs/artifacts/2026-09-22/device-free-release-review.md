@@ -59,6 +59,7 @@ It must never be substituted for the public update asset. Located the existing
 release key without changing it and derived a universal APK from the corrected
 code173 AAB through the normal release script. Its certificate matches the public
 release identity. All four native libraries are byte-identical to private173.
+Two independent bundletool derivations produce identical signed APK bytes.
 
 A newly created isolated API36 ARM64 emulator accepted public135, then public173
 with install -r. The app UID and four synthetic identity/save/preference byte
@@ -86,3 +87,14 @@ checks, not claims of improved latency or phone FPS.
 Work remains in the existing stabilization worktree and PR #317; no public
 release was published. Private logs/fixtures are under
 work/mobile-network-repair-20260922.
+
+## Source-delivery finding and next bounded pass
+
+The coordinated source packager correctly rejects binaries whose embedded source
+revision/fingerprint does not match the selected clean source archive. Current
+private build manifests retain their earlier dirty build state; packaging them
+next to a newer clean archive does not establish exact rebuild provenance. Do not
+relax that check or relabel the binaries. Freeze reviewed source and produce a
+clean, consistently versioned Android/Apple/Mac RC, then compose the full source
+delivery with exact dependency coverage. Existing173/62 packages remain useful
+validation controls, not falsely relabelled clean builds.
