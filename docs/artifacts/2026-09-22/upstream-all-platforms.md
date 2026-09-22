@@ -110,3 +110,11 @@ To reclaim build space, inactive object caches from this worktree's older Androi
 experiments were removed. Four earlier experiment symbol files are preserved as
 hash-verified `.so.gz` files. The accepted code170 APK/symbols and Apple build60
 IPA remain intact; private cleanup receipts are retained with the build logs.
+
+## Device installation follow-up
+
+Android code171 exposed a startup failure on hardware and is superseded by code172.
+Apple build61 is installed on iPad with 33 functional files verified unchanged.
+See [device installation evidence](device-install.md) and [code172 metadata](android172-package.json)
+for the correction and remaining acceptance boundary. Original upstream.1 packaging
+metadata and source archive remain historical snapshots, not code172 provenance.
