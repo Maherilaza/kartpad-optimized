@@ -19,9 +19,9 @@ documentation changes do not relabel it.
 
 ## Work not established by this audit
 
-- Exact RC2 Retro startup has not been observed. Original title/attract-mode checks
-  cannot substitute for this. The initially located local Retro extracts are older
-  than the candidate profile; do not silently use those as matching release data.
+- Exact Mac RC2 Retro startup is now visually observed with a newly downloaded,
+  hash-verified6.12.8 fixture; see clean-rc2.md. Android/iOS final-candidate Retro
+  startup remains separate. Older local Retro extracts were not substituted.
 - There is no new iPad WFC attempt with diagnostics, no explanation of94020 and
   no proven repair of the second Android profile's registration mismatch.
 - Android GPU geometry and Moto G85 idle behavior remain reporter-specific open

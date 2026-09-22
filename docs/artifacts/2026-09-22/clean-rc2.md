@@ -55,3 +55,21 @@ these offline package checks do not identify or resolve the owner's iPad WFC9402
 failure. Android geometry and Moto G85 idle reports remain unresolved. Neither
 unavailable physical device was accessed. The emulator was shut down after the
 observation. Keep the WFC publication hold and retain RC1 as a comparison artifact.
+
+## Version-matched Retro startup on Mac
+
+Downloaded the pinned6.12.8 archive into a private test fixture; verified its
+1,859,035,109-byte size and SHA256, expanded-size/path safety, and the pinned
+Code.pul/XML sizes and hashes. The exact Mac64 packaged executable (hash compared
+with the test copy) then selected the retro_rewind translated profile and applied
+4,878 overlay registrations. The Retro Rewind title was visually observed through
+the native app screenshot. The save redirect resolved under the disposable
+fixture's sd/riivolution/save/RetroWFC/RMCP; networking remained disabled.
+
+The first environment-only attempt selected Original because the Mac shell reads
+its saved profile selection. That attempt is not Retro evidence. The successful
+attempt used the app's Game menu and a restart. The prior Original selection was
+restored through the same menu afterward, and the app exited with status0.
+No owner saves, online login or driven race were used. Android/iOS exact-candidate
+Retro acceptance remains separate from this Mac result. Private receipt:
+work/mobile-network-repair-20260922/mac64-retro-receipt.json.
