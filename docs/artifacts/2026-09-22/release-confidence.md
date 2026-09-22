@@ -2,6 +2,10 @@
 
 ## Decision
 
+Post-RC1 source correction: [socket send errors](socket-send-error.md) now survive
+diagnostic logging across all four runtimes. RC1 does not contain that correction;
+rebuild and audit a new clean candidate/source delivery before promotion.
+
 Hold formal publication until the observed iPad Retro WFC login failure is
 reproduced with diagnostics and either corrected or shown not to be a regression.
 Do not require every enhancement or a universal Android performance improvement.
