@@ -51,8 +51,8 @@ remain preserved. No public release or reporter issue closure is implied.
   allocator links with the device SDK. The upstream Mac alias test also passes
   against KartPad's maintained backend.
 - Android code171, iOS/iPadOS build61, macOS build61 and experimental tvOS compile.
-  iOS, macOS and tvOS application package audits pass. Android APK/AAB compilation also succeeds; final archive auditing remains in
-  progress. Candidate archives are local and not a published release.
+  iOS, macOS and tvOS application package audits pass. Android APK/AAB audits also pass. All candidate archives are local and are
+  not a published release; exact identities are in [candidate-packages.json](candidate-packages.json).
 - The exact packaged macOS executable visibly reached the Original title screen
   using a private portable NAND/configuration, then exited cleanly. An initial
   setup failure required creating the explicitly configured empty test NAND
@@ -76,15 +76,37 @@ each release claim to a concrete source change and its actual acceptance result.
 
 ## Remaining release gates
 
-1. Finish Android, iOS/iPadOS, macOS and experimental tvOS native builds; audit
-   package contents, diagnostics defaults, symbols and source provenance.
+1. Promote the locally audited candidate identities into the public release
+   workflow only after device acceptance. The Android APK uses the private test
+   signer; the AAB and Apple IPAs are unsigned. Historical public-release scripts
+   still enforce their previously accepted release identities.
 2. Review merged input routing and ARM64 behavior; run Original and Retro smoke
    checks with isolated data, then preservation-safe device validation.
-3. Publish reviewed runtime commits before exposing parent gitlinks, update the
-   source archive and release documentation, and retain known driver/online and
-   sustained-performance limitations.
+3. Merge reviewed source and update public release metadata, retaining known
+   driver/online and sustained-performance limitations. Source and candidate
+   package archives are prepared locally; this is not public binary publication.
 
 Work is isolated in the existing stabilization worktree on
 `codex/upstream-all-platforms-20260922`; the primary checkout and accepted packages
 remain intact. Detailed build logs are private under
 `work/upstream-all-platforms-20260922`.
+
+## Review handoff
+
+[Parent draft PR #317](https://github.com/chrissotraidis/kartpad/pull/317) is stacked
+on the existing overnight Android candidate. Runtime integration PRs are
+[iOS #3](https://github.com/chrissotraidis/wiicompiled/pull/3),
+[macOS #4](https://github.com/chrissotraidis/wiicompiled/pull/4),
+[Android #5](https://github.com/chrissotraidis/wiicompiled/pull/5) and
+[tvOS #6](https://github.com/chrissotraidis/wiicompiled/pull/6). Runtime commits
+were pushed before the parent gitlinks. Check the parent PR for current CI results.
+
+The source archive and package provenance identify packaging commit `015c62c6`.
+Subsequent changes update regression harnesses and this handoff record; no new
+runtime binary is implied. The archived compilation manifests retain their
+original build revision/dirty state instead of relabeling a build as clean.
+
+To reclaim build space, inactive object caches from this worktree's older Android
+experiments were removed. Four earlier experiment symbol files are preserved as
+hash-verified `.so.gz` files. The accepted code170 APK/symbols and Apple build60
+IPA remain intact; private cleanup receipts are retained with the build logs.
