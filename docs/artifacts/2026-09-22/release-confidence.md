@@ -42,9 +42,9 @@ identity automatically and risk that working profile.
    iPad online login after the diagnosed correction. Physical iPhone acceptance
    has not been established separately from the shared iOS/iPadOS binary.
 3. Reconcile and merge the reviewed source PRs and finalize release metadata
-   before promotion. Clean local RC1 packages, public Android signing and source
-   archive validation are now complete; see [RC1 evidence](clean-rc1.md) and
-   [exact hashes](clean-rc1-packages.json). Earlier build61/code171 assets are
+   before promotion. Clean local RC2 packages, public Android signing and source
+   archive validation are now complete; see [RC2 evidence](clean-rc2.md) and
+   [exact hashes](clean-rc2-packages.json). Earlier build61/code171 assets are
    historical and must not be published as identity-safe upgrades. Later test
    and documentation commits do not change the recorded compilation revision.
 

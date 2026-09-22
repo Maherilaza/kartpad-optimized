@@ -11,6 +11,9 @@ draft after that gate is resolved; do not present it as an available release.
   Existing settings are kept. This prevents one identified upgrade path from
   assigning a new serial to existing online profiles; it cannot repair every
   previously registered profile or migrate a profile between different consoles.
+- Preserve captured socket-send errors across diagnostic logging on all maintained
+  platforms. Host tests reproduce the old error substitution; this is not proof
+  of a fix for the reported WFC login failure.
 - Add Android RVZ import, validated with a complete private disc extraction and
   file comparison. Users supply their own supported game image.
 - Reduce repeated runtime work in vertex-state handling, command summaries,
@@ -30,13 +33,13 @@ draft after that gate is resolved; do not present it as an available release.
 
 ## Candidate assets and validation
 
-Local RC1 is Android code174, unsigned iOS/iPadOS build63, and macOS ARM64 build63.
-All share compilation revision2886684. The Android APK uses the existing public
+Local RC2 is Android code175, unsigned iOS/iPadOS build64, and macOS ARM64 build64.
+All share compilation revision f8e295a. The Android APK uses the existing public
 release certificate and passed isolated emulator in-place upgrade preservation
 checks. The IPA requires signing for installation. No game images, saves or
 private test logs belong in the release assets.
 
 Package/source checks and bounded emulator observations are recorded in
-[clean-rc1.md](clean-rc1.md); exact hashes are in
-[clean-rc1-packages.json](clean-rc1-packages.json). These are preparation results,
+[clean-rc2.md](clean-rc2.md); exact hashes are in
+[clean-rc2-packages.json](clean-rc2-packages.json). These are preparation results,
 not final physical-device or online acceptance.
