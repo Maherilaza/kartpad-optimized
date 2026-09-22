@@ -38,7 +38,32 @@ login failure or reporter-specific Android geometry/performance defects.
 Previous emulator135-to173 preservation evidence and Mac62 synthetic migration
 proof remain separately labelled; neither is presented as a physical174/63 race.
 
-Next loop: verify the final174 public upgrade/chooser path, finish release
-metadata and investigate #301 idle/input-dependent guest progress using host
-evidence. Review native code equivalence before deciding which prior correctness
-checks need repeating. Do not publish solely because archives and CI pass.
+## Final APK follow-up
+
+The exact public-signer code174 APK was installed in place over public-signer
+code173 on an isolated API36 ARM64 emulator. The app UID and four synthetic
+identity, Original-save, Retro-save and preference byte sentinels stayed unchanged
+through installation and chooser launch. This supplements the previous public135
+to173 test; synthetic sentinels are not playable saves.
+
+After that preservation check, only the two asserted synthetic save files were
+removed from the disposable emulator. Existing private extracted game data was
+staged there and Original started offline with SwiftShader. Nine screenshots over
+120 seconds show title/attract-mode scene changes without injected game input;
+the process remained alive. The first screenshot still has Android's fullscreen
+education overlay, later screenshots do not. At 90 and 105 seconds the attract
+scene visibly advances; the 120-second image is black, and a later follow-up again shows an attract scene. This is a
+bounded idle observation, not a driven race, importer test, physical GPU benchmark
+or evidence that Moto G85 issue #301 is fixed.
+
+The actual Android event-service functions also pass a new host ASan/UBSan test:
+guest-fiber requests defer native polling, pending requests coalesce, polling runs
+with no input events, and a request made during service survives for the next
+scheduler service. Aurora and Fiber interfaces are stubs; this does not establish
+SDL/driver behavior. The test is included in shared-runtime CI.
+
+GitHub was refreshed again: the latest issue activity remains #216 on September
+21. No new reporter evidence justifies closing #301 or the geometry tickets.
+The supplied #301 log identifies public135 and Adreno619; emulator SwiftShader
+cannot reproduce that driver environment. Continue investigating rendering/input
+progress separately from FPS counters and retain the iPad WFC publication hold.
