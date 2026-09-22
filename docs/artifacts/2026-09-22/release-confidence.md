@@ -35,9 +35,12 @@ identity automatically and risk that working profile.
 2. Verify Original and Retro startup on the final candidates and confirm usable
    iPad online login after the diagnosed correction. Physical iPhone acceptance
    has not been established separately from the shared iOS/iPadOS binary.
-3. Reconcile the reviewed source PRs, exact package hashes, source archive, signing
-   and release metadata before promotion. Earlier build61/code171 assets are
-   historical and must not be published as identity-safe upgrades.
+3. Reconcile and merge the reviewed source PRs and finalize release metadata
+   before promotion. Clean local RC1 packages, public Android signing and source
+   archive validation are now complete; see [RC1 evidence](clean-rc1.md) and
+   [exact hashes](clean-rc1-packages.json). Earlier build61/code171 assets are
+   historical and must not be published as identity-safe upgrades. Later test
+   and documentation commits do not change the recorded compilation revision.
 
 Private evidence: work/mobile-network-repair-20260922. Do not publish its backups,
 logs or device identifiers. Current candidates are local and unreleased.
@@ -49,3 +52,7 @@ Classic driver contract tests, and corrected public-signing Android candidate.
 The private APK is not a public upgrade asset. The new public-signer APK passed
 an isolated emulator update from public135 with unchanged byte sentinels and
 app UID; this does not replace physical gameplay or iPad WFC acceptance.
+The final code174 APK also passed an in-place update from public-signer173 and
+an offline emulator title/attract-mode idle observation. The new host event-service
+regression passed with ASan/UBSan. Neither result closes the Moto G85 freeze or
+physical GPU geometry reports.
