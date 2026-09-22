@@ -34,9 +34,11 @@ creation and preservation cases. The shell test is not an app-sandbox test.
 
 Code172 (0.5.1-upstream.2) was rebuilt, passed the release APK audit and installed
 in place. Package manager confirms code172. Exact native BuildID matches retained
-private symbols. The phone locked during this work; corrected game startup still
-requires unlocking the device. Do not describe the startup fix as hardware
-accepted until the actual installed app reaches the game.
+private symbols. After unlocking the device, Original reached the actual Mario Kart Wii title
+screen. This verifies the corrected startup in the app sandbox; it does not
+establish race performance, Retro gameplay or complete feature acceptance.
+ADB-injected A presses did not establish entry into licence selection; title/demo
+continued rendering. Physical touch acceptance remains explicitly unverified.
 
 Android private app data is not readable by ADB because the release is not
 debuggable. No private save hash comparison or complete Android backup is claimed.
