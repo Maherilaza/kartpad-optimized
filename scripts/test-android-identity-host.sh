@@ -12,7 +12,7 @@ coroutines="$(jar org.jetbrains.kotlinx/kotlinx-coroutines-core-jvm/1.8.0)"
 json="$(jar org.json/json/20240303)"
 out="$repo/.android-bootstrap/identity-host-tests"
 mkdir -p "$out"
-clang++ -std=c++20 -dynamiclib -I"$jdk/include" -I"$jdk/include/darwin" -I"$repo/runtime/include" \
+clang++ -std=c++20 -dynamiclib -I"$jdk/include" -I"$jdk/include/darwin" -I"$repo/runtime/include" -I"$repo/vendor/runtimes/android/runtime/include" \
   "$repo/android/app/src/main/cpp/kartpad_mii_jni.cpp" -o "$out/libidentity-test.dylib"
 clang++ -std=c++20 -I"$repo/runtime/include" "$repo/runtime/tests/android_identity_fixtures.cpp" -o "$out/fixtures"
 "$out/fixtures" "$out"

@@ -84,6 +84,9 @@ class KartPadActivity : SDLActivity() {
         // SDL catches library/startup failures and does not start the guest.
         // Resume never runs this hook, so pending edits apply only at cold launch.
         if (BuildConfig.GAME_RUNTIME && !identityStartupChecked) {
+            KartPadIdentityStorage.applyConsoleRecovery(filesDir)?.let { error ->
+                throw IllegalStateException(error)
+            }
             KartPadIdentityStorage.applyPending(filesDir)?.let { error ->
                 throw IllegalStateException(error)
             }
@@ -1122,7 +1125,7 @@ class KartPadActivity : SDLActivity() {
     }
 
     private fun showPlayerIdentity() {
-        val choices = arrayOf("Rename or Delete Licenses…", "Edit Mii Name…", "Mii Appearance…", "About Player Identity")
+        val choices = arrayOf("Rename or Delete Licenses…", "Edit Mii Name…", "Mii Appearance…", "Restore Previous Console Identity…", "About Player Identity")
         AlertDialog.Builder(this).setTitle(if (KartPadIdentityStorage.hasPending(filesDir))
                 "Player Identity · Change Scheduled" else "Player Identity")
             .setItems(choices) { dialog, which ->
@@ -1132,6 +1135,13 @@ class KartPadActivity : SDLActivity() {
                         0 -> showIdentityRecords(false)
                         1 -> showIdentityRecords(true)
                         2 -> showMiiManager()
+                        3 -> AlertDialog.Builder(this).setTitle("Restore Previous Console Identity")
+                            .setMessage("For error 22005 after an update: restore the console serial saved by your previous KartPad installation. Saves and profiles are not edited. Recovery backups are retained. Fully close and reopen the app afterward.")
+                            .setPositiveButton("Restore Previous Identity") { _, _ ->
+                                runCatching { KartPadIdentityStorage.stageConsoleRecovery(filesDir) }
+                                    .onSuccess { identityScheduled() }
+                                    .onFailure { showParityBoundary("Recovery Not Scheduled", it.message ?: "Identity could not be verified.") }
+                            }.setNegativeButton("Cancel", null).show()
                         else -> showParityBoundary("Player Identity",
                             "A Mii is your identity and appearance; a license holds progress for one game profile. Create a license with New inside the game, then choose your Mii. Renaming a Mii updates its linked licenses without changing friend codes or progress. Fully close KartPad from Recents and reopen to apply edits; returning to the menu and resuming does not apply them.")
                     }
