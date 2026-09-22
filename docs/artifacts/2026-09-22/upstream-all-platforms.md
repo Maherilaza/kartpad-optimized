@@ -51,8 +51,8 @@ remain preserved. No public release or reporter issue closure is implied.
   allocator links with the device SDK. The upstream Mac alias test also passes
   against KartPad's maintained backend.
 - Android code171, iOS/iPadOS build61, macOS build61 and experimental tvOS compile.
-  iOS, macOS and tvOS application package audits pass. Android final package and
-  bundle auditing and candidate archives remain in progress.
+  iOS, macOS and tvOS application package audits pass. Android APK/AAB compilation also succeeds; final archive auditing remains in
+  progress. Candidate archives are local and not a published release.
 - The exact packaged macOS executable visibly reached the Original title screen
   using a private portable NAND/configuration, then exited cleanly. An initial
   setup failure required creating the explicitly configured empty test NAND
