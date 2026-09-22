@@ -114,7 +114,17 @@ unsigned writes=0;
 void WritePadStatus(uint32_t a,const PADStatus& s) {output.at((a-0x1000)/12)=s;++writes;}
 uint32_t PADRead(PADStatus* s) {for(unsigned i=0;i<4;++i)s[i]={i+1,0};return 0xf0000000;}
 bool blocked=false;
-bool PADIsInputBlocked() {return blocked;}
+// These independent upstream services are neutral in this routing test.
+// Their expression behavior is covered by the upstream input-expression suite.
+namespace InputBindings {
+bool InputBlocked() {return blocked;}
+void Apply(PADStatus*) {}
+}
+namespace WiiRemoteInput {
+void Poll() {}
+void HideRemotesFromPad(PADStatus*,unsigned) {}
+}
+void FillTriggersHeldByButtons(PADStatus*) {}
 namespace aurora::input {unsigned owners=0;uint32_t standard_gamepad_assigned_mask(){return owners;}}
 namespace Wup028Adapter {
 bool present=false;

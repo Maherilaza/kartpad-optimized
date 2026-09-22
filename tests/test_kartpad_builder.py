@@ -174,10 +174,10 @@ class ProfileTests(unittest.TestCase):
 class RetroRewindTests(unittest.TestCase):
     def test_translator_accepts_current_kamek_v2_and_legacy_v3(self) -> None:
         source = (REPO / "vendor/wiicompiled/translator/src/Translator.Core/Parsing/Kamek/KamekChunk.cs").read_text()
-        self.assertIn("MagicV2 = 0x6B000002", source)
-        self.assertIn("MagicV3 = 0x6B000003", source)
-        self.assertIn("MagicV2 or MagicV3", source)
-        self.assertIn("magic1 == MagicV2 && encodedChunkSize == 0", source)
+        self.assertIn("Magic1V2 = 0x6B000002", source)
+        self.assertIn("Magic1 = 0x6B000003", source)
+        self.assertIn("Magic1V2 or Magic1", source)
+        self.assertIn("magic1 == Magic1V2", source)
 
     def make_archive(self, root: Path, unsafe: bool = False) -> tuple[Path, dict]:
         archive = root / "retro.zip"
