@@ -63,3 +63,9 @@ boundary. Do not present either parity follow-up as newly delivered here.
 Private receipts/backups are retained in the working checkout at
 work/upstream-device-install-20260922. Do not publish its signing material,
 identifiers, game data, saves or screenshots containing personal content.
+
+## Subsequent identity regression
+
+Owner testing found a serial mismatch on both iPad profiles despite the byte-preserved
+saves. See [confirmed cause, iPad recovery and cross-platform migration fix](console-identity-migration.md).
+Earlier startup evidence is not profile compatibility acceptance.
