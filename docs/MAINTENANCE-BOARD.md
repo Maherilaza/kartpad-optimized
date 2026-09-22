@@ -6,6 +6,21 @@ owns ordering, readiness, exact next actions and acceptance; this board records
 support decisions and evidence. Refresh GitHub and local ownership before acting.
 The [device matrix](COMPATIBILITY-MATRIX.md) preserves target-specific observations.
 
+## 23 September Android optimization loop
+
+[Private candidate comparisons](artifacts/2026-09-23/android-candidate-comparison.md)
+now include repeated stationary Cookie Land battles and a matching Mailbox/FIFO
+reversal. Displayed cadence and guest CPU are measured separately. The supplied
+Reddit reports are classified in the [loop ledger](artifacts/2026-09-23/android-optimization-loop.md),
+including sustained slowdown, resolution-change freeze and input/handheld requests.
+None is closed from this Pixel-only evidence. CPU-affinity and cache-size
+experiments without reliable gains are removed, as are unproven scalar fast paths
+and helper calling-convention changes. Private build 195 retains guarded FIFO and
+bounded diagnostics. Exact-artifact Original/Retro offline and bounded lifecycle
+checks completed; significant pipeline-related hitches remain. The
+[morning report](artifacts/2026-09-23/android-morning-report.md) records the
+installed artifact and acceptance limits. No new public build was published.
+
 ## 21 September evening loop
 
 [All 63 open issues](artifacts/2026-09-21/open-issue-inventory.md) have a new

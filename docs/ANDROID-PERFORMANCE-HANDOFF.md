@@ -1,6 +1,30 @@
 # Android investigation handoff
 
-Refreshed September22,2026. Current public baseline: **Android 0.5.0/code135**. Apple 0.5.1-experimental.1/build60 is a separate diagnostic-overhead mitigation and does not update Android. See the [current issue inventory](artifacts/2026-09-21/open-issue-inventory.md), [evening evidence](artifacts/2026-09-21/evening-goal-loop.md) and [maintenance board](MAINTENANCE-BOARD.md). Older code63/code73/code83 assignments are historical.
+Refreshed September 23, 2026. Current public baseline: **Android 0.5.0/code135**. Apple 0.5.1-experimental.1/build60 is a separate diagnostic-overhead mitigation and does not update Android. See the [current issue inventory](artifacts/2026-09-21/open-issue-inventory.md), [evening evidence](artifacts/2026-09-21/evening-goal-loop.md) and [maintenance board](MAINTENANCE-BOARD.md). Older code63/code73/code83 assignments are historical.
+
+## September 23 overnight investigation
+
+The [current comparison](artifacts/2026-09-23/android-candidate-comparison.md) and
+[optimization ledger](artifacts/2026-09-23/android-optimization-loop.md) supersede
+the explicit-context proposal below. That experiment, larger front-cache size,
+borrowed metadata arrays and startup CPU affinity did not establish a reliable
+gameplay gain and have been removed. DriftDroid's source was refreshed against
+its previously audited commit; already-integrated work is not counted again.
+
+On the attached Pixel, guarded Vulkan FIFO improves displayed cadence in repeated
+stationary Cookie Land battles, with additional compositor buffering. This is
+not input-to-photon latency, driven-race acceptance or proof for another GPU.
+The inlined exact-input arithmetic candidate reduces sampled flag-capture work
+but has not improved total CPU timing. Outlining did not reduce native text size;
+the original-arithmetic helper calling-convention candidate also failed to establish
+a reliable whole-game benefit. All are excluded from the final private build 195.
+See the [arithmetic proof and tests](artifacts/2026-09-23/android-scalar-exactness.md).
+Private normal build 195 is installed with matching artifact hash. Original and
+Retro offline battles plus bounded lifecycle checks completed. A 133 ms displayed
+hitch coincides with a 123 ms persistent pipeline wait; stutter is not fixed.
+The [morning report](artifacts/2026-09-23/android-morning-report.md) records final
+source/artifact identity, measured benefit, buffering cost and remaining gates.
+No public release or issue closure follows from these private observations.
 
 ## First: sustained frame time
 
