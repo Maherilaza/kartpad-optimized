@@ -58,7 +58,8 @@ extern "C" void KartPadAndroidRecordPhase(unsigned id, long long wall, long long
     "present_lock", "present_acquire", "present_encode", "present_finish",
     "present_submit", "present_schedule_wait", "present_call", "present_total",
     "worker_seal_encode", "worker_prepare", "worker_overlap_encode",
-    "producer_wait_sealed", "producer_wait_ready"
+    "producer_wait_sealed", "producer_wait_ready",
+    "present_queue_age", "present_deadline_lateness"
   };
   static std::array<kartpad::android::PhaseMetrics, std::size(names)> windows{};
   static std::mutex mutex;
