@@ -90,7 +90,8 @@ inline constexpr std::uint32_t ANY_E = VE | OE | UE | ZE | XE;
 // VX/ZX, FR/FI and FPRF are unchanged. Skipping also avoids reading and writing
 // the host FPSR around every operation.
 inline constexpr bool TrackHostFpStatus(std::uint32_t fpscr_value) noexcept {
-#if defined(KARTPAD_ANDROID_COMBINED_FENV) && defined(KARTPAD_ANDROID_UNOBSERVED_FP_STATUS)
+#if (defined(KARTPAD_ANDROID_COMBINED_FENV) && defined(KARTPAD_ANDROID_UNOBSERVED_FP_STATUS)) || \
+    defined(KARTPAD_UNOBSERVED_FP_STATUS)
   return (fpscr_value & (fpscr::OE | fpscr::UE | fpscr::XE)) != 0;
 #else
   (void)fpscr_value;
