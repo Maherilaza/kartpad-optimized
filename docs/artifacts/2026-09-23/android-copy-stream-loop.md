@@ -321,3 +321,83 @@ a Luigi Circuit Grand Prix runs at 60 FPS with game-thread CPU 7.7 to 8.4 ms,
 in line with 200; course replay still prepares pipelines during loading; no
 fatal signal. This shows the hint is present and harmless here, not that it
 helps Samsung devices.
+
+## Second iteration (September 23, 15:50 to 18:40 JST)
+
+### Apple build 65: course replay and FP status skip ported
+
+The Apple runtime (vendor/runtimes/ios 059d193) now carries the same
+course-scoped pipeline replay as Android c59e33b and the unobserved FP status
+skip, enabled for Apple by KARTPAD_UNOBSERVED_FP_STATUS in the runtime
+CMakeLists. The FP differential test passes with the Apple define (3 million
+cases, 0 mismatches; the strict control still detects differences). It also
+includes the copy-texture pool release already in the iOS submodule. Build
+number 65 (PublicProducts.cmake), marketing version 0.5.1.
+
+Built incrementally in build/stabilization-ios-20260919 after restaging the
+verified runtime (stage-maintained-runtime.py --verify passes at 059d193); the
+build-64 tree is kept as an APFS clone in build/stabilization-ios-20260919-build64-clone,
+and the RC2 IPA remains in build/release-051-rc2-20260922. Unsigned executable
+SHA-256 546b64d5435d387c13bf9b63781f1a265e98ea086d31a3219c43c49ed5add79f.
+
+iPad Pro 12.9 (6th gen): 35 owner files (WBFS, NAND, Retro saves, Config.toml,
+ConsoleIdentity.txt, Preferences, SaveBackups, MiiBackups) backed up with
+afcclient and hashed; signed with the existing development identity, profile
+and entitlements; codesign --verify --deep --strict passes; installed in place
+(installed version 0.5.1 build 65); all 35 files read back byte-identical.
+Launch was refused twice because the iPad was locked, so there is no startup,
+replay or gameplay evidence for build 65 yet. Receipts are in
+work/ios65-install-20260923 (private).
+
+### Android: emulated TLS on the game thread (candidates 204 and 205)
+
+With the FP status skip in place, a 30-second cpu-clock profile of a 12-kart
+Grand Prix on build 203 (emulator, game thread only, symbolized) no longer
+shows the flag clear/capture helpers. Thread-local lookups lead instead:
+__emutls_get_address 6.1%, pthread_getspecific 2.9%, CurrentCpuContext 2.2%.
+Android API 28 lowers thread_local to emulated TLS, and the scalar FP helpers
+read the current CPU context once per guest operation; the indirect-dispatch
+memo is also thread_local.
+
+Change (Android runtime 88c922d, dbe7661): the game thread registers itself in
+RuntimeMain; it then reads its context and dispatch memos from plain slots that
+only it writes, identified by the tpidr_el0 thread pointer. Other threads keep
+the thread_local values, and the slot is released if its thread exits.
+tests/native/primary_cpu_context checks on the arm64 emulator that the slot
+always equals the thread_local value through nested scopes, a second thread and
+owner exit (passes).
+
+Build 204 is a dud: disassembly showed the compiler hoisted the
+__emutls_get_address call above the owner check and selected the result, so
+the cost stayed. Build 205 moves the fallback into cold out-of-line functions;
+its CurrentCpuContext is now mrs, load, compare, branch, load. A profile of 205
+confirms __emutls_get_address fell from 6.1% to 0.9% of game-thread samples.
+
+Matched timing (same route, idle host, KartPadCPU main_cpu_ms_per_present, median of
+the last six 5-second windows in the race):
+
+| Build | Runs | Mean |
+|---|---|---|
+| 203 | 8.12, 7.67, 8.37, 8.31 | 8.12 ms |
+| 205 | 7.90, 8.10, 8.45, 8.01 | 8.12 ms |
+
+No measurable change on this emulator: the removed samples did not turn into
+less wall time here, and the expected size (about 0.5 ms) is within run
+spread. The Pixel's TLS share (about 5% of cycles in the build-194 battle
+profile) may behave differently, but that is untested. 205 stays a separate
+candidate for a Pixel comparison; 203 remains the current candidate.
+
+| Build | Version | APK SHA-256 | Contents |
+|---|---|---|---|
+| 204 | 0.5.1-android-nightly.10 | 68eeea8900875bd20c05bd0dcfbd51567399edf3834fe68c54ecd9017e9000d2 | 203 plus context slot (ineffective: TLS call hoisted) |
+| 205 | 0.5.1-android-nightly.11 | 2491fb4e3cfa4d247df85a85be07a2b27051855161f51ac8eace91235616f23d | 203 plus working context slot and game-thread dispatch memos |
+
+Both pass the release package audit with the same signer. The Pixel was never
+visible to adb during this iteration.
+
+### New issue evidence
+
+#195 (S25 Ultra) now reports 60 FPS in time trials and about 41 FPS in VS,
+Original and Retro, after recent updates. This matches the emulator's 1.8x
+game-thread cost for 12 karts, and makes the S25 a multi-racer CPU or
+scheduling case; 203's Performance Hint is the candidate aimed at it.
