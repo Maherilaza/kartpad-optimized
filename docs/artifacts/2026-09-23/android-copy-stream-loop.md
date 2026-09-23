@@ -79,6 +79,7 @@ need build 196 on the Pixel.
 |---|---|---|---|
 | 196 | 0.5.1-android-nightly.2 | 62137ab8824e52d0601ae8d1d80cfb8899678f21c6ebba6660f0a2f39ee8e0de | pool release, streaming copies, pool/copy/split telemetry |
 | 197 | 0.5.1-android-nightly.3 | f01a59599462102e4f875df09a1362a0fedc13091b40ca400a5ce72ec6453328 | 196 plus live copy-cache count and size |
+| 198 | 0.5.1-android-nightly.4 | 59100c76b205e248db9f523f02a1b29415f65d1a1d9592b16919223e6bf3449d | 197 plus unobserved FP status (section below) |
 
 Both pass the release package audit and carry the same signing certificate as
 build 195 (SHA-256 61dfb514…3afaf), so an in-place install keeps app data. 197 is
@@ -101,3 +102,57 @@ release assets.
    2.51 to 2.58 GB and with the pool and live-copy telemetry.
 5. Owner check: vehicle/character select thumbnails on first entry after the
    update, and any one-frame missing objects during races.
+
+## CPU: unobserved floating-point status (candidate 198)
+
+Retained build 194 battle profile: flag clear 5.78%, capture 4.16%, finish
+1.97% of cycles; TLS lookups (emutls, pthread_getspecific, CurrentCpuContext)
+about 5.3% more. Earlier candidates 191 to 193 reduced capture samples without
+lowering total guest CPU, but all of them still read and wrote the host FPSR
+around every operation.
+
+What the guest can observe. The 29,637 translated functions contain six mffs
+reads in four functions and no mcrfs. 801A1D40 and 801A24A4 store FPSCR into an
+OS thread context. 801A278C and 801A2A14 (the only callers of 8012E5E8) enable
+the FPU and mask/restore FPSCR in OS FPU-exception handling. 800209E8, called
+from 80020A30, stores FPSCR to memory in what appears to be the crash-dump path.
+None is race logic. The Retro Rewind mod sources contain no mffs.
+
+What host flags affect. In the scalar, square-root and fused evaluators, host
+overflow/underflow/inexact flags only add the sticky OX/UX/XX bits (and FX).
+They can change a result or register write only if the guest sets OE/UE/XE.
+
+Change: with KARTPAD_ANDROID_UNOBSERVED_FP_STATUS (Android app only), those
+three evaluators skip the pre-clear and capture while the current FPSCR has
+OE, UE and XE clear. With any of them set, the unchanged exact path runs.
+
+Verification: tests/native/fp_status_differential/run.sh compiles the previous
+and new headers into one binary and compares them over random, special,
+subnormal, near-overflow and single-precision operands, all four rounding
+modes, NI, random enable bits and arbitrary pre-set host flags.
+
+| Run | Cases | Result |
+|---|---|---|
+| Enable bit set: exact comparison | 656,715 | 0 mismatches |
+| Enables clear: all bits except FX/OX/UX/XX | 2,343,285 | 0 mismatches |
+| Control: exact status required everywhere | 300,000 | 164,765 mismatches (detected) |
+
+Input FPSCR summaries are generated consistently (VX and FEX recomputed), as
+the architecture maintains them; inconsistent random summaries otherwise
+differ because the old path recomputes them on every recorded exception.
+
+Limits: this is host (Apple Silicon) arithmetic with host stand-ins for the two
+Android helpers; the Android build compiles the same header. The whole-game
+CPU effect is unmeasured until 198 is compared with 197 on the Pixel.
+
+Build confirmation: the translated code only sets NI (mtfsb1 29) and restores
+whole saved values (mtfsf 255), so OE/UE/XE stay clear during play. In build
+198's unstripped library, PpcFmulsStateInline now tests the guest FPSCR against
+0x68 (OE|UE|XE) and branches around both helper calls; build 197's calls the
+clear helper unconditionally. Build 198 passes the release package audit with
+the same signer.
+
+Remaining limits: the change is inert if the guest ever enables OE/UE/XE, and a
+whole-game gain is not established until the matched 197/198 comparison.
+The first-loop decision not to import DriftDroid's reduced arithmetic stands:
+results are unchanged here.

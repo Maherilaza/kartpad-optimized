@@ -87,6 +87,11 @@ if(KARTPAD_GAME_RUNTIME_SOURCE)
   # Preserve arithmetic/rounding semantics while merging the scalar exception
   # capture + clear at an opaque out-of-line ARM64 call boundary.
   add_compile_definitions(KARTPAD_ANDROID_COMBINED_FENV=1)
+  # Skip host overflow/underflow/inexact capture while the guest leaves the
+  # matching FPSCR enables clear. Results and register writes are unchanged;
+  # only sticky status bits read by OS context/exception paths differ. See
+  # docs/artifacts/2026-09-23/android-copy-stream-loop.md.
+  add_compile_definitions(KARTPAD_ANDROID_UNOBSERVED_FP_STATUS=1)
   add_subdirectory("${KARTPAD_GAME_RUNTIME_SOURCE}" game-runtime)
   # Local debug game builds hash pipeline configurations on the measured draw path.
   # Keep xxHash's debug assertions; optimize only this measured integer hot path.
