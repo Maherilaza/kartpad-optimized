@@ -88,6 +88,7 @@ need build 196 on the Pixel.
 | 198 | 0.5.1-android-nightly.4 | 59100c76b205e248db9f523f02a1b29415f65d1a1d9592b16919223e6bf3449d | 197 plus unobserved FP status (section below) |
 | 199 | 0.5.1-android-nightly.5 | 65700ffd045ca01217e989febc15c053b6b8acfea28c3afe388c568f093fd9c4 | 198 without the streaming-copy exemption (current candidate) |
 | 200 | 0.5.1-android-nightly.6 | 01912ece029a3f9ea94e738b63b9c8c54a59399fa164feddc23f9618a6f829b0 | 199 plus course-scoped pipeline replay (Android runtime c59e33b) |
+| 202 | 0.5.1-android-nightly.8 | c868696edef8e5f387045af385a07437e5c654e5156e500eae951d456061b176 | 200 plus FLAG_FORCE_NOT_FULLSCREEN cleared when hiding bars (#119/#202 candidate); current candidate |
 
 196 to 198 are superseded: their streaming exemption reproduces black thumbnails.
 
@@ -261,3 +262,27 @@ demand. Retro Rewind was not set up in the emulator, so its track paths are
 covered by the rule but untested. Loading may take slightly longer because the
 workers compile during it. Apple runtimes have different pipeline_cache.cpp and
 dvd.cpp files and do not have this change yet.
+
+## Issue audit: Android system bars (#119, #202)
+
+KartPad never requests a fullscreen SDL window on Android (startFullscreen is
+unset; only Apple sets SDL_WINDOW_FULLSCREEN). SDLActivity.onCreate therefore
+applies its non-fullscreen style: FLAG_FORCE_NOT_FULLSCREEN, visible system UI,
+and no SDL re-hiding. KartPadActivity hides the bars through the insets
+controller on focus, but never cleared that flag. On Android 15+ enforced
+edge-to-edge masks this; on older Android the status-bar area can stay reserved,
+matching the persistent top band on the AYN Thor (#202) and the visible bar in
+#119.
+
+Change in 202: hideGameSystemBars() also clears FLAG_FORCE_NOT_FULLSCREEN and is
+called from onResume as well as focus gain.
+
+A first attempt (201) additionally set FLAG_FULLSCREEN and re-assigned the
+window's cutout mode; on the API 36 emulator it made the status bar visible over
+the game, so it was discarded. 202 on the same emulator (with the corner cutout
+overlay) keeps a full 2400x1080 window with bars hidden, identical to 200, at
+title and after returning to the game through the launcher.
+
+Not verified: the intended improvement on Android 14 and earlier. Only Android
+15/16 system images are installed here, and both enforce edge-to-edge. #119 and
+#202 remain open pending a report from an affected device.

@@ -349,6 +349,7 @@ class KartPadActivity : SDLActivity() {
         refreshControllerHandoff()
         if (::motionSteering.isInitialized) motionSteering.start()
         if (BuildConfig.GAME_RUNTIME) KartPadRuntimeHealth.start(this, runtimeProfile)
+        hideGameSystemBars()
     }
 
     override fun onPause() {
@@ -397,6 +398,11 @@ class KartPadActivity : SDLActivity() {
 
     @Suppress("DEPRECATION")
     private fun hideGameSystemBars() {
+        // SDL creates the game window non-fullscreen on Android, which sets
+        // FLAG_FORCE_NOT_FULLSCREEN. Hiding the bars alone can leave their area
+        // reserved on devices without enforced edge-to-edge (Android 14 and
+        // earlier), showing a black band where the status bar was.
+        window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN)
         if (Build.VERSION.SDK_INT >= 30) {
             window.insetsController?.let { controller ->
                 controller.systemBarsBehavior = android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
