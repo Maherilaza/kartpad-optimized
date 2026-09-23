@@ -26,6 +26,15 @@ The [morning report](artifacts/2026-09-23/android-morning-report.md) records fin
 source/artifact identity, measured benefit, buffering cost and remaining gates.
 No public release or issue closure follows from these private observations.
 
+Later on September 23 the [copy-stream ledger](artifacts/2026-09-23/android-copy-stream-loop.md)
+added private candidates 196 to 205: copy-texture pool release, unobserved FP
+status skip, course-scoped pipeline replay, a system-bar fix, a game-thread
+Performance Hint and (205) a game-thread CPU-context slot that removes emulated
+TLS lookups. 203 is the current candidate; 205 removes the TLS samples but
+showed no timing change on the emulator and awaits a Pixel comparison. The
+replay and FP skip are also in Apple build 65, installed on the iPad with data
+verified but not yet launched. None of 196 to 205 has been measured on the Pixel.
+
 ## First: sustained frame time
 
 #198 already supplied three captures and agreed to a profiler handoff. Its Helio G85 report is 25–29 FPS after the pipeline queue reaches zero, with 94–97% main-thread occupancy and 2.3–2.6 ms measured presentation. This supports CPU sampling; it does not identify the expensive function. GX CPU work outside the presentation timer remains a possibility.

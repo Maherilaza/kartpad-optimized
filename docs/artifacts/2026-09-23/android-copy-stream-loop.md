@@ -395,6 +395,18 @@ candidate for a Pixel comparison; 203 remains the current candidate.
 Both pass the release package audit with the same signer. The Pixel was never
 visible to adb during this iteration.
 
+Lifecycle check of 205 on the emulator: one process (same PID throughout) ran
+the Luigi Circuit Grand Prix for more than three minutes at 60 FPS, was sent
+home and resumed, and kept rendering (race timer advanced from 3:06 to 3:18).
+Its renderer log shows course replay working ("Pipeline scene replay: scene
+c245398c16435baa, 213 recorded, 205 queued"). No fatal signal. The idle kart
+never finishes, so a course change within one session was not exercised.
+
+Retro Rewind: its track archives are .szs files under RetroRewind6/Tracks,
+CT/Tracks and BT/Tracks, which the scene rule matches by directory name.
+Whether the redirected DVD entry carries that path at runtime still needs a
+Retro race; Retro is not set up on the emulator.
+
 ### New issue evidence
 
 #195 (S25 Ultra) now reports 60 FPS in time trials and about 41 FPS in VS,
