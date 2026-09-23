@@ -15,6 +15,7 @@
 #include <atomic>
 #include <chrono>
 #include <cstdio>
+#include <cstdlib>
 #include <filesystem>
 #include <stdexcept>
 #include <thread>
@@ -272,6 +273,36 @@ int main(int argc, char** argv) {
       copyGateHeld.store(false);
       require(pixels == expected(16), "Consecutive real GXCopyTex retained missing shader draws");
       std::puts("Consecutive real GXCopyTex preserved all pixels with skip enabled and blocked cold shader");
+      aurora_shutdown();
+      return errors == 0 ? 0 : 4;
+    }
+    if (argc == 3 && std::string_view(argv[2]) == "--stream-copy") {
+      // A destination copied every frame for longer than the streaming threshold
+      // may skip a cold shader for one frame instead of stalling on compilation.
+      aurora_set_skip_unready_pipelines(true);
+      // Optional control: fewer warm frames than the threshold must still wait.
+      const char* warmFramesText = std::getenv("KARTPAD_PROBE_STREAM_WARM_FRAMES");
+      const unsigned warmFrames = warmFramesText ? static_cast<unsigned>(std::strtoul(warmFramesText, nullptr, 10)) : 130;
+      for (unsigned frame = 0; frame < warmFrames; ++frame) {
+        require(run(0, false, false, 1, false, false, false, 1) == expected(16), "Warm streaming copy pixels failed");
+      }
+      copyGateHeld.store(true);
+      const auto started = std::chrono::steady_clock::now();
+      const auto skipped = run(0, false, false, 1, false, false, false, 3);
+      const auto elapsed = std::chrono::steady_clock::now() - started;
+      const bool compilerStillGated = copyGateHeld.load();
+      copyGateHeld.store(false);
+      require(compilerStillGated, "Streaming copy waited for its cold shader");
+      require(skipped != expected(16), "Streaming copy unexpectedly had the gated shader ready");
+      require(elapsed < std::chrono::seconds(2), "Streaming copy frame stalled");
+      const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(10);
+      while (gfx::queued_pipeline_count() != 0) {
+        require(std::chrono::steady_clock::now() < deadline, "Released shader did not compile");
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+      }
+      require(run(0, false, false, 1, false, false, false, 3) == expected(16),
+              "Streaming copy did not recover once its shader was ready");
+      std::puts("Streaming real GXCopyTex skipped one cold-shader frame without stalling and then recovered");
       aurora_shutdown();
       return errors == 0 ? 0 : 4;
     }
