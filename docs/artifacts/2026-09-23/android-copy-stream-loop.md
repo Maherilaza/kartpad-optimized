@@ -416,6 +416,36 @@ scheduling case; 203's Performance Hint is the candidate aimed at it.
 
 ## Pixel 9 Pro XL overnight handoff (September 24, 2026 JST)
 
+### Plain-English outcome
+
+This session tested the existing 195, 203 and 205 Android candidates on the
+physical Pixel. It did not create a new performance fix. The useful result was
+choosing which candidate to keep and leaving a verified build of it installed.
+
+- **Supported on this Pixel:** in the comparable Cookie Land battle, 203 used
+  about 2.05–2.14 ms less game-thread CPU per presented frame than the two 195
+  baselines (12.652 ms versus 14.70–14.79 ms). This is a measured reduction in
+  CPU work for this scene, not proof of a general FPS increase.
+- **Rejected:** 205's extra game-thread context change did not improve on 203
+  in the clean captures (12.691–12.711 ms versus 12.652 ms). The 203 source
+  was retained.
+- **Unproven:** a clean 203 run had fewer intervals over 25 ms, but still had
+  two over 40 ms; the 195 repeat had none. Retro Rewind's replay hook logged
+  zero pipelines recorded and zero queued on the tested track. Neither
+  overall smoothness nor a Retro replay benefit was established.
+- **Working on this Pixel:** Home/resume kept the same process and returned to
+  an active battle; pause/continue resumed rendering. A 30-second CPU profile
+  identified current costs but was not a timing comparison or optimization.
+- **Handoff state:** version code 208 is a normal release rebuilt from the
+  retained 203 source. Its installed hash was checked after an in-place
+  install. The phone was left at KartPad's launcher with both games Ready to
+  play and no game running. No phone data was cleared or public release made.
+
+Next time, the S25 Ultra reporter needs to try the same 12-kart VS/Retro case
+that was reported near 41 FPS. The Pixel result cannot establish whether that
+Samsung issue is fixed. A Retro replay claim also needs a run whose diagnostic
+log shows pipelines actually recorded and queued on a repeat visit.
+
 The attached Pixel (adb serial `47181FDAS005KL`) began on build 195. Its
 installed APK was pulled and hashed before changing it; the SHA-256 was
 `3c929e6a6de15e6455754bfc5dcb52d13e8d3ac70ffe21e0dcb627b84744ea32`.
