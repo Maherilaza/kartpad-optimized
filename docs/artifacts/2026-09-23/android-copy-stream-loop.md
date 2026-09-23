@@ -413,3 +413,96 @@ Retro race; Retro is not set up on the emulator.
 Original and Retro, after recent updates. This matches the emulator's 1.8x
 game-thread cost for 12 karts, and makes the S25 a multi-racer CPU or
 scheduling case; 203's Performance Hint is the candidate aimed at it.
+
+## Pixel 9 Pro XL overnight handoff (September 24, 2026 JST)
+
+The attached Pixel (adb serial `47181FDAS005KL`) began on build 195. Its
+installed APK was pulled and hashed before changing it; the SHA-256 was
+`3c929e6a6de15e6455754bfc5dcb52d13e8d3ac70ffe21e0dcb627b84744ea32`.
+Builds 203 and 205 were installed in place with `adb install -r`, and each
+installed version and pulled APK hash matched its archived candidate. The
+launcher continued to show Mario Kart Wii and Retro Rewind as Ready to play,
+and the existing Kah'ris licence appeared in the game. No app data was cleared.
+
+The comparison used an idle Mario in Balloon Battle on GCN Cookie Land, with
+the same vehicle, team and drift setting. Before and after screenshots show
+active gameplay for each listed capture. Compositor intervals cover roughly
+120 seconds per run; game CPU is the median of app reports within that window.
+
+| Build and run | Presented FPS | Intervals >25 ms | >40 ms | Max interval | Game CPU/present | Thermal context |
+|---|---:|---:|---:|---:|---:|---|
+| 195 warm baseline | 59.07 | 109 | 2 | 133 ms | 14.70 ms | Prior baseline |
+| 195 repeat baseline | 59.42 | 74 | 0 | 33 ms | 14.79 ms | Prior baseline |
+| 203 repeat 1 | 58.22 | 211 | 5 | 49.98 ms | 13.834 ms | CPU cooling active; status rose 1→2 |
+| 203 repeat 2 | 51.07 | 1048 | 19 | 50.14 ms | 17.870 ms | Status 2, stronger cooling; exclude from code comparison |
+| 203 after cooling | 59.70 | 39 | 2 | 49.98 ms | 12.652 ms | Status 1, CPU/GPU cooling 0 |
+| 205 warm | 59.53 | 61 | 0 | 33.75 ms | 12.787 ms | CPU cooling active; status rose 1→2 |
+| 205 after cooling | 59.54 | 57 | 1 | 66.62 ms | 12.711 ms | Status 1, CPU/GPU cooling 0 |
+| 205 after cooling, repeat | — | — | — | — | 12.691 ms | Status 1, CPU/GPU cooling 0; compositor layer argument was incomplete, so those timestamps are invalid |
+
+The clean 203 capture reduced median game CPU by 2.05–2.14 ms versus the two
+195 baseline runs and had fewer intervals above 25 ms. It still had two
+intervals above 40 ms, versus zero on the 195 repeat. The clean 205 CPU
+captures did not beat 203: they were 0.039–0.059 ms higher, below the 0.09 ms
+spread of the 195 baseline pair, and the complete 205 run had more intervals
+above 25 ms than the clean 203 run. Stationary battle AI and item effects vary;
+these runs do not prove a precise causal speedup or a Samsung fix. The 203
+runtime was therefore selected for retention. The root checkout now points to
+Android runtime `a193cf432a06bc019e5db2b0d68f5a4a953745d4` (the 203 source),
+committed in `8640064`. A release APK was built as version code 206,
+`0.5.1-android-nightly.12`, because Android would not install 203 over 205.
+The APK passed `audit-android-package.sh`, was installed with `adb install -r`,
+and the installed APK was pulled back and matched SHA-256
+`68f28bfe3df61d1b36bacc0445821bce721425490ea1bb2460b51ab355b679ab`.
+Both games remained Ready to play, and the existing Kah'ris licence loaded.
+
+On build 206, Retro Rewind's N64 Wario Stadium loaded and ran twice. The
+second visit used the in-race Restart action; screenshots show active racing
+on both visits. The in-app diagnostic export for that session contains one
+`Pipeline scene replay` entry: scene `78b6ec656e1284da`, **0 recorded,
+0 queued**. The log contains three `New race started` events, but no later
+replay entry with queued pipelines. This establishes that the replay hook ran
+in a Retro session; it does not establish that it warmed any pipelines or
+reduced repeat-visit stalls on that course. The private exported log and
+screenshots remain under `work/android-optimization-20260923/`.
+
+The retained build's lifecycle check used an active Cookie Land Balloon
+Battle. Before Home, the app PID was 8526. Home showed the Android launcher;
+opening KartPad and choosing Play Game returned to the same battle with its
+timer advanced, and PID remained 8526. The in-game Pause -> Continue path
+also returned to active rendering. The battle was then quit through the game
+menu; the app was closed and reopened to the KartPad launcher, which showed
+both games Ready to play and no game running. This checks process continuity
+and rendering for this Pixel session, not save persistence through a kill.
+
+Remaining gates: a repeat Retro course with recorded/queued replay pipelines,
+and reporter gameplay on the S25 Ultra (especially 12-kart VS/Retro) to see
+whether the Pixel CPU gain helps the reported 41 FPS case. The Pixel evidence
+does not validate that Samsung result.
+
+The optional CPU profile used a private profileable release variant of the
+same retained 203 source: version code 207, name
+`0.5.1-android-nightly.13-profile`, SHA-256
+`d381248672b1bed0e942c74a7208c9c76995ab9ce1b0aa56e983e8b57e3ac439`.
+The profiler audit confirmed a non-debuggable, shell-profileable APK and a
+matching unstripped `libmain.so`. A screenshot confirmed active Cookie Land
+gameplay before the successful 30-second `simpleperf record --app` capture.
+It recorded 21,622 CPU-cycle samples with none lost; the symbolized report is
+private under `work/android-optimization-20260923/profile207-cookie30-report.txt`.
+Of the samples attributed to `SDLThread`, the largest named self costs were
+`FinishScalarFp` (3.96%), `GX__CallDisplayList_80172f64` (3.76%),
+`__emutls_get_address` (3.12%), `PpcFmulsStateInline` (3.01%), and
+`aurora::gx::fifo::process` (2.28%). These are sampling shares, not frame-time
+or candidate comparison measurements. The first 30-second attempt wrote to
+shared Downloads and produced an empty file despite reporting samples; the
+successful capture wrote under `/data/local/tmp` and was pulled from there.
+
+**Final phone state:** the profileable variant was replaced in place with a
+normal, non-debuggable, non-profileable release built from the retained 203
+source: version code 208, name `0.5.1-android-nightly.14`, SHA-256
+`a8b0d1867fe654d373b6044687b3b1e9593160163881c9be13aaa6f28e167579`.
+The package audit passed, the manifest has `profileable android:shell=false`,
+the installed version matched, and a pulled installed APK matched that hash.
+The Pixel was left at the KartPad launcher with both Mario Kart Wii and Retro
+Rewind showing Ready to play and no game running. No uninstall or data clear
+was performed.
