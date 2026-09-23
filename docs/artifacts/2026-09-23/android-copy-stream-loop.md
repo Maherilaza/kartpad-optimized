@@ -89,6 +89,7 @@ need build 196 on the Pixel.
 | 199 | 0.5.1-android-nightly.5 | 65700ffd045ca01217e989febc15c053b6b8acfea28c3afe388c568f093fd9c4 | 198 without the streaming-copy exemption (current candidate) |
 | 200 | 0.5.1-android-nightly.6 | 01912ece029a3f9ea94e738b63b9c8c54a59399fa164feddc23f9618a6f829b0 | 199 plus course-scoped pipeline replay (Android runtime c59e33b) |
 | 202 | 0.5.1-android-nightly.8 | c868696edef8e5f387045af385a07437e5c654e5156e500eae951d456061b176 | 200 plus FLAG_FORCE_NOT_FULLSCREEN cleared when hiding bars (#119/#202 candidate); current candidate |
+| 203 | 0.5.1-android-nightly.9 | ec7a4bd7a84ea7f9bedb507cac292c02436470c115f99484880793e49e557101 | 202 plus game-thread Performance Hint session; current candidate |
 
 196 to 198 are superseded: their streaming exemption reproduces black thumbnails.
 
@@ -286,3 +287,37 @@ title and after returning to the game through the launcher.
 Not verified: the intended improvement on Android 14 and earlier. Only Android
 15/16 system images are installed here, and both enforce edge-to-edge. #119 and
 #202 remain open pending a report from an affected device.
+
+## Item 2: time trial versus multi-racer CPU (emulator)
+
+Same emulator, build family 200/202 (identical native code), Luigi Circuit,
+player idle at the start line, telemetry KartPadCPU main_cpu_ms_per_present over
+5-second windows once racing:
+
+| Mode | Karts | Game-thread CPU per frame |
+|---|---|---|
+| Time Trial against the staff ghost | 2 | 4.2 to 4.4 ms (7 windows) |
+| Grand Prix 50cc | 12 | 7.6 to 8.1 ms steady (8 windows) |
+
+Eleven CPU racers raise game-thread work about 1.8x. The retained Pixel 11-CPU
+battle measurements were about 14.7 ms per frame at 2x, just inside the 16.7 ms
+budget. A device that runs this thread even modestly slower than the Pixel
+crosses the budget in VS while time trials stay far below it, which matches the
+S25 Ultra report (60 FPS in time trials, about 41 in VS, Original and Retro) and
+the S25+ battle report. The S25 Ultra's large cores are faster than the Pixel's,
+so the more likely explanation is that the thread is not running on, or not
+clocked like, a large core. KartPad does not use the Android Performance Hint
+API, sustained performance mode or thread placement; the DriftDroid audit found
+DriftDroid pins its guest and frame threads to faster cores.
+
+Candidate 203 adds an Android Performance Hint session (API 33+, loaded with
+dlsym) for the game thread: target is the VI retrace interval, and each paced
+frame reports the thread's CPU time since the previous frame. This affects only
+scheduling and clocks. Whether it helps Samsung devices requires a Samsung
+report; the Pixel and emulator can only show that it is inert or harmless.
+
+Emulator check of 203: the hint session reports active (target 16,666,000 ns);
+a Luigi Circuit Grand Prix runs at 60 FPS with game-thread CPU 7.7 to 8.4 ms,
+in line with 200; course replay still prepares pipelines during loading; no
+fatal signal. This shows the hint is present and harmless here, not that it
+helps Samsung devices.
