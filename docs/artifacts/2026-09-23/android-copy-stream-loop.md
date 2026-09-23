@@ -87,6 +87,7 @@ need build 196 on the Pixel.
 | 197 | 0.5.1-android-nightly.3 | f01a59599462102e4f875df09a1362a0fedc13091b40ca400a5ce72ec6453328 | 196 plus live copy-cache count and size |
 | 198 | 0.5.1-android-nightly.4 | 59100c76b205e248db9f523f02a1b29415f65d1a1d9592b16919223e6bf3449d | 197 plus unobserved FP status (section below) |
 | 199 | 0.5.1-android-nightly.5 | 65700ffd045ca01217e989febc15c053b6b8acfea28c3afe388c568f093fd9c4 | 198 without the streaming-copy exemption (current candidate) |
+| 200 | 0.5.1-android-nightly.6 | 01912ece029a3f9ea94e738b63b9c8c54a59399fa164feddc23f9618a6f829b0 | 199 plus course-scoped pipeline replay (Android runtime c59e33b) |
 
 196 to 198 are superseded: their streaming exemption reproduces black thumbnails.
 
@@ -217,3 +218,46 @@ and ran a Luigi Circuit race at 60 FPS in the emulator with correct HUD and
 minimap and no fatal signal in the log. This is emulator correctness evidence,
 not Pixel performance; 199 passes the release package audit with the same
 signer and is the only candidate intended for the Pixel.
+
+## Course-scoped pipeline replay (candidate 200)
+
+Because every texture-copy pass must wait for its pipelines, the remaining lever
+for item 1 is compiling them before they are needed. The global 128-recipe
+prewarm covers boot and menus; race pipelines were compiled on demand.
+
+Design (Android runtime c59e33b):
+
+- A game read of a .szs archive in a directory named Course (vanilla
+  Race/Course) or Tracks (Retro Rewind Tracks, CT/Tracks, BT/Tracks) sets the
+  renderer's current scene to a stable FNV-1a hash of that path.
+- Each pipeline used while a scene is active is linked to it once per scene visit
+  in a new pipeline_scene table (scene, type, hash, frames since scene start). It
+  is created with CREATE TABLE IF NOT EXISTS, so existing recipes are kept; a
+  future schema reset drops it with the recipe table.
+- When a scene is set, the writer thread (which owns the database) queues up to
+  384 linked recipes, in first-use order, that are neither ready nor pending, on
+  the priority workers. The session log records "Pipeline scene replay: scene X,
+  N recorded, M queued".
+- Replay only compiles pipelines early through the existing preload path. It
+  never skips or alters a draw, so it cannot reproduce the thumbnail defect.
+
+Emulator evidence (same fixed route, Luigi Circuit, fresh process each time, warm
+Dawn and pipeline disk caches):
+
+| Run | Replay log | Pipelines created during loading | Created after race start | Pipeline waits logged |
+|---|---|---|---|---|
+| 199 | none | 209 to about 350 | about 60 (350 to 411) | 22 and 11 ms |
+| 200, first visit | 0 recorded (two course archives) | 209 to 344 | about 60 | 18 ms |
+| 200, second visit | 194 recorded / 188 queued; 13 / 5 | 209 to 405 | 5 | none |
+
+The race rendered correctly with HUD and minimap. The emulator driver compiles
+cached pipelines far faster than the Pixel's Mali driver (the retained Pixel
+logs showed 97 to 133 ms waits with a warm cache), so this shows the mechanism
+moves race pipeline creation into the loading screen; it does not measure the
+Pixel stutter reduction.
+
+Limits: the first visit to each course after installing still compiles on
+demand. Retro Rewind was not set up in the emulator, so its track paths are
+covered by the rule but untested. Loading may take slightly longer because the
+workers compile during it. Apple runtimes have different pipeline_cache.cpp and
+dvd.cpp files and do not have this change yet.
