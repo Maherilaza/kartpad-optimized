@@ -6,6 +6,12 @@ Status: in progress. Starts from private build 195 and the
 The attached Pixel was not visible to adb when this loop began, so the first
 cycles use retained logs, source review and the ROM-free Mac renderer probe.
 
+**Correction (emulator evidence, below):** the streaming-copy exemption built
+into 196 to 198 reproduces black vehicle thumbnails and is withdrawn in 199.
+Copy textures are also not the source of the 2.5 GB GPU memory. The sections
+that follow record the original reasoning; the emulator section supersedes
+their conclusions.
+
 ## Findings from retained build 195 evidence
 
 1. **Every gameplay pipeline stall comes from a texture-copy pass.** Ordinary
@@ -80,6 +86,9 @@ need build 196 on the Pixel.
 | 196 | 0.5.1-android-nightly.2 | 62137ab8824e52d0601ae8d1d80cfb8899678f21c6ebba6660f0a2f39ee8e0de | pool release, streaming copies, pool/copy/split telemetry |
 | 197 | 0.5.1-android-nightly.3 | f01a59599462102e4f875df09a1362a0fedc13091b40ca400a5ce72ec6453328 | 196 plus live copy-cache count and size |
 | 198 | 0.5.1-android-nightly.4 | 59100c76b205e248db9f523f02a1b29415f65d1a1d9592b16919223e6bf3449d | 197 plus unobserved FP status (section below) |
+| 199 | 0.5.1-android-nightly.5 | 65700ffd045ca01217e989febc15c053b6b8acfea28c3afe388c568f093fd9c4 | 198 without the streaming-copy exemption (current candidate) |
+
+196 to 198 are superseded: their streaming exemption reproduces black thumbnails.
 
 Both pass the release package audit and carry the same signing certificate as
 build 195 (SHA-256 61dfb514…3afaf), so an in-place install keeps app data. 197 is
@@ -156,3 +165,55 @@ Remaining limits: the change is inert if the guest ever enables OE/UE/XE, and a
 whole-game gain is not established until the matched 197/198 comparison.
 The first-loop decision not to import DriftDroid's reduced arithmetic stands:
 results are unchanged here.
+
+## Emulator validation (supersedes the streaming conclusions)
+
+Environment: development AVD KartPad_API_36_ARM64 (host GPU, gfxstream), not
+release evidence and not the owner's device. Its previous private build (code
+99, same signer) had no game data. Build 198 was installed in place; the local
+extracted game files were staged as in the earlier emulator procedure; config
+offline, 1x, FPS overlay. A new licence was created in this disposable emulator.
+
+Findings on 198:
+
+- **Black thumbnail reproduced.** On first entry to Mario's vehicle select, the
+  Classic Dragster thumbnail was a black silhouette and stayed black; re-entry
+  showed it in colour. After moving only the Dawn and pipeline caches aside
+  (the bundled seed cache and saves retained), a second cold first entry
+  reproduced the same black thumbnail.
+- **Why:** menus make about 12 texture copies per frame and races about 10, all
+  to recurring destinations. Thumbnail bakes therefore passed the 120-frame
+  threshold and were allowed to skip cold shaders, and the incomplete result was
+  retained. A long run of copies to one destination does not prove the same
+  content is redrawn. The streaming exemption is withdrawn in all four runtimes;
+  every copy waits for its shaders again, as in 195.
+- **Copy memory is small.** In a Luigi Circuit race: pool 57 entries (5.4 MiB),
+  51 live copies (3.9 MiB) at 1x. Even scaled to 2x this is tens of MB, not the
+  2.5 GB measured on the Pixel. The idle-spare release is kept (correct, cheap)
+  but is not a meaningful memory fix. The large allocation is elsewhere (Dawn or
+  driver heaps, static textures or pipeline objects) and still needs device
+  attribution.
+- **Race-start stalls confirmed:** persistent pipeline waits of 392, 210, 67,
+  218, 121, 45, 178 and 83 ms while the race loaded and started from a cold
+  Dawn cache. Emulator timing is distorted (a build was compiling on the host),
+  so only the pattern, not the durations, is evidence.
+- No staging splits occurred in menus or the race (staging_splits=0).
+
+Probe change: the --stream-copy case is replaced by --long-copy-run, which
+requires a 130-frame run of copies to one destination to still wait for a cold
+shader and keep every pixel. With the exemption removed, copy-only,
+capacity-copy, long-copy-run and the full suite pass.
+
+Next direction for item 1: since every copy pass must wait, stalls can only be
+removed by having shaders ready before they are needed — for example preparing
+the recipes a course used previously during its loading screen. The 256-recipe
+global prewarm was already rejected; a scene-targeted prewarm has not been tried.
+
+Matched control on 199: the same cold procedure (Dawn and pipeline caches moved
+aside, seed cache and saves kept, identical input timing) shows all three
+vehicle thumbnails in colour on first entry, at both 10 and 15 seconds. 198
+showed the black Classic Dragster in both of its cold runs. 199 then started
+and ran a Luigi Circuit race at 60 FPS in the emulator with correct HUD and
+minimap and no fatal signal in the log. This is emulator correctness evidence,
+not Pixel performance; 199 passes the release package audit with the same
+signer and is the only candidate intended for the Pixel.
