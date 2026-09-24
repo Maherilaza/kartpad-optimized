@@ -5,7 +5,7 @@ not a release note or a claim of device acceptance across platforms.
 
 | Platform | Current private build | Evidence | Remaining gate |
 |---|---|---|---|
-| Android | Pixel retained build: `0.5.1-android-nightly.14`, code 208. Latest emulator candidate: `0.5.1-framerate.1`, code 214. | Code 208's archived APK and the copy pulled after its in-place Pixel 9 Pro XL install have the same SHA-256, `a8b0d1867fe654d373b6044687b3b1e9593160163881c9be13aaa6f28e167579`. Candidate 203, whose source was rebuilt as 208, ran an active stationary 12-kart Cookie Land battle on that Pixel: 12.652 ms game-thread CPU per presented frame versus 14.70–14.79 ms for build 195 in comparable runs. Codes 209–211 passed release APK audits and each reached an active Luigi Circuit race on the API 36 ARM64 emulator. Code 212 passed a fatal-exit check; code 213 rejected a modified REL. Code 214 booted Original on the emulator and Android accepted a 60 Hz surface request. | Codes 209–214 have no physical-device comparison or smoothness measurement. The Pixel still has code 208; its package/readback check does not constitute a new measured gameplay run. Retro pipeline replay logged zero recorded and zero queued on the tested physical course. Driven races, Samsung/Adreno devices and online play remain open. |
+| Android | Pixel retained build: `0.5.1-android-nightly.14`, code 208. Latest emulator-booted candidate: `0.5.1-framerate.1`, code 214. Latest compiled private APK: `0.5.1-gx-xf.1`, code 215. | Code 208's archived APK and the copy pulled after its in-place Pixel 9 Pro XL install have the same SHA-256, `a8b0d1867fe654d373b6044687b3b1e9593160163881c9be13aaa6f28e167579`. Candidate 203, whose source was rebuilt as 208, ran an active stationary 12-kart Cookie Land battle on that Pixel: 12.652 ms game-thread CPU per presented frame versus 14.70–14.79 ms for build 195 in comparable runs. Codes 209–211 passed release APK audits and each reached an active Luigi Circuit race on the API 36 ARM64 emulator. Code 212 passed a fatal-exit check; code 213 rejected a modified REL. Code 214 booted Original on the emulator and Android accepted a 60 Hz surface request. Code 215 passed the private release APK audit and XF burst host test; it has not been booted. | Codes 209–215 have no physical-device comparison or smoothness measurement. The Pixel still has code 208; its package/readback check does not constitute a new measured gameplay run. Retro pipeline replay logged zero recorded and zero queued on the tested physical course. Driven races, Samsung/Adreno devices and online play remain open. |
 | iPadOS | Installed: `0.5.1` build 66, signed development app. Latest compiled private app: unsigned build 70; no IPA packaged. | Build 66 passed the physical iOS app audit and strict signing check. It installed in place over build 65 on the iPad Pro, reports build 66, and launched as PID 999. The game image and 34 state files were backed up and read back byte-identical. Builds 67–70 compiled from newer iOS runtimes and passed full-game app audits; each executable and matching dSYM share a UUID. Build 70 includes the REL validator, #196 diagnostic, and an opt-in native-rate FIFO presentation experiment. | Build 66 has no visual KartPad launcher or game-boot check: another app was foreground on the iPad during mirror inspection. Builds 67–70 have not been signed or installed. Original, Retro, WFC, replay and performance still need physical gameplay checks. |
 
 The source branches and submodules have moved beyond the physical-device
@@ -260,6 +260,25 @@ APK, build/audit logs, transcript and screenshot are under
 `work/android-frame-rate-20260925/`. A matched 120 Hz Samsung race and Pixel
 battle comparison remain necessary before retaining this as a performance
 improvement.
+
+Android code 215 (`0.5.1-gx-xf.1`) is a private candidate for a narrower GX
+batching step. Within one direct FIFO burst, consecutive complete XF register
+loads now enter Aurora in one display-list call. CP/BP writes, draws, truncated
+packets, recording and later HLE calls keep their existing boundaries. The
+same source change is committed in all four maintained runtime copies:
+Android `b435655`, iOS `e13474a`, macOS `0814a6b`, tvOS `3c9e969`.
+`scripts/test-gx-xf-burst.py` compiles the production packet walker with a
+small ordered-packet harness and passes; shared-runtime parity also passes.
+The code 215 private release APK built from the Android pin and passed the
+package audit. Its SHA-256 is
+`bb3d12691b00dc65bca40e57af40c3fb700cff12158478fc9acfa484eb5d7706`;
+its signing certificate SHA-256 matches code 214,
+`61dfb51411efe50b2e7fb8d280fcfbba766792c275d1024013940760caa3afaf`.
+The APK and build/audit logs are private under `work/`. No device was attached
+for this build, and code 215 has not been installed, booted, played or measured.
+In particular, the host test proves packet ordering in the direct walker, not
+a gameplay speedup; HLE's per-word FIFO path and cross-call batching are still
+unchanged. Apple build 70 predates this source change.
 
 Evidence: [Pixel comparison](../2026-09-23/android-copy-stream-loop.md),
 [Android build 195 baseline](../2026-09-23/android-morning-report.md), and
