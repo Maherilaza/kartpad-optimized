@@ -6,7 +6,7 @@ not a release note or a claim of device acceptance across platforms.
 | Platform | Current private build | Evidence | Remaining gate |
 |---|---|---|---|
 | Android | Pixel retained build: `0.5.1-android-nightly.14`, code 208. Latest emulator candidate: `0.5.1-yaz0.1`, code 210. | Code 208's archived APK and the copy pulled after its in-place Pixel 9 Pro XL install have the same SHA-256, `a8b0d1867fe654d373b6044687b3b1e9593160163881c9be13aaa6f28e167579`. Candidate 203, whose source was rebuilt as 208, ran an active stationary 12-kart Cookie Land battle on that Pixel: 12.652 ms game-thread CPU per presented frame versus 14.70–14.79 ms for build 195 in comparable runs. Code 209 passed the release APK audit and reached an active Luigi Circuit time trial twice on the API 36 ARM64 emulator. Code 210 passed its release APK audit, installed over 209 without clearing emulator data, and reached an active Luigi Circuit time trial. | Codes 209–210 have no physical-device comparison or smoothness measurement. The Pixel still has code 208; its package/readback check does not constitute a new measured gameplay run. Retro pipeline replay logged zero recorded and zero queued on the tested physical course. Driven races, Samsung/Adreno devices and online play remain open. |
-| iPadOS | `0.5.1` build 66, signed development app; no IPA packaged | Built from the current iOS runtime with guarded DVD DMA copies and GX scene-generation repair. The physical iOS app audit and strict signing check passed. It installed in place over build 65 on the iPad Pro, reports build 66, and launched as PID 999. The game image and 34 state files were backed up and read back byte-identical. The earlier build 65 reached the KartPad launcher with both games Ready to play. | Build 66 has no visual KartPad launcher or game-boot check: another app was foreground on the iPad during the mirror inspection, and the build 66 process transcript only shows startup and health samples. Original, Retro, WFC, replay and performance still need physical gameplay checks. |
+| iPadOS | Installed: `0.5.1` build 66, signed development app. Latest private source candidate: unsigned build 67; no IPA packaged. | Build 66 passed the physical iOS app audit and strict signing check. It installed in place over build 65 on the iPad Pro, reports build 66, and launched as PID 999. The game image and 34 state files were backed up and read back byte-identical. Build 67 compiled from the newer iOS runtime and passed the full-game app audit; its executable and dSYM UUIDs match. | Build 66 has no visual KartPad launcher or game-boot check: another app was foreground on the iPad during mirror inspection. Build 67 has not been signed or installed. Original, Retro, WFC, replay and performance still need physical gameplay checks. |
 
 The source branches and submodules have moved beyond the physical-device
 artifacts. Guarded DVD DMA bulk copies are in all four runtime submodules and
@@ -24,8 +24,17 @@ tvOS. The six changed files match across the Apple runtimes; the three Aurora
 implementation files passed a macOS host syntax check, and the alarm source
 passed a separate syntax check. Android's surface-loss copy path was examined
 but not ported because Apple's overlay draw has a different return contract.
-No Apple app has been built from `2a9a548`, so build 66 does not validate these
-new ports on device.
+Build 67 was compiled from the later iOS runtime revision `b07c4f3`, which
+includes these ports and the guarded Yaz0 decoder. Its unsigned app is under
+`build/ios67-20260924/xcode/Release-iphoneos/KartPad.app`; the maintained-source
+stage verified against that runtime revision. The full-game iOS app audit
+passed, `CFBundleVersion` is 67, and the executable SHA-256 is
+`f839c613e1ca247cc7aab0160c7aa494c41cc1091969e1d5b7c6149a6f76805a`.
+The executable and dSYM share Mach-O UUID
+`0C713647-680E-3AB4-9A05-832C06609AD1`. The build log is private at
+`work/ios67-build-20260924.log`. Build 66 predates these changes; build 67 has
+not been installed or played, so neither validates the new decoder or ports on
+an iPad.
 
 Code 209 was built from Android runtime `f1677be`, with the private translated
 shards, as `work/android-replaygen-20260924/kartpad-code209-replaygen.apk`.
