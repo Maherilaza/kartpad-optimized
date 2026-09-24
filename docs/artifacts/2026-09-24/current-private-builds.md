@@ -7,7 +7,7 @@ not a release note or a claim of device acceptance across platforms.
 |---|---|---|---|
 | Android | Pixel retained build: `0.5.1-android-nightly.14`, code 208. Latest private APK and emulator-booted candidate: `0.5.1-gx-nodraw.2`, code 218. | Code 208's archived APK and the copy pulled after its in-place Pixel 9 Pro XL install have the same SHA-256, `a8b0d1867fe654d373b6044687b3b1e9593160163881c9be13aaa6f28e167579`. Candidate 203, whose source was rebuilt as 208, ran an active stationary 12-kart Cookie Land battle on that Pixel: 12.652 ms game-thread CPU per presented frame versus 14.70–14.79 ms for build 195 in comparable runs. Codes 209–211 passed release APK audits and each reached an active Luigi Circuit race on the API 36 ARM64 emulator. Code 212 passed a fatal-exit check; code 213 rejected a modified REL. Code 214 booted Original on the emulator and Android accepted a 60 Hz surface request. Code 215 passed its private release APK audit and XF burst host test but was not booted. Code 216 reached Original's animated title. Code 218 passed its release APK audit and reached the title and animated course background on the emulator after an in-place install over code 217; its retained config and game files kept the same hashes. | Codes 209–218 have no physical-device comparison or smoothness measurement. The Pixel still has code 208; its package/readback check does not constitute a new measured gameplay run. Codes 216–218 reached no race. Retro pipeline replay logged zero recorded and zero queued on the tested physical course. Driven races, Samsung/Adreno devices and online play remain open. |
 | iPadOS | Installed: `0.5.1` build 70, signed development app. Latest candidate: unsigned build 72; no IPA packaged. | Build 66 passed the physical iOS app audit and strict signing check and installed in place over build 65. Builds 67–72 compiled from newer iOS runtimes and passed full-game app audits; each executable and matching dSYM share a UUID. Build 70 includes the REL validator, #196 diagnostic, and an opt-in native-rate FIFO presentation experiment. It was signed with the same team and installed in place over build 66 on the paired iPad Pro. The 2.6 GB game image and 34 other app-data files were backed up before and read back byte-identical after installation. Build 70 launched on the physical iPad: the native launcher showed Original and Retro as “Ready to play,” its process transcript identified build 70, and the config and console identity matched their post-install copies. Build 71 includes the GX display-list change compiled from the regenerated graph; build 72 adds the bounded register-only display-list classification cache. | Neither Original nor Retro was started in build 70. Builds 71–72 have not been installed or launched. WFC, replay, and performance still need physical gameplay checks. |
-| macOS | Latest private candidate: `0.4.21` build 44, ad hoc signed dual app. | Runtime `10360ad` includes course-scoped pipeline replay. The translated arm64 dual runtime linked, and the package audit passed with explicit expected version/build values. In an isolated local data directory, the app reached Original's animated opening; its overlay and later present telemetry showed roughly 60 FPS. | No menu, race, course revisit, or matched performance comparison has been run for this candidate. Retro and replay remain unverified. |
+| macOS | Latest private candidate: `0.4.21` build 44, ad hoc signed dual app. | Runtime `10360ad` includes course-scoped pipeline replay. The translated arm64 dual runtime linked, and the package audit passed with explicit expected version/build values. Using isolated portable data, the app reached an active Original 100cc Luigi Circuit VS race with 12 racers. Its first load logged zero recorded/queued pipelines; the cache subsequently contained 266 links for that course. | No driven lap, completed race, same-course replay verification, or matched performance comparison. Retro remains unverified. |
 | tvOS | Latest private candidate: unsigned `0.5.1` build 62 dual app; no IPA packaged. | Runtime `686a573` includes course-scoped replay. The physical tvOS SDK build and full-game app audit passed; the binary targets TVOS arm64 with a tvOS 17.0 minimum. | The app has not been installed or played. Course revisit, Original, Retro, and performance remain unverified on Apple TV. |
 
 The source branches and submodules have moved beyond the physical-device
@@ -25,10 +25,9 @@ scene-generation invalidation. A course archive read now selects its scene;
 the next visit can queue recorded pipelines during loading. Each changed
 Aurora implementation file and the DVD read source passed a focused macOS
 host C++ syntax check using current runtime headers. A later tvOS SDK build
-and app audit also passed. The macOS build later reached the animated opening,
-but neither Apple app has entered a race. The existing Android emulator course
-revisit remains the only
-gameplay-path evidence for this replay behavior.
+and app audit also passed. The macOS build later entered an Original race and recorded course links,
+but same-course replay in a new process remains unverified. The existing
+Android emulator course revisit remains the only completed revisit check.
 
 The new private macOS dual app is
 `build/macos-replay-20260925/KartPad-build44.app`. Its unsigned runtime SHA-256
@@ -46,8 +45,21 @@ reading the existing extracted game files. It reached Original's animated
 opening on the physical Mac. The on-screen overlay showed 60.0 FPS; later
 intro telemetry in `work/mac44-first-launch/stdout.log` reported about 59–60
 FPS, with occasional 33 ms worst intervals. The app exited cleanly after a
-normal Quit. No menu, race or course revisit was run, so this is no evidence
-of a replay speedup or sustained gameplay performance.
+normal Quit. That opening check did not measure sustained gameplay performance.
+
+A subsequent portable-mode session used `portable.txt` and `UserData` beside
+the candidate app, preserving the normal user data directory. A new test
+licence reached an active Original 100cc Luigi Circuit VS race with 12 racers,
+then returned to the menu and quit cleanly. Mario remained at the starting
+area; no driven lap or completed race was recorded.
+`work/mac44-first-launch/race-attempt.log` logged scene `c245398c16435baa`
+with zero recorded and zero queued pipelines on its first load. Read-only
+SQLite inspection subsequently found 266 pipeline links for that scene.
+A second process retained this cache, but as of the 08:35 JST audit its
+`work/mac44-first-launch/revisit.log` contained only other course scenes
+from the attract sequence, not a second Luigi Circuit load. Persistent
+recording is demonstrated; same-course replay and any performance gain
+remain unverified.
 
 The new private physical-tvOS app is under
 `build/tvos-replay-20260925/xcode/Release-appletvos/KartPad.app`. Its bundle
