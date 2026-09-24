@@ -1828,10 +1828,10 @@ class KartPadActivity : SDLActivity() {
             }
         }
         val autoAccelerate = Switch(this).apply {
-            text = "Auto-accelerate"
+            text = "Touch auto-accelerate"
             setTextColor(Color.WHITE)
             isChecked = KartPadTouchSettings.autoAccelerate(this@KartPadActivity)
-            contentDescription = "Auto-accelerate: hold A for one second to lock; off uses normal hold controls"
+            contentDescription = "Touch auto-accelerate: hold touch A for one second to lock; off uses normal hold controls"
             setOnCheckedChangeListener { _, checked ->
                 KartPadTouchSettings.setAutoAccelerate(this@KartPadActivity, checked)
                 kartPadOverlay.reloadPresentationSettings()

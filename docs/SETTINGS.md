@@ -21,7 +21,7 @@ This release transfers ghosts from the Original game profile only. Retro Rewind 
 
 Controller Button Mapping supports D-pad directions and triggers, optional shared physical actions, and the Use L1 for Items preset. Controller Player Setup remains separate. Touch layout controls and motion steering remain available.
 
-**Auto-accelerate** is under Controls → Touch Control Settings. OFF uses ordinary A press/hold/release; ON retains the one-second hold-to-latch behavior. The choice persists.
+**Touch auto-accelerate** is under Controls → Touch Control Settings. OFF uses ordinary touch A press/hold/release; ON retains the one-second touch hold-to-latch behavior. The choice persists and does not change physical controller buttons.
 
 Motion steering supports calibration and sensitivity. iPhone/iPad additionally offer shake-to-trick; Android currently has tilt steering only.
 

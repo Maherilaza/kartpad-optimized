@@ -1966,11 +1966,11 @@ static NSString *const kKartPadPreferredGameKey = @"KartPadPreferredGame";
     [row removeFromSuperview];
     UISwitch *autoAccelerate = [UISwitch new];
     autoAccelerate.on = KartPadAutoAccelerateEnabled();
-    autoAccelerate.accessibilityLabel = @"Auto-accelerate";
-    autoAccelerate.accessibilityHint = @"Hold A for one second to lock acceleration. Turn off for normal hold controls.";
+    autoAccelerate.accessibilityLabel = @"Touch auto-accelerate";
+    autoAccelerate.accessibilityHint = @"Hold touch A for one second to lock acceleration. Turn off for normal hold controls.";
     [autoAccelerate addTarget:self action:@selector(kartPadAutoAccelerateChanged:)
             forControlEvents:UIControlEventValueChanged];
-    [stack insertArrangedSubview:[self settingsRowWithTitle:@"Auto-accelerate" control:autoAccelerate]
+    [stack insertArrangedSubview:[self settingsRowWithTitle:@"Touch auto-accelerate" control:autoAccelerate]
                          atIndex:MIN((NSUInteger)3, stack.arrangedSubviews.count)];
   }
 }

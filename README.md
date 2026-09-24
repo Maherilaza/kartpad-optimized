@@ -52,7 +52,7 @@ The projects are independently maintained.
 | Apple Silicon Mac | [0.5.0 · build 59](https://github.com/chrissotraidis/kartpad/releases/tag/v0.5.0) | [macOS 14+](docs/INSTALL_MACOS.md) |
 | Apple TV experimental preview | [0.4.11 · build 9](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11-tvos.1) | [tvOS 17+; re-sign the IPA](docs/INSTALL_TVOS.md) |
 
-**0.5.0 combines Android, iPhone/iPad and Mac downloads in one release.** It adds a persistent Auto-accelerate switch, fixes Android controller assignment, preserves vehicle thumbnails while shaders compile, and corrects framebuffer-copy and graphics-startup failures. See the [release notes](docs/releases/v0.5.0.md) and [mobile settings guide](docs/SETTINGS.md). Device-specific graphics and performance limitations remain; this is not a universal FPS improvement claim.
+**0.5.0 combines Android, iPhone/iPad and Mac downloads in one release.** It adds a persistent touch auto-accelerate switch, fixes Android controller assignment, preserves vehicle thumbnails while shaders compile, and corrects framebuffer-copy and graphics-startup failures. See the [release notes](docs/releases/v0.5.0.md) and [mobile settings guide](docs/SETTINGS.md). Device-specific graphics and performance limitations remain; this is not a universal FPS improvement claim.
 
 **0.4.22 moved KartPad to maintained WiiCompiled source** with pinned platform
 branches, preserving the existing game behavior and repository history. Source
