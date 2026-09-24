@@ -6,7 +6,7 @@ not a release note or a claim of device acceptance across platforms.
 | Platform | Current private build | Evidence | Remaining gate |
 |---|---|---|---|
 | Android | Pixel retained build: `0.5.1-android-nightly.14`, code 208. Latest emulator candidate: `0.5.1-framerate.1`, code 214. | Code 208's archived APK and the copy pulled after its in-place Pixel 9 Pro XL install have the same SHA-256, `a8b0d1867fe654d373b6044687b3b1e9593160163881c9be13aaa6f28e167579`. Candidate 203, whose source was rebuilt as 208, ran an active stationary 12-kart Cookie Land battle on that Pixel: 12.652 ms game-thread CPU per presented frame versus 14.70–14.79 ms for build 195 in comparable runs. Codes 209–211 passed release APK audits and each reached an active Luigi Circuit race on the API 36 ARM64 emulator. Code 212 passed a fatal-exit check; code 213 rejected a modified REL. Code 214 booted Original on the emulator and Android accepted a 60 Hz surface request. | Codes 209–214 have no physical-device comparison or smoothness measurement. The Pixel still has code 208; its package/readback check does not constitute a new measured gameplay run. Retro pipeline replay logged zero recorded and zero queued on the tested physical course. Driven races, Samsung/Adreno devices and online play remain open. |
-| iPadOS | Installed: `0.5.1` build 66, signed development app. Latest compiled private app: unsigned build 69; no IPA packaged. | Build 66 passed the physical iOS app audit and strict signing check. It installed in place over build 65 on the iPad Pro, reports build 66, and launched as PID 999. The game image and 34 state files were backed up and read back byte-identical. Builds 67–69 compiled from newer iOS runtimes and passed full-game app audits; each executable and matching dSYM share a UUID. Build 69 includes the REL validation source. | Build 66 has no visual KartPad launcher or game-boot check: another app was foreground on the iPad during mirror inspection. Builds 67–69 have not been signed or installed. Original, Retro, WFC, replay and performance still need physical gameplay checks. |
+| iPadOS | Installed: `0.5.1` build 66, signed development app. Latest compiled private app: unsigned build 70; no IPA packaged. | Build 66 passed the physical iOS app audit and strict signing check. It installed in place over build 65 on the iPad Pro, reports build 66, and launched as PID 999. The game image and 34 state files were backed up and read back byte-identical. Builds 67–70 compiled from newer iOS runtimes and passed full-game app audits; each executable and matching dSYM share a UUID. Build 70 includes the REL validator, #196 diagnostic, and an opt-in native-rate FIFO presentation experiment. | Build 66 has no visual KartPad launcher or game-boot check: another app was foreground on the iPad during mirror inspection. Builds 67–70 have not been signed or installed. Original, Retro, WFC, replay and performance still need physical gameplay checks. |
 
 The source branches and submodules have moved beyond the physical-device
 artifacts. Guarded DVD DMA bulk copies are in all four runtime submodules and
@@ -179,8 +179,28 @@ missing-target failure at `ModuleLinker::CallModule`'s return address
 index (`r4`), module base (`r3`), and failed REL prolog target, alongside the
 registered StaticR prolog address. The translated call site confirms those
 register meanings; this change does not alter module loading or dispatch.
-Build 69 predates the diagnostic. The cause of #196 remains unproven until a
-new run supplies those values; this source change has not been built or run.
+Build 69 predates the diagnostic. Build 70 compiles it but has not been run;
+the cause of #196 remains unproven until a new run supplies those values.
+
+Unsigned iPhoneOS build 70 compiles the #196 diagnostic and a private
+presentation experiment from iOS runtime `73d4962`. `video.vsync = true` in
+`Config.toml` requests Metal FIFO at native rate when the surface supports it;
+the default retains the existing present-mode policy. Aurora checks the active
+interpolation target when selecting or reconfiguring the surface, so an
+interpolated target uses the existing non-FIFO policy. The chosen mode and
+mode changes are logged. This is a way to compare presentation and audio
+pacing on the same iPad, not evidence that FIFO improves them.
+
+The maintained-source stage and full-game app audit passed. The private app
+is at `build/ios70-fifo-20260925/xcode/Release-iphoneos/KartPad.app`, with
+`CFBundleVersion` 70, executable SHA-256
+`3f86c8d05cc465d24812578c93b9ff037bdf27aa9124d9f8734f05e88b219576`,
+and matching executable/dSYM UUID `BB9B3CA7-73FA-3365-9B94-E27D864F8CA8`.
+The manifest records all four runtime commits and the translation fingerprint;
+`source_dirty=true` reflects the staged iOS gitlink and the owner's unrelated
+document. The build log is `work/ios70-fifo-build-20260925.log`. The app is
+unsigned, has no IPA, and has not been installed or played on iPad hardware.
+No iOS frame-time, frame-tail, audio, or input comparison has been measured.
 
 The build 66 iPad receipt is in `work/ios66-install-20260924/`. It was built
 from a fresh stage of iOS runtime `0df334c` plus the build-number change later
