@@ -5,7 +5,7 @@ not a release note or a claim of device acceptance across platforms.
 
 | Platform | Current private build | Evidence | Remaining gate |
 |---|---|---|---|
-| Android | Pixel retained build: `0.5.1-android-nightly.14`, code 208. Latest private APK and emulator-booted candidate: `0.5.1-gx-direct.1`, code 216. | Code 208's archived APK and the copy pulled after its in-place Pixel 9 Pro XL install have the same SHA-256, `a8b0d1867fe654d373b6044687b3b1e9593160163881c9be13aaa6f28e167579`. Candidate 203, whose source was rebuilt as 208, ran an active stationary 12-kart Cookie Land battle on that Pixel: 12.652 ms game-thread CPU per presented frame versus 14.70–14.79 ms for build 195 in comparable runs. Codes 209–211 passed release APK audits and each reached an active Luigi Circuit race on the API 36 ARM64 emulator. Code 212 passed a fatal-exit check; code 213 rejected a modified REL. Code 214 booted Original on the emulator and Android accepted a 60 Hz surface request. Code 215 passed its private release APK audit and XF burst host test but was not booted. Code 216 passed the release APK audit and reached Original's animated title on the API 36 ARM64 emulator after an in-place install over code 214. | Codes 209–216 have no physical-device comparison or smoothness measurement. The Pixel still has code 208; its package/readback check does not constitute a new measured gameplay run. Code 216 reached no race. Retro pipeline replay logged zero recorded and zero queued on the tested physical course. Driven races, Samsung/Adreno devices and online play remain open. |
+| Android | Pixel retained build: `0.5.1-android-nightly.14`, code 208. Latest private APK and emulator-booted candidate: `0.5.1-gx-nodraw.2`, code 218. | Code 208's archived APK and the copy pulled after its in-place Pixel 9 Pro XL install have the same SHA-256, `a8b0d1867fe654d373b6044687b3b1e9593160163881c9be13aaa6f28e167579`. Candidate 203, whose source was rebuilt as 208, ran an active stationary 12-kart Cookie Land battle on that Pixel: 12.652 ms game-thread CPU per presented frame versus 14.70–14.79 ms for build 195 in comparable runs. Codes 209–211 passed release APK audits and each reached an active Luigi Circuit race on the API 36 ARM64 emulator. Code 212 passed a fatal-exit check; code 213 rejected a modified REL. Code 214 booted Original on the emulator and Android accepted a 60 Hz surface request. Code 215 passed its private release APK audit and XF burst host test but was not booted. Code 216 reached Original's animated title. Code 218 passed its release APK audit and reached the title and animated course background on the emulator after an in-place install over code 217; its retained config and game files kept the same hashes. | Codes 209–218 have no physical-device comparison or smoothness measurement. The Pixel still has code 208; its package/readback check does not constitute a new measured gameplay run. Codes 216–218 reached no race. Retro pipeline replay logged zero recorded and zero queued on the tested physical course. Driven races, Samsung/Adreno devices and online play remain open. |
 | iPadOS | Installed: `0.5.1` build 70, signed development app. Latest candidate: unsigned build 71; no IPA packaged. | Build 66 passed the physical iOS app audit and strict signing check and installed in place over build 65. Builds 67–71 compiled from newer iOS runtimes and passed full-game app audits; each executable and matching dSYM share a UUID. Build 70 includes the REL validator, #196 diagnostic, and an opt-in native-rate FIFO presentation experiment. It was signed with the same team and installed in place over build 66 on the paired iPad Pro. The 2.6 GB game image and 34 other app-data files were backed up before and read back byte-identical after installation. The device reports build 70. Build 71 includes the GX display-list change compiled from the regenerated graph. | Builds 70–71 have not been launched or visually checked: OpenTS1 was active on the iPad when its screen was mirrored, so KartPad was left in the background. Original, Retro, WFC, replay and performance still need physical gameplay checks. |
 
 The source branches and submodules have moved beyond the physical-device
@@ -72,7 +72,7 @@ the audited APK, build log, console transcript and countdown/running-race
 screenshots. The transcript identifies build 210 and shows no fatal or abort
 through that run. The emulator was stopped without wiping its data. No physical
 Android device was connected for code 210. Apple build 66 predates this Yaz0
-change, so it does not validate the new decoder on iPadOS.
+change; the newer build 71 includes it but has not run on the iPad.
 
 Code 211 was built from Android runtime `0ce6a52`, with the same private
 translated shards, as `work/android-dvd-cache-20260924/kartpad-code211-dvdcache.apk`.
@@ -96,8 +96,8 @@ audited APK, build log, console transcript and race screenshot. The transcript
 identifies build 211 and showed no fatal or abort through the race check. The
 emulator was stopped without wiping app data. No physical Android device was
 connected, and this run is not a matched performance comparison. Apple build
-67 predates the file-cache change; no Apple app with this change has been
-built or tested on device.
+67 predates the file-cache change; build 71 includes it but has not run on
+device.
 
 On 25 September, all four runtime copies gained a central `RuntimeTerminate`
 path for the named fatal exits, including missing guest targets, OS panic and
@@ -342,6 +342,45 @@ been packaged as an IPA, installed, launched, played or measured. The paired
 iPad still has build 70 installed; a mirror showed OpenTS1 in the foreground,
 so no KartPad session was interrupted. This compiler/package result does not
 establish a device speedup or clear Original, Retro or WFC gameplay.
+
+The next GX source change caches the answer for register-only display lists
+whose outer bytes contain no nested call. Previously those lists bypassed the
+index scan but repeated the classification walk on every call. The entry uses
+the existing guest-write generation and digest validation; Aurora still
+receives the list on every call. Lists with nested calls remain uncached so a
+rewritten callee cannot make the outer classification stale. Identical patches
+are committed in all four maintained runtimes.
+
+Android code 217 (`0.5.1-gx-nodraw.1`) compiled this change and passed the
+private release APK audit. It installed in place over code 216 on the API 36
+ARM64 emulator; the checked config, REL and disc manifest retained their hashes.
+Original reached its title, but overlay A input did not reach a menu or race.
+In three busy title windows the cache reported 645,662 validated hits from
+652,674 probes, with 7,068 entries and no eviction. That showed reuse but also
+put the cache close to its former 8,192-entry bound before a race. The bounded
+entry limit was raised to 16,384 in all four runtimes; copied command bytes
+remain capped at 8 MiB.
+
+Android code 218 (`0.5.1-gx-nodraw.2`) compiled that bound from Android runtime
+`27074c2` and the same private translation graph. Its audited private release
+APK is `work/kartpad-code218-gx-nodraw-bound.apk`, SHA-256
+`601f6e57479546af14fafb3b9c069a1ddae41e962164612c0813cfa8e018ee1f`.
+Its signing certificate SHA-256 matches code 217,
+`61dfb51411efe50b2e7fb8d280fcfbba766792c275d1024013940760caa3afaf`.
+Its embedded source-input record names translation SHA-256
+`b9b4d447e8a1d5dc27132fb229e9dbfb1491468e4fbbf2904c0ac73271ee03e0`;
+`source_dirty=true` reflects the staged runtime gitlinks and the owner's
+unrelated dirty document at build time.
+It installed in place over 217 on the emulator; the checked config, REL and
+disc manifest remained byte-identical. The app's total file count changed
+from 2,142 to 2,141 during installation. Original reached the animated title
+and course background. Five busy windows recorded 1,421,619 validated hits
+from 1,429,800 probes, 9,685 maximum entries and zero evictions. The private
+build, audit, install and screenshot receipts are under `work/android-gx-nodraw-*`
+and `work/android-gx-nodraw-bound-*`. This shows the old entry cap would have
+been crossed in this emulator title session; it does not measure a CPU or
+smoothness improvement. No race was reached, the Pixel remains on code 208,
+and Apple build 71 predates this cache change.
 
 Evidence: [Pixel comparison](../2026-09-23/android-copy-stream-loop.md),
 [Android build 195 baseline](../2026-09-23/android-morning-report.md), and
