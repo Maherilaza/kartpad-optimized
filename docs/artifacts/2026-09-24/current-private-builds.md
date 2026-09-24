@@ -5,7 +5,7 @@ not a release note or a claim of device acceptance across platforms.
 
 | Platform | Current private build | Evidence | Remaining gate |
 |---|---|---|---|
-| Android | Pixel retained build: `0.5.1-android-nightly.14`, code 208. Latest emulator candidate: `0.5.1-imagecheck.1`, code 213. | Code 208's archived APK and the copy pulled after its in-place Pixel 9 Pro XL install have the same SHA-256, `a8b0d1867fe654d373b6044687b3b1e9593160163881c9be13aaa6f28e167579`. Candidate 203, whose source was rebuilt as 208, ran an active stationary 12-kart Cookie Land battle on that Pixel: 12.652 ms game-thread CPU per presented frame versus 14.70–14.79 ms for build 195 in comparable runs. Codes 209–211 passed release APK audits and each reached an active Luigi Circuit race on the API 36 ARM64 emulator. Code 212 passed a fatal-exit check. Code 213 accepted clean game data, rejected a one-byte modified REL, and booted Original on the emulator. | Codes 209–213 have no physical-device comparison or smoothness measurement. The Pixel still has code 208; its package/readback check does not constitute a new measured gameplay run. Retro pipeline replay logged zero recorded and zero queued on the tested physical course. Driven races, Samsung/Adreno devices and online play remain open. |
+| Android | Pixel retained build: `0.5.1-android-nightly.14`, code 208. Latest emulator candidate: `0.5.1-framerate.1`, code 214. | Code 208's archived APK and the copy pulled after its in-place Pixel 9 Pro XL install have the same SHA-256, `a8b0d1867fe654d373b6044687b3b1e9593160163881c9be13aaa6f28e167579`. Candidate 203, whose source was rebuilt as 208, ran an active stationary 12-kart Cookie Land battle on that Pixel: 12.652 ms game-thread CPU per presented frame versus 14.70–14.79 ms for build 195 in comparable runs. Codes 209–211 passed release APK audits and each reached an active Luigi Circuit race on the API 36 ARM64 emulator. Code 212 passed a fatal-exit check; code 213 rejected a modified REL. Code 214 booted Original on the emulator and Android accepted a 60 Hz surface request. | Codes 209–214 have no physical-device comparison or smoothness measurement. The Pixel still has code 208; its package/readback check does not constitute a new measured gameplay run. Retro pipeline replay logged zero recorded and zero queued on the tested physical course. Driven races, Samsung/Adreno devices and online play remain open. |
 | iPadOS | Installed: `0.5.1` build 66, signed development app. Latest compiled private app: unsigned build 68; no IPA packaged. Newer source adds REL validation and has not been compiled. | Build 66 passed the physical iOS app audit and strict signing check. It installed in place over build 65 on the iPad Pro, reports build 66, and launched as PID 999. The game image and 34 state files were backed up and read back byte-identical. Builds 67–68 compiled from newer iOS runtimes and passed full-game app audits; each executable and matching dSYM share a UUID. | Build 66 has no visual KartPad launcher or game-boot check: another app was foreground on the iPad during mirror inspection. Builds 67–68 have not been signed or installed. Original, Retro, WFC, replay and performance still need physical gameplay checks. |
 
 The source branches and submodules have moved beyond the physical-device
@@ -176,6 +176,36 @@ The handoff's GX, Adreno and floating-point proposals remain
 hypotheses or bounded experiments. In particular, the available shader evidence
 does not prove an Adreno driver defect, and a lower game-thread CPU number does
 not by itself establish smoother presentation.
+
+The 25 September GX source check narrowed the proposed first batching step.
+`GX__CallDisplayList_80172f64` does not rescan every list on every call: it
+has a bounded scan cache keyed by guest address, bytes and vertex layout, with
+write-generation and content-digest validation; register-only lists bypass the
+index scan. The retained Pixel log shows 203,218 probes and 73,144 validated
+hits in one five-second interval, with no eviction. `HleFifoWrite` applies
+CP/BP writes immediately, while XF/INDX packets are sent to Aurora and draws
+depend on the resulting order. Any batch across those boundaries needs a
+separate ordering proof and matched gameplay measurement; no GX batching was
+shipped from this source review.
+
+Android code 214 (`0.5.1-framerate.1`) requests the output rate on its native
+window at surface creation and reconfiguration: 60 Hz normally, or the selected
+interpolation target. It loads `ANativeWindow_setFrameRate` dynamically so
+API 28–29 remain supported. The pinned NDK header recommends default
+compatibility for game content; the handoff's fixed-source suggestion is for
+video. The private release APK passed the package audit, retains the code 213
+signer, and has SHA-256
+`e6d71a721b4aaf5ddb00cf5c055fc9ae6687d27958bb8c97c27c2ae49bd044fc`.
+`adb install -r` over 213 preserved 2,115 app files and the same config and
+REL hashes. On the API 36 ARM64 emulator, Original reached its opening
+sequence and the session transcript recorded
+`Android surface frame-rate request 60 Hz: 0` followed by Vulkan FIFO mode.
+The zero return shows Android accepted the hint; it does not prove that a
+physical display switched rates or that gameplay became smoother. The private
+APK, build/audit logs, transcript and screenshot are under
+`work/android-frame-rate-20260925/`. A matched 120 Hz Samsung race and Pixel
+battle comparison remain necessary before retaining this as a performance
+improvement.
 
 Evidence: [Pixel comparison](../2026-09-23/android-copy-stream-loop.md),
 [Android build 195 baseline](../2026-09-23/android-morning-report.md), and
