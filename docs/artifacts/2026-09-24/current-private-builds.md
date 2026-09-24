@@ -7,15 +7,40 @@ not a release note or a claim of device acceptance across platforms.
 |---|---|---|---|
 | Android | Pixel retained build: `0.5.1-android-nightly.14`, code 208. Latest private APK and emulator-booted candidate: `0.5.1-gx-nodraw.2`, code 218. | Code 208's archived APK and the copy pulled after its in-place Pixel 9 Pro XL install have the same SHA-256, `a8b0d1867fe654d373b6044687b3b1e9593160163881c9be13aaa6f28e167579`. Candidate 203, whose source was rebuilt as 208, ran an active stationary 12-kart Cookie Land battle on that Pixel: 12.652 ms game-thread CPU per presented frame versus 14.70–14.79 ms for build 195 in comparable runs. Codes 209–211 passed release APK audits and each reached an active Luigi Circuit race on the API 36 ARM64 emulator. Code 212 passed a fatal-exit check; code 213 rejected a modified REL. Code 214 booted Original on the emulator and Android accepted a 60 Hz surface request. Code 215 passed its private release APK audit and XF burst host test but was not booted. Code 216 reached Original's animated title. Code 218 passed its release APK audit and reached the title and animated course background on the emulator after an in-place install over code 217; its retained config and game files kept the same hashes. | Codes 209–218 have no physical-device comparison or smoothness measurement. The Pixel still has code 208; its package/readback check does not constitute a new measured gameplay run. Codes 216–218 reached no race. Retro pipeline replay logged zero recorded and zero queued on the tested physical course. Driven races, Samsung/Adreno devices and online play remain open. |
 | iPadOS | Installed: `0.5.1` build 70, signed development app. Latest candidate: unsigned build 72; no IPA packaged. | Build 66 passed the physical iOS app audit and strict signing check and installed in place over build 65. Builds 67–72 compiled from newer iOS runtimes and passed full-game app audits; each executable and matching dSYM share a UUID. Build 70 includes the REL validator, #196 diagnostic, and an opt-in native-rate FIFO presentation experiment. It was signed with the same team and installed in place over build 66 on the paired iPad Pro. The 2.6 GB game image and 34 other app-data files were backed up before and read back byte-identical after installation. The device reports build 70. Build 71 includes the GX display-list change compiled from the regenerated graph; build 72 adds the bounded register-only display-list classification cache. | Builds 70–72 have not been launched or visually checked: OpenTS1 was active on the iPad when its screen was mirrored, so KartPad was left in the background. Original, Retro, WFC, replay and performance still need physical gameplay checks. |
+| macOS | Latest private candidate: `0.4.21` build 44, ad hoc signed dual app. | Runtime `10360ad` includes course-scoped pipeline replay. The translated arm64 dual runtime linked, and the package audit passed with explicit expected version/build values. | The app has not been launched or played. No course revisit, frame-time, or performance result exists for this candidate. |
+| tvOS | Runtime source `686a573`; no new app artifact. | The course-scoped replay sources passed focused macOS host C++ syntax checks. | A tvOS SDK build, package audit, installation, and gameplay remain open. |
 
 The source branches and submodules have moved beyond the physical-device
 artifacts. Guarded DVD DMA bulk copies are in all four runtime submodules and
 passed C++ syntax checks. Android code 209 includes that change and a
 scene-generation fix in its Android runtime. The fix invalidates both GX
 pipeline memos when a course load begins, allowing previously seen recipes to
-reach the scene recorder again. The iOS source has the same fix; macOS and tvOS
-do not yet have it. The iPad build 66 includes the iOS changes through the GX
-scene-generation repair, but has not been driven into either game.
+reach the scene recorder again. All four runtime sources now have the fix. The
+iPad build 66 includes the iOS changes through the GX scene-generation repair,
+but has not been driven into either game.
+
+On 25 September, macOS runtime `10360ad` and tvOS runtime `686a573`
+received the Android/iOS course-scoped recipe recorder, replay queue, and GX
+scene-generation invalidation. A course archive read now selects its scene;
+the next visit can queue recorded pipelines during loading. Each changed
+Aurora implementation file and the DVD read source passed a focused macOS
+host C++ syntax check using current runtime headers. The tvOS check did not use
+a tvOS SDK, and no tvOS app was built. The macOS app was built but not played.
+The existing Android emulator course revisit remains the only
+gameplay-path evidence for this replay behavior.
+
+The new private macOS dual app is
+`build/macos-replay-20260925/KartPad-build44.app`. Its unsigned runtime SHA-256
+is `0e32180ab6e3c2fc0d0cbef4ff3b042039647dde8ce6211ed78e16ea41cc66d5`;
+the packaged executable SHA-256 is
+`63c0d3ff52c5d14b647047068a181a8afa717a67166bae9c667db5e8c1e765da`.
+The audit's bundle-content hash is
+`9b5a5df499a0ff0bae9435959985e665788509f28eb37a8b4e6ca8f47314d4b0`.
+The app is ad hoc signed, has no team identifier, and was built from the staged
+macOS runtime pin `10360ad`; the package fingerprint records root commit
+`1947d26` before these gitlink and ledger updates. The private compile log is
+`work/macos-replay-build-20260925.log`. This is a build and package result,
+not a claim of a successful game session or faster course load.
 
 Apple source revision `2a9a548` additionally ports Android's shared Aurora
 render-mode lock, frame-owned debug marker/depth-peek mapping, GX GEN_MODE
