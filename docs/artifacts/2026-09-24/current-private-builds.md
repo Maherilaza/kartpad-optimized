@@ -274,7 +274,11 @@ package audit. Its SHA-256 is
 `bb3d12691b00dc65bca40e57af40c3fb700cff12158478fc9acfa484eb5d7706`;
 its signing certificate SHA-256 matches code 214,
 `61dfb51411efe50b2e7fb8d280fcfbba766792c275d1024013940760caa3afaf`.
-The APK and build/audit logs are private under `work/`. No device was attached
+The APK is `work/kartpad-code215-gx-xf.apk`; build and audit logs are private
+under `work/`. Its embedded provenance names the four runtime commits above
+and the exact translation hash. It records the pre-commit root revision
+`4493afb` as dirty because the package preceded root commit `3ec00a8`.
+No device was attached
 for this build, and code 215 has not been installed, booted, played or measured.
 In particular, the host test proves packet ordering in the direct walker, not
 a gameplay speedup; HLE's per-word FIFO path and cross-call batching are still
