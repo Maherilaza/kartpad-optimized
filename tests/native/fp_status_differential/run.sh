@@ -14,4 +14,3 @@ clang++ "${flags[@]}" -DKARTPAD_ANDROID_UNOBSERVED_FP_STATUS=1 \
   -Dsemantics=candidate_semantics -c "$here/variant.cpp" -o "$out/candidate.o"
 clang++ -std=c++20 -O2 -fno-fast-math "$here/main.cpp" "$out/baseline.o" "$out/candidate.o" -o "$out/fpdiff"
 "$out/fpdiff" "${2:-3000000}"
-

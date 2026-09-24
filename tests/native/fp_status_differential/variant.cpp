@@ -16,4 +16,3 @@ extern "C" void VARIANT_FN(int op, std::uint32_t fpscr, double a, double b, doub
   }
   *value = r.value; *out_fpscr = r.fpscr; *exception = r.exception; *write = r.write_destination;
 }
-

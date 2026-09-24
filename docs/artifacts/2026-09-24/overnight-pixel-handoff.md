@@ -222,4 +222,3 @@ and what was not verified. Commit docs and code on the branch (private captures
 stay under `work/`). End with a short plain-language report for Chris: what is
 installed, what got measurably better on the phone, what did not, and what still
 needs his hands.
-
