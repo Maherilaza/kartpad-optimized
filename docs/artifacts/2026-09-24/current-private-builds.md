@@ -267,7 +267,7 @@ loads now enter Aurora in one display-list call. CP/BP writes, draws, truncated
 packets, recording and later HLE calls keep their existing boundaries. The
 same source change is committed in all four maintained runtime copies:
 Android `b435655`, iOS `e13474a`, macOS `0814a6b`, tvOS `3c9e969`.
-`scripts/test-gx-xf-burst.py` compiles the production packet walker with a
+`scripts/test-gx-fifo-burst.py` compiles the production packet walker with a
 small ordered-packet harness and passes; shared-runtime parity also passes.
 The code 215 private release APK built from the Android pin and passed the
 package audit. Its SHA-256 is
@@ -278,11 +278,23 @@ The APK is `work/kartpad-code215-gx-xf.apk`; build and audit logs are private
 under `work/`. Its embedded provenance names the four runtime commits above
 and the exact translation hash. It records the pre-commit root revision
 `4493afb` as dirty because the package preceded root commit `3ec00a8`.
-No device was attached
-for this build, and code 215 has not been installed, booted, played or measured.
+No device was attached for this build, and code 215 has not been installed,
+booted, played or measured.
 In particular, the host test proves packet ordering in the direct walker, not
 a gameplay speedup; HLE's per-word FIFO path and cross-call batching are still
 unchanged. Apple build 70 predates this source change.
+
+The subsequent source candidate handles complete nine-byte GX display-list
+calls directly in the burst walker. The shared translator now folds only the
+three-store `0x40` command/address/length pattern; other three-store packets
+keep their existing path. When direct parsing is unavailable, the runtime
+replays the original 1/4/4 writes. A private retranslation of the real
+`ResShp::CallPrePrimitiveDisplayList` function emitted two such bursts in place
+of six FIFO calls; 11 bursts were added across the regenerated graph. All 14
+focused translator tests, the production walker host test, and shared-runtime
+parity pass. This candidate is source-only: no new APK or Apple app has been
+built from it, and no game-thread or presentation measurement exists. The
+private translation output is under `work/gx-direct-dl-translation-20260925/`.
 
 Evidence: [Pixel comparison](../2026-09-23/android-copy-stream-loop.md),
 [Android build 195 baseline](../2026-09-23/android-morning-report.md), and

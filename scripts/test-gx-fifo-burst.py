@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check the production FIFO burst walker against ordered XF/CP/BP packets."""
+"""Check the production FIFO burst walker against ordered register and DL packets."""
 
 from pathlib import Path
 import subprocess
@@ -10,15 +10,18 @@ source = (root / "vendor/runtimes/android/runtime/src/hle/gx/gx_fifo.cpp").read_
 start = source.index("static uint32_t ApplyFifoPacketsDirect(")
 end = source.index("\n// Display-list recording", start)
 walker = source[start:end]
+wrapper = source[source.index('extern "C" void GX_HLE_FIFO_WriteBurst('):]
 
 program = r'''
 #include <cassert>
 #include <cstdint>
+#include <utility>
 #include <vector>
 using u32 = uint32_t;
 constexpr uint8_t GX_NOP_CMD = 0x00;
 constexpr uint8_t GX_LOAD_CP_REG_CMD = 0x08;
 constexpr uint8_t GX_LOAD_XF_REG_CMD = 0x10;
+constexpr uint8_t GX_CMD_CALL_DL_CMD = 0x40;
 constexpr uint8_t GX_LOAD_BP_REG_CMD = 0x61;
 constexpr uint8_t GX_OPCODE_MASK_CMD = 0xF8;
 struct { bool inBegin = false; size_t fifoByteCount = 0; } g_hleGxState;
@@ -31,6 +34,8 @@ uint32_t ReadBE32(const uint8_t* p) {
 std::vector<unsigned> events;
 unsigned calls = 0;
 unsigned marks = 0;
+std::vector<std::pair<uint32_t, uint32_t>> lists;
+std::vector<std::pair<uint32_t, uint32_t>> writes;
 void GXMarkFrameWork() { ++marks; }
 void GXApplyBPReg(uint8_t reg, uint32_t) { events.push_back(0x20000 | reg); }
 namespace GxCpDecode {
@@ -48,7 +53,14 @@ void GXCallDisplayList(const void* raw, uint32_t bytes) {
     pos += packetBytes;
   }
 }
-''' + walker + r'''
+void GX__CallDisplayList_80172f64(uint32_t address, uint32_t bytes) {
+  lists.emplace_back(address, bytes);
+  events.push_back(0x40000);
+}
+void HleFifoWrite(u32 value, uint32_t bytes) { writes.emplace_back(value, bytes); }
+bool WriteDisplayListBurst(const uint8_t*, uint32_t) { return false; }
+void HleFifoWriteBurstChunked(const uint8_t*, uint32_t) { assert(false); }
+''' + walker + wrapper + r'''
 int main() {
   const std::vector<uint8_t> stream{
       0x10,0,0,0,0,1,0,0,0, 0x10,0,0,0,0,2,0,0,0,
@@ -63,6 +75,40 @@ int main() {
   assert(ApplyFifoPacketsDirect(incomplete.data(), incomplete.size()) == 9);
   assert((events == std::vector<unsigned>{0x10007}));
   assert(calls == 1 && marks == 1);
+
+  events.clear(); calls = marks = 0;
+  const std::vector<uint8_t> withList{
+      0x10,0,0,0,0,8,0,0,0,
+      0x40,0,0,0,0x20,0,0,0,0x10,
+      0x61,9,0,0,0};
+  assert(ApplyFifoPacketsDirect(withList.data(), withList.size()) == withList.size());
+  assert((events == std::vector<unsigned>{0x10008,0x40000,0x20009}));
+  assert((lists == std::vector<std::pair<uint32_t,uint32_t>>{{0x20,0x10}}));
+  assert(calls == 1 && marks == 1);
+
+  lists.clear();
+  const std::vector<uint8_t> shortList{0x40,0,0,0,0x20,0,0};
+  assert(ApplyFifoPacketsDirect(shortList.data(), shortList.size()) == 0);
+  const std::vector<uint8_t> zeroList{0x40,0,0,0,0,0,0,0,0x10};
+  assert(ApplyFifoPacketsDirect(zeroList.data(), zeroList.size()) == 9);
+  assert(lists.empty());
+
+  lists.clear(); writes.clear();
+  GX_HLE_FIFO_WriteBurst(withList.data() + 9, 9);
+  assert((lists == std::vector<std::pair<uint32_t,uint32_t>>{{0x20,0x10}}));
+  assert(writes.empty());
+
+  lists.clear();
+  g_hleGxState.fifoByteCount = 1;
+  GX_HLE_FIFO_WriteBurst(withList.data() + 9, 9);
+  assert(lists.empty());
+  assert((writes == std::vector<std::pair<uint32_t,uint32_t>>{{0x40,1},{0x20,4},{0x10,4}}));
+  g_hleGxState.fifoByteCount = 0;
+  writes.clear();
+  recording = true;
+  GX_HLE_FIFO_WriteBurst(withList.data() + 9, 9);
+  assert((writes == std::vector<std::pair<uint32_t,uint32_t>>{{0x40,1},{0x20,4},{0x10,4}}));
+  recording = false;
 
   events.clear(); calls = marks = 0;
   g_hleGxState.fifoByteCount = 1;
@@ -82,4 +128,4 @@ with tempfile.TemporaryDirectory(prefix="kartpad-gx-xf-burst-") as temp:
                     str(source_file), "-o", str(binary)], check=True)
     subprocess.run([str(binary)], check=True)
 
-print("PASS: XF burst grouping preserves packet order and truncated/recording boundaries")
+print("PASS: direct FIFO burst preserves XF, display-list, CP/BP, and fallback boundaries")
