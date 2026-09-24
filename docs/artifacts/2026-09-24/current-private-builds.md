@@ -202,6 +202,17 @@ document. The build log is `work/ios70-fifo-build-20260925.log`. The app is
 unsigned, has no IPA, and has not been installed or played on iPad hardware.
 No iOS frame-time, frame-tail, audio, or input comparison has been measured.
 
+Source after build 70 labels the Android and iOS auto-accelerate setting
+"Touch auto-accelerate," matching the existing one-second touch A latch;
+physical controller input still uses its normal button path. No controller
+behavior changed and no app with the new label has been built. A focused host
+test passed the iOS present-mode selector's default, FIFO opt-in,
+interpolation, unsupported-mode and backend cases. The local CI workflow is
+configured to check five intentionally identical runtime files across Android,
+iOS, macOS and tvOS;
+the macOS VSync test was updated for iOS's new opt-in policy. These source
+and CI checks do not establish iPad pacing or controller acceptance.
+
 The build 66 iPad receipt is in `work/ios66-install-20260924/`. It was built
 from a fresh stage of iOS runtime `0df334c` plus the build-number change later
 committed as `e5902c8`. The unsigned executable SHA-256 is

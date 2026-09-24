@@ -15,6 +15,8 @@ on:
       - 'scripts/test-android-aram-window.py'
       - 'scripts/test-android-event-service.py'
       - 'scripts/test-network-send-error.py'
+      - 'scripts/test-ios-vsync.py'
+      - 'scripts/test-shared-runtime-parity.py'
       - 'tests/test_efb_readback_lifecycle.py'
       - 'tests/test_sleep_timer_reentry.py'
       - 'prototypes/stabilization/test_pipeline_startup_budget.py'
@@ -39,6 +41,8 @@ on:
       - 'scripts/test-android-aram-window.py'
       - 'scripts/test-android-event-service.py'
       - 'scripts/test-network-send-error.py'
+      - 'scripts/test-ios-vsync.py'
+      - 'scripts/test-shared-runtime-parity.py'
       - 'tests/test_efb_readback_lifecycle.py'
       - 'tests/test_sleep_timer_reentry.py'
       - 'prototypes/stabilization/test_pipeline_startup_budget.py'
@@ -86,6 +90,10 @@ jobs:
         run: python3 -B scripts/test-android-event-service.py
       - name: Preserve send errors across diagnostics
         run: python3 -B scripts/test-network-send-error.py
+      - name: Shared runtime source parity
+        run: python3 -B scripts/test-shared-runtime-parity.py
+      - name: iOS native-rate present mode policy
+        run: python3 -B scripts/test-ios-vsync.py
       - name: Experimental atomic draw reservations
         run: |
           clang++ -std=c++20 -Wall -Wextra -Werror -fsanitize=address,undefined prototypes/stabilization/test_batch_reservation.cpp -o /tmp/kartpad-batch-reservation
