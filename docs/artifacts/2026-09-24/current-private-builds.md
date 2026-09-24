@@ -6,7 +6,7 @@ not a release note or a claim of device acceptance across platforms.
 | Platform | Current private build | Evidence | Remaining gate |
 |---|---|---|---|
 | Android | Pixel retained build: `0.5.1-android-nightly.14`, code 208. Latest emulator candidate: `0.5.1-framerate.1`, code 214. | Code 208's archived APK and the copy pulled after its in-place Pixel 9 Pro XL install have the same SHA-256, `a8b0d1867fe654d373b6044687b3b1e9593160163881c9be13aaa6f28e167579`. Candidate 203, whose source was rebuilt as 208, ran an active stationary 12-kart Cookie Land battle on that Pixel: 12.652 ms game-thread CPU per presented frame versus 14.70–14.79 ms for build 195 in comparable runs. Codes 209–211 passed release APK audits and each reached an active Luigi Circuit race on the API 36 ARM64 emulator. Code 212 passed a fatal-exit check; code 213 rejected a modified REL. Code 214 booted Original on the emulator and Android accepted a 60 Hz surface request. | Codes 209–214 have no physical-device comparison or smoothness measurement. The Pixel still has code 208; its package/readback check does not constitute a new measured gameplay run. Retro pipeline replay logged zero recorded and zero queued on the tested physical course. Driven races, Samsung/Adreno devices and online play remain open. |
-| iPadOS | Installed: `0.5.1` build 66, signed development app. Latest compiled private app: unsigned build 68; no IPA packaged. Newer source adds REL validation and has not been compiled. | Build 66 passed the physical iOS app audit and strict signing check. It installed in place over build 65 on the iPad Pro, reports build 66, and launched as PID 999. The game image and 34 state files were backed up and read back byte-identical. Builds 67–68 compiled from newer iOS runtimes and passed full-game app audits; each executable and matching dSYM share a UUID. | Build 66 has no visual KartPad launcher or game-boot check: another app was foreground on the iPad during mirror inspection. Builds 67–68 have not been signed or installed. Original, Retro, WFC, replay and performance still need physical gameplay checks. |
+| iPadOS | Installed: `0.5.1` build 66, signed development app. Latest compiled private app: unsigned build 69; no IPA packaged. | Build 66 passed the physical iOS app audit and strict signing check. It installed in place over build 65 on the iPad Pro, reports build 66, and launched as PID 999. The game image and 34 state files were backed up and read back byte-identical. Builds 67–69 compiled from newer iOS runtimes and passed full-game app audits; each executable and matching dSYM share a UUID. Build 69 includes the REL validation source. | Build 66 has no visual KartPad launcher or game-boot check: another app was foreground on the iPad during mirror inspection. Builds 67–69 have not been signed or installed. Original, Retro, WFC, replay and performance still need physical gameplay checks. |
 
 The source branches and submodules have moved beyond the physical-device
 artifacts. Guarded DVD DMA bulk copies are in all four runtime submodules and
@@ -157,7 +157,21 @@ displayed the clean-dump message. Restoring the backup read back to SHA-256
 and restored “Ready to play.” Screenshots, build/audit logs and the private
 APK are under `work/android-imagecheck-20260925/`. The emulator was stopped
 without wiping data. This is a launcher/boot check, not a driven race or a
-physical-device test. The Apple source checks have not yet been built or run.
+physical-device test. The macOS and tvOS source checks have not yet been built
+or run.
+
+Unsigned physical-iOS build 69 compiled the iOS REL validator from runtime
+`4eab579` and the pinned translation into
+`build/ios69-imagecheck-20260925/xcode/Release-iphoneos/KartPad.app`. The
+full-game app audit passed, `CFBundleVersion` is 69, executable SHA-256 is
+`fb855175603064281da2125b146bcc4fe870bd8f99e17f391eb4013f6e425028`,
+and executable/dSYM UUID is `6A0F8393-834C-38B4-BD04-B71FA6EA1358`. The
+build log confirms `KartPadRuntimeOverlayHost.mm` compiled, and the binary
+contains the modified-data message. Its `kartpad-build.json` records the four
+runtime commits and translation fingerprint; `source_dirty=true` reflects the
+owner's unrelated dirty document plus the staged iOS gitlink at build time.
+The app is unsigned and has no IPA. It has not been installed or played on an
+iPad; compilation does not prove the new rejection flow on Apple hardware.
 
 The build 66 iPad receipt is in `work/ios66-install-20260924/`. It was built
 from a fresh stage of iOS runtime `0df334c` plus the build-number change later
