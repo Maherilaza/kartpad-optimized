@@ -5,7 +5,7 @@ not a release note or a claim of device acceptance across platforms.
 
 | Platform | Current private build | Evidence | Remaining gate |
 |---|---|---|---|
-| Android | Pixel retained build: `0.5.1-android-nightly.14`, code 208. Latest emulator candidate: `0.5.1-yaz0.1`, code 210. | Code 208's archived APK and the copy pulled after its in-place Pixel 9 Pro XL install have the same SHA-256, `a8b0d1867fe654d373b6044687b3b1e9593160163881c9be13aaa6f28e167579`. Candidate 203, whose source was rebuilt as 208, ran an active stationary 12-kart Cookie Land battle on that Pixel: 12.652 ms game-thread CPU per presented frame versus 14.70–14.79 ms for build 195 in comparable runs. Code 209 passed the release APK audit and reached an active Luigi Circuit time trial twice on the API 36 ARM64 emulator. Code 210 passed its release APK audit, installed over 209 without clearing emulator data, and reached an active Luigi Circuit time trial. | Codes 209–210 have no physical-device comparison or smoothness measurement. The Pixel still has code 208; its package/readback check does not constitute a new measured gameplay run. Retro pipeline replay logged zero recorded and zero queued on the tested physical course. Driven races, Samsung/Adreno devices and online play remain open. |
+| Android | Pixel retained build: `0.5.1-android-nightly.14`, code 208. Latest emulator candidate: `0.5.1-dvdcache.1`, code 211. | Code 208's archived APK and the copy pulled after its in-place Pixel 9 Pro XL install have the same SHA-256, `a8b0d1867fe654d373b6044687b3b1e9593160163881c9be13aaa6f28e167579`. Candidate 203, whose source was rebuilt as 208, ran an active stationary 12-kart Cookie Land battle on that Pixel: 12.652 ms game-thread CPU per presented frame versus 14.70–14.79 ms for build 195 in comparable runs. Codes 209–211 passed release APK audits and each reached an active Luigi Circuit race on the API 36 ARM64 emulator. | Codes 209–211 have no physical-device comparison or smoothness measurement. The Pixel still has code 208; its package/readback check does not constitute a new measured gameplay run. Retro pipeline replay logged zero recorded and zero queued on the tested physical course. Driven races, Samsung/Adreno devices and online play remain open. |
 | iPadOS | Installed: `0.5.1` build 66, signed development app. Latest private source candidate: unsigned build 67; no IPA packaged. | Build 66 passed the physical iOS app audit and strict signing check. It installed in place over build 65 on the iPad Pro, reports build 66, and launched as PID 999. The game image and 34 state files were backed up and read back byte-identical. Build 67 compiled from the newer iOS runtime and passed the full-game app audit; its executable and dSYM UUIDs match. | Build 66 has no visual KartPad launcher or game-boot check: another app was foreground on the iPad during mirror inspection. Build 67 has not been signed or installed. Original, Retro, WFC, replay and performance still need physical gameplay checks. |
 
 The source branches and submodules have moved beyond the physical-device
@@ -73,6 +73,31 @@ screenshots. The transcript identifies build 210 and shows no fatal or abort
 through that run. The emulator was stopped without wiping its data. No physical
 Android device was connected for code 210. Apple build 66 predates this Yaz0
 change, so it does not validate the new decoder on iPadOS.
+
+Code 211 was built from Android runtime `0ce6a52`, with the same private
+translated shards, as `work/android-dvd-cache-20260924/kartpad-code211-dvdcache.apk`.
+SHA-256: `21fd4b127bdf3e1df303d5b00eedfad8b8fac13e27383eadef65732c04889b13`.
+The release audit verified version code 211/name `0.5.1-dvdcache.1`; its signer
+SHA-256 is `61dfb51411efe50b2e7fb8d280fcfbba766792c275d1024013940760caa3afaf`.
+All four runtime copies now use a bounded eight-handle, per-thread DVD file
+cache for repeated exact reads. It checks modification time on reuse and
+evicts the least recently used handle; the read bounds and output-on-success
+contract remain in place. An actual-source host harness passed repeated,
+zero-length, boundary, replacement, truncation, deletion, eviction and
+concurrent-caller cases. A synthetic host benchmark of 20,000 local 4 KiB
+reads took 224.708 ms with fresh opens versus 39.7558 ms with the cache. That
+measures host file-open overhead, not game frame time.
+
+On the existing API 36 ARM64 emulator, code 211 installed over 210 with
+`adb install -r`; app files remained at 2.5 GB and 2,107 files. Original
+booted, the saved license and menus opened, and a 50cc Luigi Circuit Grand
+Prix race reached active gameplay. The private directory above holds the
+audited APK, build log, console transcript and race screenshot. The transcript
+identifies build 211 and showed no fatal or abort through the race check. The
+emulator was stopped without wiping app data. No physical Android device was
+connected, and this run is not a matched performance comparison. Apple build
+67 predates the file-cache change; no Apple app with this change has been
+built or tested on device.
 
 The build 66 iPad receipt is in `work/ios66-install-20260924/`. It was built
 from a fresh stage of iOS runtime `0df334c` plus the build-number change later
