@@ -1,11 +1,11 @@
-# Private build status — 24 September 2026
+# Private build status — 25 September 2026
 
 This records what the current unpublished builds have actually proved. It is
 not a release note or a claim of device acceptance across platforms.
 
 | Platform | Current private build | Evidence | Remaining gate |
 |---|---|---|---|
-| Android | Pixel retained build: `0.5.1-android-nightly.14`, code 208. Latest emulator-booted candidate: `0.5.1-framerate.1`, code 214. Latest compiled private APK: `0.5.1-gx-xf.1`, code 215. | Code 208's archived APK and the copy pulled after its in-place Pixel 9 Pro XL install have the same SHA-256, `a8b0d1867fe654d373b6044687b3b1e9593160163881c9be13aaa6f28e167579`. Candidate 203, whose source was rebuilt as 208, ran an active stationary 12-kart Cookie Land battle on that Pixel: 12.652 ms game-thread CPU per presented frame versus 14.70–14.79 ms for build 195 in comparable runs. Codes 209–211 passed release APK audits and each reached an active Luigi Circuit race on the API 36 ARM64 emulator. Code 212 passed a fatal-exit check; code 213 rejected a modified REL. Code 214 booted Original on the emulator and Android accepted a 60 Hz surface request. Code 215 passed the private release APK audit and XF burst host test; it has not been booted. | Codes 209–215 have no physical-device comparison or smoothness measurement. The Pixel still has code 208; its package/readback check does not constitute a new measured gameplay run. Retro pipeline replay logged zero recorded and zero queued on the tested physical course. Driven races, Samsung/Adreno devices and online play remain open. |
+| Android | Pixel retained build: `0.5.1-android-nightly.14`, code 208. Latest private APK and emulator-booted candidate: `0.5.1-gx-direct.1`, code 216. | Code 208's archived APK and the copy pulled after its in-place Pixel 9 Pro XL install have the same SHA-256, `a8b0d1867fe654d373b6044687b3b1e9593160163881c9be13aaa6f28e167579`. Candidate 203, whose source was rebuilt as 208, ran an active stationary 12-kart Cookie Land battle on that Pixel: 12.652 ms game-thread CPU per presented frame versus 14.70–14.79 ms for build 195 in comparable runs. Codes 209–211 passed release APK audits and each reached an active Luigi Circuit race on the API 36 ARM64 emulator. Code 212 passed a fatal-exit check; code 213 rejected a modified REL. Code 214 booted Original on the emulator and Android accepted a 60 Hz surface request. Code 215 passed its private release APK audit and XF burst host test but was not booted. Code 216 passed the release APK audit and reached Original's animated title on the API 36 ARM64 emulator after an in-place install over code 214. | Codes 209–216 have no physical-device comparison or smoothness measurement. The Pixel still has code 208; its package/readback check does not constitute a new measured gameplay run. Code 216 reached no race. Retro pipeline replay logged zero recorded and zero queued on the tested physical course. Driven races, Samsung/Adreno devices and online play remain open. |
 | iPadOS | Installed: `0.5.1` build 66, signed development app. Latest compiled private app: unsigned build 70; no IPA packaged. | Build 66 passed the physical iOS app audit and strict signing check. It installed in place over build 65 on the iPad Pro, reports build 66, and launched as PID 999. The game image and 34 state files were backed up and read back byte-identical. Builds 67–70 compiled from newer iOS runtimes and passed full-game app audits; each executable and matching dSYM share a UUID. Build 70 includes the REL validator, #196 diagnostic, and an opt-in native-rate FIFO presentation experiment. | Build 66 has no visual KartPad launcher or game-boot check: another app was foreground on the iPad during mirror inspection. Builds 67–70 have not been signed or installed. Original, Retro, WFC, replay and performance still need physical gameplay checks. |
 
 The source branches and submodules have moved beyond the physical-device
@@ -284,7 +284,7 @@ In particular, the host test proves packet ordering in the direct walker, not
 a gameplay speedup; HLE's per-word FIFO path and cross-call batching are still
 unchanged. Apple build 70 predates this source change.
 
-The subsequent source candidate handles complete nine-byte GX display-list
+Code 216 handles complete nine-byte GX display-list
 calls directly in the burst walker. The shared translator now folds only the
 three-store `0x40` command/address/length pattern; other three-store packets
 keep their existing path. When direct parsing is unavailable, the runtime
@@ -292,9 +292,22 @@ replays the original 1/4/4 writes. A private retranslation of the real
 `ResShp::CallPrePrimitiveDisplayList` function emitted two such bursts in place
 of six FIFO calls; 11 bursts were added across the regenerated graph. All 14
 focused translator tests, the production walker host test, and shared-runtime
-parity pass. This candidate is source-only: no new APK or Apple app has been
-built from it, and no game-thread or presentation measurement exists. The
-private translation output is under `work/gx-direct-dl-translation-20260925/`.
+parity pass. The private release APK passed the package audit and has SHA-256
+`2f364a883d449853fe9304838bbb13eb31aed2121fa430f1281e0b4e1b1259b0`;
+its signing certificate SHA-256 matches code 215,
+`61dfb51411efe50b2e7fb8d280fcfbba766792c275d1024013940760caa3afaf`.
+It was installed in place over code 214 on the API 36 ARM64 emulator. Before
+and after installation, the app had 2,116 files, and `Config.toml`,
+`StaticR.rel`, and the disc manifest read back byte-identical. The launcher
+offered Original, which reached the animated title and kept rendering for over
+nine minutes without a fatal message in the session transcript. Input attempts
+did not reach a menu or race. This is an emulator boot and data-preservation
+check, not a gameplay or performance comparison. The Pixel remains on code
+208; no physical Android device was attached. No Apple app has been built from
+this change. The private APK, translation, build/audit logs, screenshots and
+session transcript are under `work/kartpad-code216-gx-direct.apk`,
+`work/gx-direct-dl-translation-20260925/` and
+`work/android-gx-direct-20260925-*`.
 
 Evidence: [Pixel comparison](../2026-09-23/android-copy-stream-loop.md),
 [Android build 195 baseline](../2026-09-23/android-morning-report.md), and
