@@ -6,7 +6,7 @@ not a release note or a claim of device acceptance across platforms.
 | Platform | Current private build | Evidence | Remaining gate |
 |---|---|---|---|
 | Android | Pixel retained build: `0.5.1-android-nightly.14`, code 208. Latest private APK and emulator-booted candidate: `0.5.1-gx-direct.1`, code 216. | Code 208's archived APK and the copy pulled after its in-place Pixel 9 Pro XL install have the same SHA-256, `a8b0d1867fe654d373b6044687b3b1e9593160163881c9be13aaa6f28e167579`. Candidate 203, whose source was rebuilt as 208, ran an active stationary 12-kart Cookie Land battle on that Pixel: 12.652 ms game-thread CPU per presented frame versus 14.70–14.79 ms for build 195 in comparable runs. Codes 209–211 passed release APK audits and each reached an active Luigi Circuit race on the API 36 ARM64 emulator. Code 212 passed a fatal-exit check; code 213 rejected a modified REL. Code 214 booted Original on the emulator and Android accepted a 60 Hz surface request. Code 215 passed its private release APK audit and XF burst host test but was not booted. Code 216 passed the release APK audit and reached Original's animated title on the API 36 ARM64 emulator after an in-place install over code 214. | Codes 209–216 have no physical-device comparison or smoothness measurement. The Pixel still has code 208; its package/readback check does not constitute a new measured gameplay run. Code 216 reached no race. Retro pipeline replay logged zero recorded and zero queued on the tested physical course. Driven races, Samsung/Adreno devices and online play remain open. |
-| iPadOS | Installed: `0.5.1` build 70, signed development app; no IPA packaged. | Build 66 passed the physical iOS app audit and strict signing check and installed in place over build 65. Builds 67–70 compiled from newer iOS runtimes and passed full-game app audits; each executable and matching dSYM share a UUID. Build 70 includes the REL validator, #196 diagnostic, and an opt-in native-rate FIFO presentation experiment. It was signed with the same team and installed in place over build 66 on the paired iPad Pro. The 2.6 GB game image and 34 other app-data files were backed up before and read back byte-identical after installation. The device reports build 70. | Build 70 has not been launched or visually checked: OpenTS1 was active on the iPad when its screen was mirrored, so KartPad was left in the background. Original, Retro, WFC, replay and performance still need physical gameplay checks. |
+| iPadOS | Installed: `0.5.1` build 70, signed development app. Latest candidate: unsigned build 71; no IPA packaged. | Build 66 passed the physical iOS app audit and strict signing check and installed in place over build 65. Builds 67–71 compiled from newer iOS runtimes and passed full-game app audits; each executable and matching dSYM share a UUID. Build 70 includes the REL validator, #196 diagnostic, and an opt-in native-rate FIFO presentation experiment. It was signed with the same team and installed in place over build 66 on the paired iPad Pro. The 2.6 GB game image and 34 other app-data files were backed up before and read back byte-identical after installation. The device reports build 70. Build 71 includes the GX display-list change compiled from the regenerated graph. | Builds 70–71 have not been launched or visually checked: OpenTS1 was active on the iPad when its screen was mirrored, so KartPad was left in the background. Original, Retro, WFC, replay and performance still need physical gameplay checks. |
 
 The source branches and submodules have moved beyond the physical-device
 artifacts. Guarded DVD DMA bulk copies are in all four runtime submodules and
@@ -205,11 +205,14 @@ same development team and provision as build 66, then passed strict signature
 verification. Its signed executable SHA-256 is
 `8f91d07ecfc751f5a2aca38176af47b27fc2e9dd48171933df2e64b6e4b83cf6`;
 its UUID still matches the retained dSYM. An in-place install over build 66
-succeeded on the paired iPad Pro, and the device reports build 70. AFC backups
-before and after the install contain the same 35 files with no hash mismatch,
-including the game image at
+succeeded on the paired iPad Pro, and the device reports build 70. AFC copies
+of all 35 files matched byte-for-byte before and after installation, including
+the game image at
 `fc035e60610842da6860d23d4a30c1f1c0f019d492469deb8a2ac25ef5822331`.
-The private receipt is `work/ios70-install-20260925/readback-verification.json`.
+The two temporary game-image readback copies were removed after the hash check;
+an identical full backup remains at `work/ios66-install-20260924/ipad-before/game-full.wbfs`.
+The 34 other before/after files and the verification receipt remain under
+`work/ios70-install-20260925/`.
 QuickTime mirrored the physical iPad, but OpenTS1 was active, so KartPad was
 not launched. No iOS frame-time, frame-tail, audio, or input comparison has
 been measured.
@@ -315,11 +318,30 @@ offered Original, which reached the animated title and kept rendering for over
 nine minutes without a fatal message in the session transcript. Input attempts
 did not reach a menu or race. This is an emulator boot and data-preservation
 check, not a gameplay or performance comparison. The Pixel remains on code
-208; no physical Android device was attached. No Apple app has been built from
-this change. The private APK, translation, build/audit logs, screenshots and
+208; no physical Android device was attached. The private APK, translation,
+build/audit logs, screenshots and
 session transcript are under `work/kartpad-code216-gx-direct.apk`,
 `work/gx-direct-dl-translation-20260925/` and
 `work/android-gx-direct-20260925-*`.
+
+Unsigned physical-iOS build 71 compiles the same GX display-list change from
+the regenerated code 216 translation graph, with the iOS-specific data-section
+aliases retained. Only seven translated function files differ from the earlier
+Apple graph. It uses iOS runtime `fe44bf8` and build number 71. The dual app
+build and full-game app audit passed; the executable SHA-256 is
+`1f6a40855675485689589f67cab74d7a432366281ae91ad324df07e37df3fc08`,
+and the executable and dSYM both have UUID
+`6C788A83-724A-3791-9DA4-D68B1D0E7CE3`. The embedded source-input record
+names translation SHA-256
+`9e0b11d3bb1fe97f6cccecd8420008b24450297e337ba29506f10ff262b2f1b3`;
+`source_dirty=true` reflects the staged iOS gitlink and the owner's unrelated
+dirty document at build time. The app and dSYM are under
+`build/ios71-gx-direct-20260925/xcode/Release-iphoneos/`; the private build log
+is `work/ios71-gx-direct-build-20260925.log`. Build 71 is unsigned and has not
+been packaged as an IPA, installed, launched, played or measured. The paired
+iPad still has build 70 installed; a mirror showed OpenTS1 in the foreground,
+so no KartPad session was interrupted. This compiler/package result does not
+establish a device speedup or clear Original, Retro or WFC gameplay.
 
 Evidence: [Pixel comparison](../2026-09-23/android-copy-stream-loop.md),
 [Android build 195 baseline](../2026-09-23/android-morning-report.md), and
