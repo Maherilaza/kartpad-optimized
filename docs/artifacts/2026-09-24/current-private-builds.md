@@ -14,8 +14,18 @@ passed C++ syntax checks. Android code 209 includes that change and a
 scene-generation fix in its Android runtime. The fix invalidates both GX
 pipeline memos when a course load begins, allowing previously seen recipes to
 reach the scene recorder again. The iOS source has the same fix; macOS and tvOS
-have only the DVD change. The iPad build 66 includes the iOS changes, but has
-not been driven into either game.
+do not yet have it. The iPad build 66 includes the iOS changes through the GX
+scene-generation repair, but has not been driven into either game.
+
+Apple source revision `2a9a548` additionally ports Android's shared Aurora
+render-mode lock, frame-owned debug marker/depth-peek mapping, GX GEN_MODE
+first-write initialization, and alarm reschedule ordering to iOS, macOS and
+tvOS. The six changed files match across the Apple runtimes; the three Aurora
+implementation files passed a macOS host syntax check, and the alarm source
+passed a separate syntax check. Android's surface-loss copy path was examined
+but not ported because Apple's overlay draw has a different return contract.
+No Apple app has been built from `2a9a548`, so build 66 does not validate these
+new ports on device.
 
 Code 209 was built from Android runtime `f1677be`, with the private translated
 shards, as `work/android-replaygen-20260924/kartpad-code209-replaygen.apk`.
