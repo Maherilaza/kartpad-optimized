@@ -6,22 +6,26 @@ here was installed or played on a device, no public reply or release was made,
 and no product source was changed. Measured numbers are labelled with their
 source; everything else is marked as a hypothesis.
 
+For the exact unpublished build status and acceptance limits, see
+[Private build status](current-private-builds.md). The conclusions below are
+review hypotheses unless tied to a named measurement or source check.
+
 ## 0. Plain-English summary
 
-1. **Races are slow mainly because one thread does everything.** On the Pixel,
-   the game thread uses 80% of all app CPU. About a quarter of that thread is
+1. **The game thread is the largest measured CPU user in one Pixel battle.** It
+   accounts for 80% of sampled app CPU. About a quarter of that thread is
    KartPad's own Wii-graphics front end (decoding the game's GX command stream
    and building draws), which real hardware and Dolphin do on a separate
    GPU-side thread. Another ~14% is emulating PowerPC floating-point status
    bits the game never reads. Other CPU cores sit mostly idle.
-2. **The Android character corruption is an Adreno driver problem triggered by
-   one specific shader pattern:** each vertex of a skinned character picks its
-   own matrix from a uniform array. The shader is valid Vulkan; the fix is to
-   stop asking the GPU to do per-vertex matrix selection (CPU skinning or draw
-   splitting), not another indexing tweak.
-3. **Phone imports accept modified game images.** Only the disc ID and
-   revision are checked, never the code files, although the exact hashes are
-   already in the builder profile. Modified images crash on start.
+2. **The Adreno character corruption may be tied to per-vertex matrix
+   selection.** Each vertex of a skinned character picks its own matrix from a
+   uniform array. The generated shader appears valid, but there is no isolated
+   Adreno reproduction yet. CPU skinning or draw splitting are proposed tests.
+3. **Phone imports appear to accept modified game images.** The inspected import
+   paths check disc ID and revision, not the code-file hashes in the builder
+   profile. A modified image causing a specific startup crash is still a
+   hypothesis; validate it before making that claim to users.
 4. **The iPhone 17 crash (#196) is now decoded:** it dies at the boot screen
    when the game calls StaticR's start routine through the module linker. It
    needs one log line to finish.
@@ -191,4 +195,3 @@ With §3.2 in place, add one boot log at `ModuleLinker::CallModule` (HLE wrapper
 - Report physical-device evidence separately from emulator/host/package/compiler evidence.
 - Specific, privacy-bounded reporter asks only; no public replies or releases without owner approval.
 - Keep the primary checkout untouched. Do not suggest Figma.
-
