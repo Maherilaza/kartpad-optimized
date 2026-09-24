@@ -5,8 +5,8 @@ not a release note or a claim of device acceptance across platforms.
 
 | Platform | Current private build | Evidence | Remaining gate |
 |---|---|---|---|
-| Android | Pixel retained build: `0.5.1-android-nightly.14`, code 208. Latest emulator candidate: `0.5.1-dvdcache.1`, code 211. | Code 208's archived APK and the copy pulled after its in-place Pixel 9 Pro XL install have the same SHA-256, `a8b0d1867fe654d373b6044687b3b1e9593160163881c9be13aaa6f28e167579`. Candidate 203, whose source was rebuilt as 208, ran an active stationary 12-kart Cookie Land battle on that Pixel: 12.652 ms game-thread CPU per presented frame versus 14.70–14.79 ms for build 195 in comparable runs. Codes 209–211 passed release APK audits and each reached an active Luigi Circuit race on the API 36 ARM64 emulator. | Codes 209–211 have no physical-device comparison or smoothness measurement. The Pixel still has code 208; its package/readback check does not constitute a new measured gameplay run. Retro pipeline replay logged zero recorded and zero queued on the tested physical course. Driven races, Samsung/Adreno devices and online play remain open. |
-| iPadOS | Installed: `0.5.1` build 66, signed development app. Latest private source candidate: unsigned build 67; no IPA packaged. | Build 66 passed the physical iOS app audit and strict signing check. It installed in place over build 65 on the iPad Pro, reports build 66, and launched as PID 999. The game image and 34 state files were backed up and read back byte-identical. Build 67 compiled from the newer iOS runtime and passed the full-game app audit; its executable and dSYM UUIDs match. | Build 66 has no visual KartPad launcher or game-boot check: another app was foreground on the iPad during mirror inspection. Build 67 has not been signed or installed. Original, Retro, WFC, replay and performance still need physical gameplay checks. |
+| Android | Pixel retained build: `0.5.1-android-nightly.14`, code 208. Latest emulator candidate: `0.5.1-exit.1`, code 212. | Code 208's archived APK and the copy pulled after its in-place Pixel 9 Pro XL install have the same SHA-256, `a8b0d1867fe654d373b6044687b3b1e9593160163881c9be13aaa6f28e167579`. Candidate 203, whose source was rebuilt as 208, ran an active stationary 12-kart Cookie Land battle on that Pixel: 12.652 ms game-thread CPU per presented frame versus 14.70–14.79 ms for build 195 in comparable runs. Codes 209–211 passed release APK audits and each reached an active Luigi Circuit race on the API 36 ARM64 emulator. Code 212 passed the package audit, booted into the emulator's game attract sequence, and passed an invalid-DVD-root fatal-exit check. | Codes 209–212 have no physical-device comparison or smoothness measurement. The Pixel still has code 208; its package/readback check does not constitute a new measured gameplay run. Retro pipeline replay logged zero recorded and zero queued on the tested physical course. Driven races, Samsung/Adreno devices and online play remain open. |
+| iPadOS | Installed: `0.5.1` build 66, signed development app. Latest private source candidate: unsigned build 68; no IPA packaged. | Build 66 passed the physical iOS app audit and strict signing check. It installed in place over build 65 on the iPad Pro, reports build 66, and launched as PID 999. The game image and 34 state files were backed up and read back byte-identical. Builds 67–68 compiled from newer iOS runtimes and passed full-game app audits; each executable and matching dSYM share a UUID. | Build 66 has no visual KartPad launcher or game-boot check: another app was foreground on the iPad during mirror inspection. Builds 67–68 have not been signed or installed. Original, Retro, WFC, replay and performance still need physical gameplay checks. |
 
 The source branches and submodules have moved beyond the physical-device
 artifacts. Guarded DVD DMA bulk copies are in all four runtime submodules and
@@ -98,6 +98,39 @@ emulator was stopped without wiping app data. No physical Android device was
 connected, and this run is not a matched performance comparison. Apple build
 67 predates the file-cache change; no Apple app with this change has been
 built or tested on device.
+
+On 25 September, all four runtime copies gained a central `RuntimeTerminate`
+path for the named fatal exits, including missing guest targets, OS panic and
+reset, guest exit, DVD/NAND root failures, and malformed Yaz0. It records a
+reason, writes fallback artifacts if needed, stops audio and Aurora workers,
+closes the transcript pump, flushes streams and exits without running static
+thread-owning destructors. Other low-level abort sites remain outside this
+change. The GX batching suggestion was inspected but not implemented: HLE
+applies CP/BP state immediately while Aurora defers XF/INDX work, so batching
+requires an explicit ordering contract at each synchronization point.
+
+Android code 212 (`0.5.1-exit.1`) was built from the new runtime and private
+translation into `work/android-termination-20260925/kartpad-code212-exit.apk`.
+SHA-256: `4526f6f029aacced47fb6bcdea0dbe7d80fe41b9f67b85ad5c939166e7808a26`.
+The release audit passed; signer SHA-256 remains
+`61dfb51411efe50b2e7fb8d280fcfbba766792c275d1024013940760caa3afaf`.
+On the existing API 36 ARM64 emulator, `adb install -r` preserved 2,109 app
+files, 2.5 GB of data, and the exact `Config.toml` hash. Original booted into
+the game's running attract sequence. A temporary invalid DVD root, launched
+directly through `KartPadActivity`, produced `crash_dvd_root.txt`, an exit-1
+reason in `console.log`, and `[runtime] process transcript ended`. The original
+config was restored and read back with SHA-256
+`e1e85a1693ebf504679f7d54123f38568e3a217ae315b0c214277ce9f04fe63f`.
+The emulator was stopped without a wipe. This checks one fatal path, not all
+fatal paths or an active race; code 212 was not installed on a physical phone.
+
+Unsigned iOS build 68 was compiled from the same termination change and the
+newer file-cache runtime at
+`build/ios68-termination-20260925/xcode/Release-iphoneos/KartPad.app`.
+Its full-game app audit passed, `CFBundleVersion` is 68, executable SHA-256 is
+`b6d3cb66fb29b4226ec994ce5346ac5abcdf30d8f5703d2508506f59aaa76dde`,
+and executable/dSYM UUID is `0A4C83E0-8F09-3F9C-8662-76EA46A50B37`.
+Build 68 has not been signed, packaged as an IPA, installed or played on iPad.
 
 The build 66 iPad receipt is in `work/ios66-install-20260924/`. It was built
 from a fresh stage of iOS runtime `0df334c` plus the build-number change later
