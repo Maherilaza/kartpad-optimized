@@ -5,8 +5,8 @@ not a release note or a claim of device acceptance across platforms.
 
 | Platform | Current private build | Evidence | Remaining gate |
 |---|---|---|---|
-| Android | Pixel retained build: `0.5.1-android-nightly.14`, code 208. Latest emulator candidate: `0.5.1-exit.1`, code 212. | Code 208's archived APK and the copy pulled after its in-place Pixel 9 Pro XL install have the same SHA-256, `a8b0d1867fe654d373b6044687b3b1e9593160163881c9be13aaa6f28e167579`. Candidate 203, whose source was rebuilt as 208, ran an active stationary 12-kart Cookie Land battle on that Pixel: 12.652 ms game-thread CPU per presented frame versus 14.70–14.79 ms for build 195 in comparable runs. Codes 209–211 passed release APK audits and each reached an active Luigi Circuit race on the API 36 ARM64 emulator. Code 212 passed the package audit, booted into the emulator's game attract sequence, and passed an invalid-DVD-root fatal-exit check. | Codes 209–212 have no physical-device comparison or smoothness measurement. The Pixel still has code 208; its package/readback check does not constitute a new measured gameplay run. Retro pipeline replay logged zero recorded and zero queued on the tested physical course. Driven races, Samsung/Adreno devices and online play remain open. |
-| iPadOS | Installed: `0.5.1` build 66, signed development app. Latest private source candidate: unsigned build 68; no IPA packaged. | Build 66 passed the physical iOS app audit and strict signing check. It installed in place over build 65 on the iPad Pro, reports build 66, and launched as PID 999. The game image and 34 state files were backed up and read back byte-identical. Builds 67–68 compiled from newer iOS runtimes and passed full-game app audits; each executable and matching dSYM share a UUID. | Build 66 has no visual KartPad launcher or game-boot check: another app was foreground on the iPad during mirror inspection. Builds 67–68 have not been signed or installed. Original, Retro, WFC, replay and performance still need physical gameplay checks. |
+| Android | Pixel retained build: `0.5.1-android-nightly.14`, code 208. Latest emulator candidate: `0.5.1-imagecheck.1`, code 213. | Code 208's archived APK and the copy pulled after its in-place Pixel 9 Pro XL install have the same SHA-256, `a8b0d1867fe654d373b6044687b3b1e9593160163881c9be13aaa6f28e167579`. Candidate 203, whose source was rebuilt as 208, ran an active stationary 12-kart Cookie Land battle on that Pixel: 12.652 ms game-thread CPU per presented frame versus 14.70–14.79 ms for build 195 in comparable runs. Codes 209–211 passed release APK audits and each reached an active Luigi Circuit race on the API 36 ARM64 emulator. Code 212 passed a fatal-exit check. Code 213 accepted clean game data, rejected a one-byte modified REL, and booted Original on the emulator. | Codes 209–213 have no physical-device comparison or smoothness measurement. The Pixel still has code 208; its package/readback check does not constitute a new measured gameplay run. Retro pipeline replay logged zero recorded and zero queued on the tested physical course. Driven races, Samsung/Adreno devices and online play remain open. |
+| iPadOS | Installed: `0.5.1` build 66, signed development app. Latest compiled private app: unsigned build 68; no IPA packaged. Newer source adds REL validation and has not been compiled. | Build 66 passed the physical iOS app audit and strict signing check. It installed in place over build 65 on the iPad Pro, reports build 66, and launched as PID 999. The game image and 34 state files were backed up and read back byte-identical. Builds 67–68 compiled from newer iOS runtimes and passed full-game app audits; each executable and matching dSYM share a UUID. | Build 66 has no visual KartPad launcher or game-boot check: another app was foreground on the iPad during mirror inspection. Builds 67–68 have not been signed or installed. Original, Retro, WFC, replay and performance still need physical gameplay checks. |
 
 The source branches and submodules have moved beyond the physical-device
 artifacts. Guarded DVD DMA bulk copies are in all four runtime submodules and
@@ -131,6 +131,33 @@ Its full-game app audit passed, `CFBundleVersion` is 68, executable SHA-256 is
 `b6d3cb66fb29b4226ec994ce5346ac5abcdf30d8f5703d2508506f59aaa76dde`,
 and executable/dSYM UUID is `0A4C83E0-8F09-3F9C-8662-76EA46A50B37`.
 Build 68 has not been signed, packaged as an IPA, installed or played on iPad.
+
+The handoff's claim that extracted-folder imports do not hash executable game
+files was incomplete: Android, iOS, macOS and tvOS already checked `main.dol`
+in their game-data readiness paths. The actual gap was `StaticR.rel` on all
+four platforms. The same readiness paths validate extracted staging after a
+disc-image import, so the Android and iOS disc-image paths also gain the REL
+check without duplicating hashing inside the extractors. The profile's pinned
+REL hash matched the retained emulator's clean file. Rather than keep a
+size/time cache that could accept a changed file, the readiness check hashes
+the 4.9 MB REL on launch alongside the existing DOL check. No frame-loop hash
+was added.
+
+Android code 213 (`0.5.1-imagecheck.1`) built from this source, passed the
+release APK audit, and has SHA-256
+`ac0888f54f6e47657a0bd1f6590bffc9d4cb0ab26290df8e3f7994903b124f9f`.
+Its signer remains
+`61dfb51411efe50b2e7fb8d280fcfbba766792c275d1024013940760caa3afaf`.
+On the existing API 36 ARM64 emulator, `adb install -r` preserved 2,114 app
+files, `Config.toml`, and the clean REL hashes. The launcher showed “Ready to
+play” and Original began booting. A one-byte modified REL, staged only after
+pulling a byte-identical backup, changed the launcher to “Setup needed” and
+displayed the clean-dump message. Restoring the backup read back to SHA-256
+`16d9d146112541fefea701ecb5bc1a496f9d50e4a752fbb5b6778e7c6399f67d`
+and restored “Ready to play.” Screenshots, build/audit logs and the private
+APK are under `work/android-imagecheck-20260925/`. The emulator was stopped
+without wiping data. This is a launcher/boot check, not a driven race or a
+physical-device test. The Apple source checks have not yet been built or run.
 
 The build 66 iPad receipt is in `work/ios66-install-20260924/`. It was built
 from a fresh stage of iOS runtime `0df334c` plus the build-number change later

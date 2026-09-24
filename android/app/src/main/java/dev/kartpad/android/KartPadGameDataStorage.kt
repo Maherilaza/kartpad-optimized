@@ -18,6 +18,10 @@ internal object KartPadGameDataStorage {
     private const val MAX_BYTES = 8L * 1024L * 1024L * 1024L
     private const val MAIN_DOL_SHA256 =
         "80d18895b39c63bd80f457398bfcbb91b7d16ac116a41a88967e954080155b05"
+    private const val STATIC_R_SHA256 =
+        "16d9d146112541fefea701ecb5bc1a496f9d50e4a752fbb5b6778e7c6399f67d"
+    private const val MODIFIED_GAME_DATA =
+        "This game data is modified (for example Wiimmfi-patched or pre-patched). Please use a clean RMCP01 dump."
 
     private val requiredPaths = listOf(
         "sys/boot.bin",
@@ -169,7 +173,10 @@ internal object KartPadGameDataStorage {
             "The selected folder does not contain a valid extracted Wii disc header."
         }
         require(navigator.sha256(nodes.getValue("sys/main.dol")) == MAIN_DOL_SHA256) {
-            "sys/main.dol does not match the supported RMCP01 revision 0 profile."
+            MODIFIED_GAME_DATA
+        }
+        require(navigator.sha256(nodes.getValue("files/rel/StaticR.rel")) == STATIC_R_SHA256) {
+            MODIFIED_GAME_DATA
         }
     }
 
@@ -202,7 +209,12 @@ internal object KartPadGameDataStorage {
         val hash = runCatching { sha256(File(root, "sys/main.dol")) }
             .getOrElse { return "KartPad could not hash sys/main.dol." }
         if (hash != MAIN_DOL_SHA256) {
-            return "sys/main.dol does not match the supported RMCP01 revision 0 profile."
+            return MODIFIED_GAME_DATA
+        }
+        val relHash = runCatching { sha256(File(root, "files/rel/StaticR.rel")) }
+            .getOrElse { return "KartPad could not hash files/rel/StaticR.rel." }
+        if (relHash != STATIC_R_SHA256) {
+            return MODIFIED_GAME_DATA
         }
         return null
     }

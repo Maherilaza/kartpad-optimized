@@ -438,7 +438,16 @@ NSString *KartPadValidateExtractedRoot(NSString *root, NSError **error) {
   }
   if (![dolHash isEqualToString:
       @"80d18895b39c63bd80f457398bfcbb91b7d16ac116a41a88967e954080155b05"]) {
-    return @"sys/main.dol does not match the supported RMCP01 revision 0 profile.";
+    return @"This game data is modified (for example Wiimmfi-patched or pre-patched). Please use a clean RMCP01 dump.";
+  }
+  NSString *relHash = KartPadSHA256ForFile(
+      [root stringByAppendingPathComponent:@"files/rel/StaticR.rel"], error);
+  if (relHash == nil) {
+    return @"KartPad could not hash files/rel/StaticR.rel.";
+  }
+  if (![relHash isEqualToString:
+      @"16d9d146112541fefea701ecb5bc1a496f9d50e4a752fbb5b6778e7c6399f67d"]) {
+    return @"This game data is modified (for example Wiimmfi-patched or pre-patched). Please use a clean RMCP01 dump.";
   }
   return nil;
 }
