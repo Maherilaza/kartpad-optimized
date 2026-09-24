@@ -173,6 +173,15 @@ owner's unrelated dirty document plus the staged iOS gitlink at build time.
 The app is unsigned and has no IPA. It has not been installed or played on an
 iPad; compilation does not prove the new rejection flow on Apple hardware.
 
+After build 69, the four runtime copies gained a narrow diagnostic for the
+missing-target failure at `ModuleLinker::CallModule`'s return address
+`0x8000A42C`. The fatal transcript and crash artifact now label the module
+index (`r4`), module base (`r3`), and failed REL prolog target, alongside the
+registered StaticR prolog address. The translated call site confirms those
+register meanings; this change does not alter module loading or dispatch.
+Build 69 predates the diagnostic. The cause of #196 remains unproven until a
+new run supplies those values; this source change has not been built or run.
+
 The build 66 iPad receipt is in `work/ios66-install-20260924/`. It was built
 from a fresh stage of iOS runtime `0df334c` plus the build-number change later
 committed as `e5902c8`. The unsigned executable SHA-256 is
