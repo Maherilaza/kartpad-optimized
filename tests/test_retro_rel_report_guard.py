@@ -102,6 +102,18 @@ class RelReportGuardTests(unittest.TestCase):
         with self.assertRaises(OSError):
             GUARD.shard_definition(self.root)
 
+    def test_graph_accepts_relocatable_shard_root(self):
+        shard = self.root / 'shard.cpp'
+        shard.write_text(FUNCTION)
+        GUARD.inject(shard)
+        (self.root / 'shards.cmake').write_text(
+            'set(MKW_TRANSLATED_SHARD_ROOT "${CMAKE_CURRENT_LIST_DIR}")\n'
+            'set(MKW_BASE_COMMON_SHARDS\n'
+            '  "${MKW_TRANSLATED_SHARD_ROOT}/shard.cpp"\n'
+            ')\n'
+        )
+        self.assertEqual(GUARD.shard_definition(self.root), shard)
+
     def test_graph_rejects_report_outside_the_output_tree(self):
         nested = self.root / 'shards'
         nested.mkdir()

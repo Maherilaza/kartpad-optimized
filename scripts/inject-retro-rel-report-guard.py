@@ -91,6 +91,7 @@ def shard_definition(root: Path) -> Path:
         raise SystemExit(f"missing literal compiled source list in {root}/shards.cmake")
     definitions = []
     for entry in sorted(set(entries)):
+        entry = entry.replace('${MKW_TRANSLATED_SHARD_ROOT}', str(root))
         path = Path(entry).resolve()
         if SIGNATURE in path.read_text():
             if not path.is_relative_to(root):

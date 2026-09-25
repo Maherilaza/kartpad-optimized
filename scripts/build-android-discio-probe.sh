@@ -2,15 +2,17 @@
 set -euo pipefail
 
 repo_root="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+# shellcheck source=android-toolchain-versions.sh
+source "${repo_root}/scripts/android-toolchain-versions.sh"
 source_root="${1:-${repo_root}/ref/upstream/dolphin}"
 work_source="${2:-${repo_root}/build/dolphin-android-discio-source}"
 work_build="${3:-${repo_root}/build/dolphin-android-discio-build}"
 stage_root="${4:-${repo_root}/build/dolphin-android-discio-jni}"
 resume="${KARTPAD_DISCIO_RESUME:-0}"
-sdk_root="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$HOME/Library/Android/sdk}}"
-ndk_root="${sdk_root}/ndk/29.0.14206865"
-cmake_bin="${sdk_root}/cmake/3.31.6/bin/cmake"
-ninja_bin="${sdk_root}/cmake/3.31.6/bin/ninja"
+sdk_root="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$KARTPAD_ANDROID_DEFAULT_SDK_ROOT}}"
+ndk_root="${sdk_root}/ndk/${KARTPAD_ANDROID_NDK}"
+cmake_bin="${sdk_root}/cmake/${KARTPAD_ANDROID_CMAKE}/bin/cmake"
+ninja_bin="${sdk_root}/cmake/${KARTPAD_ANDROID_CMAKE}/bin/ninja"
 
 if [[ "${resume}" != "0" && "${resume}" != "1" ]]; then
   echo "ERROR: KARTPAD_DISCIO_RESUME must be 0 or 1" >&2
@@ -89,7 +91,7 @@ if [[ ! -f "${binary}" ]]; then
   echo "ERROR: missing Android DiscIO probe: ${binary}" >&2
   exit 65
 fi
-if ! "${ndk_root}/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf" -h \
+if ! "${ndk_root}/toolchains/llvm/prebuilt/${KARTPAD_ANDROID_NDK_HOST_TAG}/bin/llvm-readelf" -h \
     "${binary}" | rg -q 'Machine:[[:space:]]+AArch64'; then
   echo "ERROR: DiscIO probe is not AArch64" >&2
   exit 65
@@ -109,6 +111,14 @@ install -m 0644 "${jni_library}" \
   "${stage_root}/arm64-v8a/libkartpad_discio.so"
 
 echo "Built pinned Android DiscIO probe: ${binary}"
-shasum -a 256 "${binary}"
+if command -v sha256sum >/dev/null 2>&1; then
+  sha256sum "${binary}"
+else
+  shasum -a 256 "${binary}"
+fi
 echo "Staged Android DiscIO JNI library: ${stage_root}/arm64-v8a/libkartpad_discio.so"
-shasum -a 256 "${stage_root}/arm64-v8a/libkartpad_discio.so"
+if command -v sha256sum >/dev/null 2>&1; then
+  sha256sum "${stage_root}/arm64-v8a/libkartpad_discio.so"
+else
+  shasum -a 256 "${stage_root}/arm64-v8a/libkartpad_discio.so"
+fi
