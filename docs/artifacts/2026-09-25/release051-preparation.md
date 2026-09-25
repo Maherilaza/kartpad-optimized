@@ -2,6 +2,9 @@
 
 ## State
 
+**SUPERSEDED: release withdrawn after the owner reported severe iPad stutter.
+See [the release hold](ios-release-hold.md). Do not publish these assets.**
+
 Prepared, audited, not published. No release tag, GitHub release URL, store upload,
 main merge, or post-release reporter replies exist from this preparation.
 Android code220 and iPhone/iPad build73 are clean full builds. Mac was skipped;
