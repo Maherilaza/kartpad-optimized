@@ -75,8 +75,8 @@ def main() -> int:
     reference_root = args.reference_root or repo / "ref"
     additional_entries = {
         "INSTALL_IPA.md": repo / "docs/INSTALL_IPA.md",
-        "RELEASE_NOTES.md": repo / "docs/releases/v0.4.24-ios.1.md",
-        "SOURCE_AND_REBUILD.md": repo / "docs/releases/v0.4.24-ios.1-source.md",
+        "RELEASE_NOTES.md": repo / "docs/releases/v0.5.1.md",
+        "SOURCE_AND_REBUILD.md": repo / "docs/releases/v0.5.1-source.md",
         "MULTIPLAYER.md": repo / "docs/MULTIPLAYER.md",
         "LICENSE": repo / "LICENSE",
         "LICENSES/GPL-3.0.txt": repo / "LICENSES/GPL-3.0.txt",
