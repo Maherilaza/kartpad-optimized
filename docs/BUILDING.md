@@ -6,6 +6,8 @@ See [source maintenance](source-maintenance/README.md) for editable source, pins
 Run commands from the repository root. For downloads and first launch, use the
 [Mac](INSTALL_MACOS.md) or [iPhone/iPad](INSTALL_IPA.md) installation guide.
 Android has a separate [source-build guide](../android/README.md).
+Linux users who only need to generate the private Android runtime handoff can
+follow the [Linux runtime guide](BUILDING_LINUX_RUNTIME.md).
 
 For a personal unsigned IPA, the [Personal IPA Builder](BUILDER.md) handles
 bootstrap, input validation and translation:

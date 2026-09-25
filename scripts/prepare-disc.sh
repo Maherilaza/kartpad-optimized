@@ -1,12 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-repo_root="$(git rev-parse --show-toplevel)"
+repo_root="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
 image="${1:-${repo_root}/ref/Mario Kart Wii.wbfs}"
 output="${2:-${repo_root}/private/self-build/disc}"
 expected_image_sha256="fc035e60610842da6860d23d4a30c1f1c0f019d492469deb8a2ac25ef5822331"
 expected_dol_sha256="80d18895b39c63bd80f457398bfcbb91b7d16ac116a41a88967e954080155b05"
 expected_rel_sha256="16d9d146112541fefea701ecb5bc1a496f9d50e4a752fbb5b6778e7c6399f67d"
+
+sha256_file() {
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$1" | awk '{print $1}'
+  else
+    shasum -a 256 "$1" | awk '{print $1}'
+  fi
+}
 
 image_lower="$(printf '%s' "${image}" | tr '[:upper:]' '[:lower:]')"
 case "${image_lower}" in
@@ -50,23 +58,25 @@ validate_output() {
     echo "ERROR: extracted data has an invalid Wii disc magic" >&2
     return 1
   }
-  [[ "$(shasum -a 256 "${root}/sys/main.dol" | awk '{print $1}')" == \
+  [[ "$(sha256_file "${root}/sys/main.dol")" == \
       "${expected_dol_sha256}" ]] || {
     echo "ERROR: extracted main.dol does not match the supported profile" >&2
     return 1
   }
-  [[ "$(shasum -a 256 "${root}/files/rel/StaticR.rel" | awk '{print $1}')" == \
+  [[ "$(sha256_file "${root}/files/rel/StaticR.rel")" == \
       "${expected_rel_sha256}" ]] || {
     echo "ERROR: extracted StaticR.rel does not match the supported profile" >&2
     return 1
   }
 }
 
-image_sha256="$(shasum -a 256 "${image}" | awk '{print $1}')"
-[[ "${image_sha256}" == "${expected_image_sha256}" ]] || {
+image_sha256="$(sha256_file "${image}")"
+if [[ "${image_sha256}" != "${expected_image_sha256}" &&
+      "${KARTPAD_ALLOW_EQUIVALENT_DISC_CONTAINER:-0}" != "1" ]]; then
   echo "ERROR: disc-image SHA-256 is unsupported: ${image_sha256}" >&2
+  echo "Use the Linux runtime handoff command for an equivalent ISO/WBFS/RVZ container." >&2
   exit 65
-}
+fi
 
 if [[ -d "${output}" ]]; then
   validate_output "${output}"
@@ -85,10 +95,9 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# This exact WBFS is independently pinned by a full SHA-256. nodtool's H0
-# validation rejects its first block despite the extracted DOL/REL matching the
-# supported profile, so extraction is read-only and followed by strict output
-# identity checks instead of weakening acceptance to a partial container hash.
+# The Linux handoff may accept a differently encoded container, but only after
+# extracting it read-only and validating the disc identity plus the exact
+# executable inputs used by the translator.
 "${nodtool}" extract --quiet "${image}" "${stage}"
 validate_output "${stage}"
 mv "${stage}" "${output}"
