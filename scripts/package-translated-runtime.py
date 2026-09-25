@@ -22,6 +22,7 @@ REQUIRED_FILES = (
     "build_shards/shards.cmake",
 )
 OPTIONAL_FILES = ("guest_symbol_table.cpp",)
+REQUIRED_DIRECTORIES = ("data_sections_init_blobs",)
 ARCHIVE_ROOT = "kartpad-runtime"
 
 
@@ -44,12 +45,19 @@ def payload_files(translation: Path) -> list[Path]:
             raise ValueError(f"generated runtime must not contain symlinks: {path}")
         if path.is_file():
             files.append(path)
-    shard_root = translation / "build_shards"
-    for path in sorted(shard_root.rglob("*")):
-        if path.is_symlink():
-            raise ValueError(f"generated runtime must not contain symlinks: {path}")
-        if path.is_file():
-            files.append(path)
+    for relative in (*REQUIRED_DIRECTORIES, "build_shards"):
+        root = translation / relative
+        if not root.is_dir() or root.is_symlink():
+            raise ValueError(f"generated runtime directory is invalid: {root}")
+        directory_files = []
+        for path in sorted(root.rglob("*")):
+            if path.is_symlink():
+                raise ValueError(f"generated runtime must not contain symlinks: {path}")
+            if path.is_file():
+                directory_files.append(path)
+        if not directory_files:
+            raise ValueError(f"generated runtime directory is empty: {root}")
+        files.extend(directory_files)
     return sorted(set(files), key=lambda path: path.relative_to(translation).as_posix())
 
 

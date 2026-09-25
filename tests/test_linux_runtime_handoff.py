@@ -23,7 +23,11 @@ class LinuxRuntimeHandoffTests(unittest.TestCase):
         (shards / "base_common").mkdir(parents=True)
         (translation / "RuntimeConfig.h").write_text("#pragma once\n")
         (translation / "data_sections_init.cpp").write_text("void InitData() {}\n")
-        (translation / "data_sections_init_blobs.S").write_text(".section .rodata\n")
+        (translation / "data_sections_init_blobs.S").write_text(
+            '.incbin "@MKW_TRANSLATED_BLOB_ROOT@/data_sections_init_blobs/_data.bin"\n'
+        )
+        (translation / "data_sections_init_blobs").mkdir()
+        (translation / "data_sections_init_blobs/_data.bin").write_bytes(b"data")
         (translation / "guest_symbol_table.cpp").write_text("const int symbols = 0;\n")
         (translation / "functions/func_8000A440.cpp").write_text("void f() {}\n")
         shard = shards / "base_common/base.cpp"
@@ -73,6 +77,9 @@ class LinuxRuntimeHandoffTests(unittest.TestCase):
                     "kartpad-runtime/build_shards/base_common/base.cpp", names
                 )
                 self.assertIn("kartpad-runtime/functions/func_8000A440.cpp", names)
+                self.assertIn(
+                    "kartpad-runtime/data_sections_init_blobs/_data.bin", names
+                )
                 self.assertNotIn("kartpad-runtime/disc.rvz", names)
                 self.assertFalse(any("/sys/" in name for name in names))
                 cmake = (
@@ -89,6 +96,13 @@ class LinuxRuntimeHandoffTests(unittest.TestCase):
                     cmake,
                 )
                 self.assertNotIn(str(translation), cmake)
+                blob_assembly = (
+                    archive.extractfile("kartpad-runtime/data_sections_init_blobs.S")
+                    .read()
+                    .decode()
+                )
+                self.assertIn("@MKW_TRANSLATED_BLOB_ROOT@", blob_assembly)
+                self.assertNotIn(str(translation), blob_assembly)
                 manifest = json.load(
                     archive.extractfile("kartpad-runtime/kartpad-runtime-manifest.json")
                 )
@@ -120,6 +134,10 @@ class LinuxRuntimeHandoffTests(unittest.TestCase):
         translator = (REPO / "scripts/prepare-patched-translator.sh").read_text()
         translate = (REPO / "scripts/translate-base.sh").read_text()
         runtime_prepare = (REPO / "scripts/prepare-ios-game-runtime.sh").read_text()
+        android_bootstrap = (REPO / "scripts/bootstrap-android-host.sh").read_text()
+        android_runtime_prepare = (
+            REPO / "scripts/prepare-android-game-runtime.sh"
+        ).read_text()
         project = (REPO / "tools/mkwii-rmcp01-base.yml").read_text()
         for extension in ("*.iso", "*.wbfs", "*.rvz"):
             self.assertIn(extension, prepare)
@@ -146,6 +164,14 @@ class LinuxRuntimeHandoffTests(unittest.TestCase):
         self.assertIn(
             "Prepared integrated ${prepare_platform} runtime source", runtime_prepare
         )
+        self.assertIn(
+            'generated_stage="${runtime_source}-generated"', android_runtime_prepare
+        )
+        self.assertIn(
+            'MKW_TRANSLATED_BLOB_ROOT="$generated_stage"',
+            android_runtime_prepare,
+        )
+        self.assertIn("KARTPAD_ANDROID_ACCEPT_LICENSES", android_bootstrap)
         self.assertIn("vendor/wiicompiled/projects/mkwii/MAP.txt", project)
 
     def test_android_source_preparation_reaches_graph_validation_on_linux(self):

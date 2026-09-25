@@ -4,7 +4,7 @@ set -euo pipefail
 repo_root="$(git rev-parse --show-toplevel)"
 # shellcheck source=android-toolchain-versions.sh
 source "$repo_root/scripts/android-toolchain-versions.sh"
-sdk_root="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$HOME/Library/Android/sdk}}"
+sdk_root="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$KARTPAD_ANDROID_DEFAULT_SDK_ROOT}}"
 apk="${1:-$repo_root/android/app/build/outputs/apk/debug/app-debug.apk}"
 [[ -f "$apk" ]] || { echo "ERROR: APK does not exist: $apk" >&2; exit 1; }
 

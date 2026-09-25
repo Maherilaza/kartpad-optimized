@@ -75,7 +75,7 @@ if grep -Eq '^set\(MKW_HAVE_RETRO_REWIND_SHARDS ON\)' \
   runtime_product="dual"
 fi
 
-"$repo_root/scripts/check-android-host.sh"
+KARTPAD_ANDROID_REQUIRE_AVDS=0 "$repo_root/scripts/check-android-host.sh"
 prepare_output="$("$repo_root/scripts/prepare-android-dependencies.sh")"
 echo "$prepare_output"
 dawn_root="$(printf '%s\n' "$prepare_output" | sed -n 's/^DAWN_ANDROID_ROOT=//p')"
@@ -117,8 +117,11 @@ if [[ ! -f "$discio_jni_root/arm64-v8a/libkartpad_discio.so" ]]; then
   fi
 fi
 
-export JAVA_HOME="$repo_root/.android-bootstrap/jdk-$KARTPAD_ANDROID_JDK_VERSION/Contents/Home"
-export ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$HOME/Library/Android/sdk}}"
+export JAVA_HOME="$repo_root/.android-bootstrap/jdk-$KARTPAD_ANDROID_JDK_VERSION"
+if [[ -n "$KARTPAD_ANDROID_JDK_HOME_SUBDIR" ]]; then
+  export JAVA_HOME="$JAVA_HOME/$KARTPAD_ANDROID_JDK_HOME_SUBDIR"
+fi
+export ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$KARTPAD_ANDROID_DEFAULT_SDK_ROOT}}"
 export DAWN_ANDROID_ROOT="$dawn_root"
 export MINIZIP_ANDROID_ROOT="$minizip_root"
 export MBEDTLS_ANDROID_ROOT="$mbedtls_root"
@@ -168,4 +171,8 @@ if [[ ! -f "$package_path" ]]; then
   exit 1
 fi
 echo "Built local Android game $package_kind (do not publish): $package_path"
-shasum -a 256 "$package_path"
+if command -v sha256sum >/dev/null 2>&1; then
+  sha256sum "$package_path"
+else
+  shasum -a 256 "$package_path"
+fi

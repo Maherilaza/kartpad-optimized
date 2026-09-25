@@ -16,18 +16,21 @@ pass() {
   echo "PASS: $*"
 }
 
-if [[ "$(uname -s)" != "Darwin" || "$(uname -m)" != "arm64" ]]; then
-  fail "A0 currently requires an Apple Silicon macOS host"
-else
-  pass "Apple Silicon host ($(sw_vers -productVersion))"
-fi
+case "$(uname -s):$(uname -m)" in
+  Darwin:arm64) pass "Apple Silicon host ($(sw_vers -productVersion))" ;;
+  Linux:x86_64) pass "Linux x86_64 Android build host" ;;
+  *) fail "unsupported Android build host ($(uname -s) $(uname -m))" ;;
+esac
 
-sdk_root="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$HOME/Library/Android/sdk}}"
+sdk_root="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$KARTPAD_ANDROID_DEFAULT_SDK_ROOT}}"
 if [[ ! -d "$sdk_root" ]]; then
   fail "Android SDK root does not exist: $sdk_root"
 fi
 
-java_home="$repo_root/.android-bootstrap/jdk-$KARTPAD_ANDROID_JDK_VERSION/Contents/Home"
+java_home="$repo_root/.android-bootstrap/jdk-$KARTPAD_ANDROID_JDK_VERSION"
+if [[ -n "$KARTPAD_ANDROID_JDK_HOME_SUBDIR" ]]; then
+  java_home="$java_home/$KARTPAD_ANDROID_JDK_HOME_SUBDIR"
+fi
 if [[ ! -x "$java_home/bin/java" ]]; then
   fail "pinned Temurin JDK $KARTPAD_ANDROID_JDK_VERSION is unavailable"
 else
@@ -62,7 +65,6 @@ require_directory() {
 require_file "sdkmanager ${KARTPAD_ANDROID_CMDLINE_TOOLS_REVISION}" \
   "$sdk_root/cmdline-tools/$KARTPAD_ANDROID_CMDLINE_TOOLS_REVISION/bin/sdkmanager"
 require_file "adb" "$sdk_root/platform-tools/adb"
-require_file "emulator" "$sdk_root/emulator/emulator"
 require_directory "Android platform ${KARTPAD_ANDROID_COMPILE_SDK}" \
   "$sdk_root/platforms/android-$KARTPAD_ANDROID_COMPILE_SDK"
 require_directory "Build Tools ${KARTPAD_ANDROID_BUILD_TOOLS}" \
@@ -71,37 +73,40 @@ require_directory "NDK ${KARTPAD_ANDROID_NDK}" \
   "$sdk_root/ndk/$KARTPAD_ANDROID_NDK"
 require_directory "CMake ${KARTPAD_ANDROID_CMAKE}" \
   "$sdk_root/cmake/$KARTPAD_ANDROID_CMAKE"
-require_directory "$KARTPAD_ANDROID_PHONE_IMAGE" \
-  "$sdk_root/system-images/android-36/google_apis/arm64-v8a"
-require_directory "$KARTPAD_ANDROID_PS16K_IMAGE" \
-  "$sdk_root/system-images/android-35/google_apis_ps16k/arm64-v8a"
+if [[ "${KARTPAD_ANDROID_REQUIRE_AVDS:-1}" == 1 ]]; then
+  require_file "emulator" "$sdk_root/emulator/emulator"
+  require_directory "$KARTPAD_ANDROID_PHONE_IMAGE" \
+    "$sdk_root/system-images/android-36/google_apis/arm64-v8a"
+  require_directory "$KARTPAD_ANDROID_PS16K_IMAGE" \
+    "$sdk_root/system-images/android-35/google_apis_ps16k/arm64-v8a"
 
-avd_root="${ANDROID_AVD_HOME:-$HOME/.android/avd}"
-require_file "AVD $KARTPAD_ANDROID_PHONE_AVD" \
-  "$avd_root/$KARTPAD_ANDROID_PHONE_AVD.avd/config.ini"
-require_file "AVD $KARTPAD_ANDROID_TABLET_AVD" \
-  "$avd_root/$KARTPAD_ANDROID_TABLET_AVD.avd/config.ini"
-require_file "AVD $KARTPAD_ANDROID_PS16K_AVD" \
-  "$avd_root/$KARTPAD_ANDROID_PS16K_AVD.avd/config.ini"
-if [[ -f "$avd_root/$KARTPAD_ANDROID_PHONE_AVD.avd/config.ini" ]] &&
-   ! grep -Eq '^image\.sysdir\.1=.*android-36/google_apis/arm64-v8a' \
-      "$avd_root/$KARTPAD_ANDROID_PHONE_AVD.avd/config.ini"; then
-  fail "AVD $KARTPAD_ANDROID_PHONE_AVD does not use the pinned API 36 ARM64 image"
-fi
-if [[ -f "$avd_root/$KARTPAD_ANDROID_TABLET_AVD.avd/config.ini" ]] &&
-   ! grep -Eq '^image\.sysdir\.1=.*android-36/google_apis/arm64-v8a' \
-      "$avd_root/$KARTPAD_ANDROID_TABLET_AVD.avd/config.ini"; then
-  fail "AVD $KARTPAD_ANDROID_TABLET_AVD does not use the pinned API 36 ARM64 image"
-fi
-if [[ -f "$avd_root/$KARTPAD_ANDROID_TABLET_AVD.avd/config.ini" ]] &&
-   ! grep -Eq '^hw\.device\.name=pixel_tablet$' \
-      "$avd_root/$KARTPAD_ANDROID_TABLET_AVD.avd/config.ini"; then
-  fail "AVD $KARTPAD_ANDROID_TABLET_AVD is not the pinned Pixel Tablet profile"
-fi
-if [[ -f "$avd_root/$KARTPAD_ANDROID_PS16K_AVD.avd/config.ini" ]] &&
-   ! grep -Eq '^image\.sysdir\.1=.*android-35/google_apis_ps16k/arm64-v8a' \
-      "$avd_root/$KARTPAD_ANDROID_PS16K_AVD.avd/config.ini"; then
-  fail "AVD $KARTPAD_ANDROID_PS16K_AVD does not use the pinned 16 KiB ARM64 image"
+  avd_root="${ANDROID_AVD_HOME:-$HOME/.android/avd}"
+  require_file "AVD $KARTPAD_ANDROID_PHONE_AVD" \
+    "$avd_root/$KARTPAD_ANDROID_PHONE_AVD.avd/config.ini"
+  require_file "AVD $KARTPAD_ANDROID_TABLET_AVD" \
+    "$avd_root/$KARTPAD_ANDROID_TABLET_AVD.avd/config.ini"
+  require_file "AVD $KARTPAD_ANDROID_PS16K_AVD" \
+    "$avd_root/$KARTPAD_ANDROID_PS16K_AVD.avd/config.ini"
+  if [[ -f "$avd_root/$KARTPAD_ANDROID_PHONE_AVD.avd/config.ini" ]] &&
+     ! grep -Eq '^image\.sysdir\.1=.*android-36/google_apis/arm64-v8a' \
+        "$avd_root/$KARTPAD_ANDROID_PHONE_AVD.avd/config.ini"; then
+    fail "AVD $KARTPAD_ANDROID_PHONE_AVD does not use the pinned API 36 ARM64 image"
+  fi
+  if [[ -f "$avd_root/$KARTPAD_ANDROID_TABLET_AVD.avd/config.ini" ]] &&
+     ! grep -Eq '^image\.sysdir\.1=.*android-36/google_apis/arm64-v8a' \
+        "$avd_root/$KARTPAD_ANDROID_TABLET_AVD.avd/config.ini"; then
+    fail "AVD $KARTPAD_ANDROID_TABLET_AVD does not use the pinned API 36 ARM64 image"
+  fi
+  if [[ -f "$avd_root/$KARTPAD_ANDROID_TABLET_AVD.avd/config.ini" ]] &&
+     ! grep -Eq '^hw\.device\.name=pixel_tablet$' \
+        "$avd_root/$KARTPAD_ANDROID_TABLET_AVD.avd/config.ini"; then
+    fail "AVD $KARTPAD_ANDROID_TABLET_AVD is not the pinned Pixel Tablet profile"
+  fi
+  if [[ -f "$avd_root/$KARTPAD_ANDROID_PS16K_AVD.avd/config.ini" ]] &&
+     ! grep -Eq '^image\.sysdir\.1=.*android-35/google_apis_ps16k/arm64-v8a' \
+        "$avd_root/$KARTPAD_ANDROID_PS16K_AVD.avd/config.ini"; then
+    fail "AVD $KARTPAD_ANDROID_PS16K_AVD does not use the pinned 16 KiB ARM64 image"
+  fi
 fi
 
 if [[ -x "$sdk_root/platform-tools/adb" ]]; then
