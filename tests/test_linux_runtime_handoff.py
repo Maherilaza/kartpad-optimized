@@ -134,6 +134,7 @@ class LinuxRuntimeHandoffTests(unittest.TestCase):
         translator = (REPO / "scripts/prepare-patched-translator.sh").read_text()
         translate = (REPO / "scripts/translate-base.sh").read_text()
         runtime_prepare = (REPO / "scripts/prepare-ios-game-runtime.sh").read_text()
+        android_bootstrap = (REPO / "scripts/bootstrap-android-host.sh").read_text()
         android_runtime_prepare = (
             REPO / "scripts/prepare-android-game-runtime.sh"
         ).read_text()
@@ -170,6 +171,7 @@ class LinuxRuntimeHandoffTests(unittest.TestCase):
             'MKW_TRANSLATED_BLOB_ROOT="$generated_stage"',
             android_runtime_prepare,
         )
+        self.assertIn("KARTPAD_ANDROID_ACCEPT_LICENSES", android_bootstrap)
         self.assertIn("vendor/wiicompiled/projects/mkwii/MAP.txt", project)
 
     def test_android_source_preparation_reaches_graph_validation_on_linux(self):

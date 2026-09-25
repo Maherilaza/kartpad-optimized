@@ -72,6 +72,15 @@ if [[ ! -x "$tools_root/bin/sdkmanager" ]]; then
 fi
 
 sdkmanager="$tools_root/bin/sdkmanager"
+accept_licenses="${KARTPAD_ANDROID_ACCEPT_LICENSES:-0}"
+case "$accept_licenses" in
+  0|1) ;;
+  *) echo "ERROR: KARTPAD_ANDROID_ACCEPT_LICENSES must be 0 or 1" >&2; exit 64 ;;
+esac
+if [[ "$accept_licenses" == 1 ]]; then
+  printf 'y\n%.0s' {1..100} |
+    "$sdkmanager" --sdk_root="$sdk_root" --licenses >/dev/null
+fi
 packages=(
   "platform-tools"
   "platforms;android-$KARTPAD_ANDROID_COMPILE_SDK"
@@ -84,7 +93,9 @@ if [[ "${KARTPAD_ANDROID_BOOTSTRAP_AVDS:-1}" == 1 ]]; then
 fi
 
 echo "Installing pinned Android packages into $sdk_root"
-echo "If sdkmanager reports an unaccepted license, stop and accept it interactively in Android Studio; this script never accepts terms on your behalf."
+if [[ "$accept_licenses" == 0 ]]; then
+  echo "If sdkmanager reports an unaccepted license, accept it interactively or explicitly set KARTPAD_ANDROID_ACCEPT_LICENSES=1."
+fi
 "$sdkmanager" --sdk_root="$sdk_root" "${packages[@]}"
 
 avdmanager="$tools_root/bin/avdmanager"
