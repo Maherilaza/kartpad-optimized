@@ -111,3 +111,11 @@ The owner explicitly requires publication of an updated APK before asking
 other users for targeted retests. Build 218 remains private. Next engineering
 work should analyze the existing Adreno crash/geometry evidence alongside the
 captured pipeline and network waits. Further Apple work remains deferred.
+
+## Second review handoff
+
+See [Android second-review prompt](android-second-review-prompt.md). As of this
+handoff, two Discord replies were sent; no new GitHub issue replies were posted
+in this session. The latest public APK remains v0.5.0/code135. Performance
+comparisons cited in earlier records compare intermediate candidates, not a
+matched public-code135 versus private-code218 run.
