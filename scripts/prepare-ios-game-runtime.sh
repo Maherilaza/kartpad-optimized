@@ -21,6 +21,14 @@ sse2neon_url="https://raw.githubusercontent.com/DLTcollab/sse2neon/13a42df35dc7f
 sse2neon_sha256="44b9fa3dec3a52ea473246e04b9f692a4e5b0ed654299eef7fe7ec3049e223e0"
 prepare_only="${KARTPAD_PREPARE_ONLY:-0}"
 
+sha256_file() {
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$1" | awk '{print $1}'
+  else
+    shasum -a 256 "$1" | awk '{print $1}'
+  fi
+}
+
 case "${product}" in
   base) product_target="WiiCompiled" ;;
   retro-rewind) product_target="RetroRewind" ;;
@@ -33,7 +41,8 @@ if [[ "${prepare_only}" != "0" && "${prepare_only}" != "1" ]]; then
   exit 64
 fi
 
-if [[ "$(uname -s)" != "Darwin" || "$(uname -m)" != "arm64" ]]; then
+if [[ "${prepare_only}" == "0" &&
+      ("$(uname -s)" != "Darwin" || "$(uname -m)" != "arm64") ]]; then
   echo "ERROR: the iOS game-runtime build requires arm64 macOS" >&2
   exit 1
 fi
@@ -61,7 +70,7 @@ if [[ "${prepare_only}" == "0" ]]; then
   fi
 fi
 if [[ "${prepare_only}" == "0" ]]; then
-  actual_dawn_sha256="$(shasum -a 256 "${dawn_archive}" | awk '{print $1}')"
+  actual_dawn_sha256="$(sha256_file "${dawn_archive}")"
   if [[ "${actual_dawn_sha256}" != "${dawn_sha256}" ]]; then
     echo "ERROR: Simulator Dawn hash mismatch: ${actual_dawn_sha256}" >&2
     exit 1
@@ -85,7 +94,7 @@ PYTHONPATH="${repo_root}/builder" python3 -m kartpad_builder.release_header \
 mkdir -p "${runtime_source}/third_party/sse2neon"
 cached_sse2neon="${repo_root}/build/dependency-cache/sse2neon-${sse2neon_sha256}.h"
 if [[ -f "${cached_sse2neon}" ]] &&
-   [[ "$(shasum -a 256 "${cached_sse2neon}" | awk '{print $1}')" == "${sse2neon_sha256}" ]]; then
+   [[ "$(sha256_file "${cached_sse2neon}")" == "${sse2neon_sha256}" ]]; then
   cp "${cached_sse2neon}" "${runtime_source}/third_party/sse2neon/sse2neon.h"
 else
   curl --fail --location --silent --show-error \
@@ -93,14 +102,14 @@ else
   mkdir -p "$(dirname "${cached_sse2neon}")"
   cp "${runtime_source}/third_party/sse2neon/sse2neon.h" "${cached_sse2neon}"
 fi
-actual_sse2neon_sha256="$(shasum -a 256 "${runtime_source}/third_party/sse2neon/sse2neon.h" | awk '{print $1}')"
+actual_sse2neon_sha256="$(sha256_file "${runtime_source}/third_party/sse2neon/sse2neon.h")"
 if [[ "${actual_sse2neon_sha256}" != "${sse2neon_sha256}" ]]; then
   echo "ERROR: sse2neon hash mismatch: ${actual_sse2neon_sha256}" >&2
   exit 1
 fi
 
 if [[ "${prepare_only}" == "1" ]]; then
-  echo "Prepared integrated iOS runtime source: ${runtime_source}"
+  echo "Prepared integrated ${prepare_platform} runtime source: ${runtime_source}"
   exit 0
 fi
 

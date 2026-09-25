@@ -19,10 +19,15 @@ inputs. It is not a recipe for reproducing the current code135 APK. Its
 [source delivery and reconstruction record](../docs/artifacts/2026-09-13/android-source-delivery.md)
 supplies that version's dependency/runtime source and exact partition metadata.
 
-The current scripts target macOS ARM64, with Xcode command-line tools, Python 3,
-and the pinned Builder/Android dependencies. Linux/Windows host builds are not
-documented as validated. Allow substantial disk space for dependencies and the
-private translated graph; the installed app's size is not the build-space cost.
+The complete local APK build scripts target macOS ARM64, with Xcode
+command-line tools, Python 3, and the pinned Builder/Android dependencies.
+Linux APK builds and Windows host builds are not documented as validated. Allow
+substantial disk space for dependencies and the private translated graph; the
+installed app's size is not the build-space cost.
+
+Linux users can generate a private base-title runtime handoff without building
+the APK or sharing their disc image. See
+[Generate the private Android runtime on Linux](../docs/BUILDING_LINUX_RUNTIME.md).
 
 ```sh
 git clone https://github.com/chrissotraidis/kartpad.git

@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-repo_root="$(git rev-parse --show-toplevel)"
+repo_root="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
 image="${1:-${repo_root}/ref/Mario Kart Wii.wbfs}"
 manifest="${repo_root}/tools/mkwii-rmcp01-base.yml"
 output="${repo_root}/private/self-build/translation"
 functions="${output}/functions"
 metadata="${output}/base_translation_output.json"
 shards="${output}/build_shards"
-dotnet_bin="/opt/homebrew/opt/dotnet@8/bin/dotnet"
+dotnet_bin="$("${repo_root}/scripts/resolve-dotnet.sh")"
 translator="${repo_root}/build/wiicompiled-fpscr/translator/src/Translator.Cli/bin/Release/net8.0/Translator.Cli.dll"
 translation_jobs="${KARTPAD_TRANSLATION_JOBS:-2}"
 
