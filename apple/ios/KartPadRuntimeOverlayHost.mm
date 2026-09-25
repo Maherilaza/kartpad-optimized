@@ -718,7 +718,8 @@ static NSString *const kKartPadPreferredGameKey = @"KartPadPreferredGame";
 @property(nonatomic, strong) NSMutableArray<UILabel *> *primaryLabels;
 @property(nonatomic, strong) NSMutableArray<UIView *> *dividers;
 @property(nonatomic, strong) NSMutableArray<UIButton *> *actionButtons;
-@property(nonatomic, strong) UISwitch *themeSwitch;
+@property(nonatomic, strong) UIButton *themeButton;
+@property(nonatomic) BOOL darkMode;
 @property(nonatomic, strong) UIButton *preferenceButton;
 @property(nonatomic, strong) UIImageView *checker;
 @end
@@ -726,7 +727,7 @@ static NSString *const kKartPadPreferredGameKey = @"KartPadPreferredGame";
 @implementation KartPadFirstLaunchViewController
 
 - (UIColor *)racingRed {
-  return self.themeSwitch.on ? [UIColor colorWithRed:1 green:0.20 blue:0.26 alpha:1]
+  return self.darkMode ? [UIColor colorWithRed:1 green:0.20 blue:0.26 alpha:1]
                             : [UIColor colorWithRed:0.80 green:0.035 blue:0.12 alpha:1];
 }
 
@@ -876,7 +877,7 @@ static NSString *const kKartPadPreferredGameKey = @"KartPadPreferredGame";
 }
 
 - (void)applyTheme {
-  BOOL dark = self.themeSwitch.on;
+  BOOL dark = self.darkMode;
   self.overrideUserInterfaceStyle = dark ? UIUserInterfaceStyleDark : UIUserInterfaceStyleLight;
   self.view.backgroundColor = dark ? [UIColor colorWithWhite:0.065 alpha:1]
                                   : [UIColor colorWithRed:0.985 green:0.975 blue:0.95 alpha:1];
@@ -893,18 +894,26 @@ static NSString *const kKartPadPreferredGameKey = @"KartPadPreferredGame";
         ? [[self racingRed] colorWithAlphaComponent:dark ? 0.10 : 0.065] : UIColor.clearColor;
     UIButton *button = self.actionButtons[i];
     UIButtonConfiguration *config = button.configuration;
-    BOOL primary = current || (!self.resumingGame && i == 0);
-    config.baseBackgroundColor = primary ? [UIColor colorWithRed:0.89 green:0.025 blue:0.10 alpha:1] : UIColor.clearColor;
-    config.baseForegroundColor = primary ? UIColor.whiteColor : [self racingRed];
+    config.baseBackgroundColor = i == 1
+        ? [UIColor colorWithRed:0.08 green:0.36 blue:0.80 alpha:1]
+        : [UIColor colorWithRed:0.89 green:0.025 blue:0.10 alpha:1];
+    config.baseForegroundColor = UIColor.whiteColor;
     button.configuration = config;
   }
-  self.themeSwitch.onTintColor = [UIColor colorWithRed:0.89 green:0.025 blue:0.10 alpha:1];
+  UIButtonConfiguration *theme = self.themeButton.configuration;
+  theme.image = [UIImage systemImageNamed:dark ? @"moon.fill" : @"sun.max.fill"];
+  theme.baseForegroundColor = foreground;
+  theme.baseBackgroundColor = [foreground colorWithAlphaComponent:0.08];
+  self.themeButton.configuration = theme;
+  self.themeButton.accessibilityLabel = dark ? @"Switch to light mode" : @"Switch to dark mode";
+  self.themeButton.accessibilityValue = dark ? @"Dark mode" : @"Light mode";
   self.checker.tintColor = dark ? UIColor.whiteColor : UIColor.blackColor;
   self.checker.alpha = dark ? 1.0 : 0.65;
 }
 
-- (void)themeChanged:(UISwitch *)sender {
-  [NSUserDefaults.standardUserDefaults setBool:sender.on forKey:kKartPadDarkModeKey];
+- (void)themeChanged:(UIButton *)sender {
+  self.darkMode = !self.darkMode;
+  [NSUserDefaults.standardUserDefaults setBool:self.darkMode forKey:kKartPadDarkModeKey];
   [self applyTheme];
 }
 
@@ -1001,12 +1010,15 @@ static NSString *const kKartPadPreferredGameKey = @"KartPadPreferredGame";
   self.secondaryLabels = [NSMutableArray array];
   self.cardTitles = [NSMutableArray array];
   self.dividers = [NSMutableArray array];
-  self.themeSwitch = [UISwitch new];
+  UIButtonConfiguration *themeConfiguration = [UIButtonConfiguration filledButtonConfiguration];
+  themeConfiguration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+  self.themeButton = [UIButton buttonWithConfiguration:themeConfiguration primaryAction:nil];
   id savedTheme = [NSUserDefaults.standardUserDefaults objectForKey:kKartPadDarkModeKey];
-  self.themeSwitch.on = savedTheme == nil || [savedTheme boolValue];
-  self.themeSwitch.accessibilityLabel = @"Dark mode";
-  self.themeSwitch.accessibilityIdentifier = @"kartpad.theme.dark";
-  [self.themeSwitch addTarget:self action:@selector(themeChanged:) forControlEvents:UIControlEventValueChanged];
+  self.darkMode = savedTheme == nil || [savedTheme boolValue];
+  self.themeButton.accessibilityIdentifier = @"kartpad.theme.dark";
+  [self.themeButton.widthAnchor constraintEqualToConstant:48].active = YES;
+  [self.themeButton.heightAnchor constraintEqualToConstant:48].active = YES;
+  [self.themeButton addTarget:self action:@selector(themeChanged:) forControlEvents:UIControlEventTouchUpInside];
   UIImageView *mark = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"KartPadLogo"]];
   mark.contentMode = UIViewContentModeScaleAspectFit;
   mark.isAccessibilityElement = NO;
@@ -1018,19 +1030,12 @@ static NSString *const kKartPadPreferredGameKey = @"KartPadPreferredGame";
   identity.axis = UILayoutConstraintAxisHorizontal;
   identity.alignment = UIStackViewAlignmentCenter;
   identity.spacing = 12;
-  UILabel *themeLabel = [self label:@"Dark mode" style:UIFontTextStyleSubheadline secondary:NO];
-  UIStackView *theme = [[UIStackView alloc] initWithArrangedSubviews:@[themeLabel, self.themeSwitch]];
-  theme.axis = UILayoutConstraintAxisHorizontal;
-  theme.alignment = UIStackViewAlignmentCenter;
-  theme.spacing = 10;
-  [theme setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
   __weak KartPadFirstLaunchViewController *weakSelf = self;
   UIButton *help = [self link:@"Help" symbol:nil action:^{ [weakSelf showSetupHelp]; }];
   help.accessibilityIdentifier = @"kartpad.setup.help";
   [help setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
   [identity setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
-  [themeLabel setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
-  self.header = [[UIStackView alloc] initWithArrangedSubviews:@[identity, [UIView new], theme, help]];
+  self.header = [[UIStackView alloc] initWithArrangedSubviews:@[identity, [UIView new], self.themeButton, help]];
   self.header.axis = UILayoutConstraintAxisHorizontal;
   self.header.alignment = UIStackViewAlignmentCenter;
   self.header.spacing = 20;
