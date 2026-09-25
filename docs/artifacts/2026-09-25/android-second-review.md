@@ -124,3 +124,38 @@ retest is requested before a public APK exists.
 Private evidence (not committed): `work/android-second-review-20260925/`
 (attachments, compiled objects) in the stabilization worktree.
 
+## Cross-report pass
+
+All 20 diagnostic attachments on open and closed issues were re-read.
+
+- **Build 218 carries the #321 path.** The unstripped 218 library (BuildID
+  `8c2aab86`, `android/app/build/intermediates/cxx/RelWithDebInfo/422i1s3a`) shows
+  `aurora::imgui::render` calling `wgpuRenderPassEncoderPushDebugGroup`,
+  `ImGui_ImplWGPU_RenderDrawData` and `wgpuRenderPassEncoderPopDebugGroup`
+  unconditionally. Keep that library; it symbolizes any 218 crash exactly.
+- **#321's signature is unique.** The other native exits are different known
+  failures: #216 (build 119, startup abort in KartPad code), #304 (PowerVR
+  limit abort) and #137 (build 119, abort 25 s in). Patch 1 targets #321 only.
+- **Patch 2 reaches one known reporter.** Only #320 is API ≤ 29 among the
+  attachments; all others report API 31–36 and six or seven workers.
+- **The blocking receive recurs in a public report.** #123 (Mali-G715, Retro
+  online) logged three `socket_ioctlv command=12` stalls (112, 228, 110 ms) during
+  NAS/GPCM login, beside an interval with a 2,222 ms worst frame. That interval
+  also contains a 1,596-pipeline prewarm, so network is one contributor, not the
+  whole freeze. The same log shows `OSSleepThread … scheduler could not switch
+  away`; a deferred receive must fall back where parking is impossible, as
+  deferred connect/poll already do.
+- **The geometry blocker is stale.** The board's `adreno-geometry` card awaits
+  delivery of the dynamic/literal character-draw comparison, but that comparison
+  already ran: #193 (build 121) posted `KartPadPNMTX draw_binding` lines proving
+  both `variant=literal` and `variant=dynamic` reached the targeted pipelines
+  `58866e32…`/`33c5ff18…`, with corruption unchanged in every mode; #102 also
+  reported no change. Matrix-index selection is excluded for those draws. Every
+  affected GPU is Adreno (6xx #216, 7xx #104/#211, 8xx #102/#308/#316), while all
+  Mali devices render characters correctly. The next discriminator should target
+  vertex position fetch and decoding, not matrix indexing. No candidate was built.
+- **Integration base is current.** `27074c2` is the published head of
+  `origin/codex/upstream-android-20260922`, and PR #317's head is `397a3af`; both
+  branches stack without conflict. Both changed runtime files also compile with
+  the 25 September release configuration (`6d6p27d4`, debug groups undefined).
+
