@@ -15,13 +15,13 @@ Android also has Android Graphics Diagnostics under Display. This is device-spec
 
 Open **Game Data & Saves → Time Trial Ghosts**. Choose the Original license and use the import/export actions for `.rkg` files. Imports are validated and applied at the next complete app restart. Importing replaces the downloaded comparison ghost, not the personal best. Pending imports apply to the latest save, preserving progress made before restarting; a backup is retained. Exports support personal-best and downloaded ghosts.
 
-This release supports Original Mario Kart Wii courses. Retro Rewind custom-track ghost transfers are not implemented. If a file fails, report the app build, course and import/export step; do not post your full save or identity publicly.
+This release transfers ghosts from the Original game profile only. Retro Rewind ghost transfers are not implemented, including original Wii courses played inside Retro Rewind. If a file fails, report the app build, course and import/export step; do not post your full save or identity publicly.
 
 ## Controls and display
 
 Controller Button Mapping supports D-pad directions and triggers, optional shared physical actions, and the Use L1 for Items preset. Controller Player Setup remains separate. Touch layout controls and motion steering remain available.
 
-**Auto-accelerate** is under Controls → Touch Control Settings. OFF uses ordinary A press/hold/release; ON retains the one-second hold-to-latch behavior. The choice persists.
+**Touch auto-accelerate** is under Controls → Touch Control Settings. OFF uses ordinary touch A press/hold/release; ON retains the one-second touch hold-to-latch behavior. The choice persists and does not change physical controller buttons.
 
 Motion steering supports calibration and sensitivity. iPhone/iPad additionally offer shake-to-trick; Android currently has tilt steering only.
 

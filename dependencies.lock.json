@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-06",
+  "generatedAt": "2026-09-22",
   "dependencies": [
     {
       "name": "WiiCompiled",
       "repository": "https://github.com/patchzyy/Wiicompiled.git",
-      "commit": "1912292c804ff9b1b79938de89369ec4496f9fff",
-      "tree": "34f9deda094915e12f47316059911b28c6812964",
+      "commit": "83463764b8acda394e058b0c689a10b8561fc380",
+      "tree": "c0da769a99ff39b9303b259c7ed56485d3bdf338",
       "path": "ref/upstream/Wiicompiled",
       "license": "GPL-3.0-only; upstream README specifies version 3",
       "role": "Primary static translator and runtime baseline",
@@ -14,7 +14,7 @@
       "maintainedSource": {
         "path": "vendor/wiicompiled",
         "method": "git-subtree-squash",
-        "upstreamBase": "1912292c804ff9b1b79938de89369ec4496f9fff",
+        "upstreamBase": "83463764b8acda394e058b0c689a10b8561fc380",
         "activeConsumers": [
           "translator"
         ],

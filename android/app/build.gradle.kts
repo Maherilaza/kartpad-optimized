@@ -18,6 +18,10 @@ val kartpadDiagnosticRelease = providers.gradleProperty("kartpadDiagnosticReleas
 val kartpadProfileable = providers.gradleProperty("kartpadProfileable")
     .map { it.toBooleanStrict() }
     .getOrElse(false)
+// ELF TLS requires Android 10. Keep Android 9 support in ordinary builds.
+val kartpadNativeTlsExperiment = providers.gradleProperty("kartpadNativeTlsExperiment")
+    .map { it.toBooleanStrict() }
+    .getOrElse(false)
 // Private RenderDoc handoff: opt in without switching to an unoptimized Debug runtime.
 val kartpadFrameCapture = providers.gradleProperty("kartpadFrameCapture")
     .map { it.toBooleanStrict() }
@@ -60,6 +64,9 @@ val kartpadVersionName = providers.gradleProperty("kartpadVersionName")
 require(!kartpadFrameCapture || kartpadVersionName.endsWith("-capture")) {
     "Frame capture builds must have a version name ending in -capture"
 }
+require(!kartpadNativeTlsExperiment || kartpadVersionName.contains("-native-tls")) {
+    "Native TLS experiments must have -native-tls in the version name"
+}
 
 android {
     namespace = "dev.kartpad.android"
@@ -69,7 +76,7 @@ android {
 
     defaultConfig {
         applicationId = "dev.kartpad.android"
-        minSdk = 28
+        minSdk = if (kartpadNativeTlsExperiment) 29 else 28
         targetSdk = 36
         versionCode = kartpadVersionCode
         versionName = kartpadVersionName

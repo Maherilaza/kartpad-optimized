@@ -23,7 +23,10 @@ Git submodule commits pin each runtime exactly; branch tips never select a build
 implicitly. All platform branches initially derive from WiiCompiled commit
 `1912292c804ff9b1b79938de89369ec4496f9fff`. The existing platform differences are
 preserved, including memory allocation, controller and renderer behavior. This
-migration does not update upstream or consolidate those differences.
+migration does not update upstream or consolidate those differences. The later
+[22 September integration candidate](../artifacts/2026-09-22/upstream-all-platforms.md)
+updates all four runtimes and the translator to `83463764b8ac`, while retaining
+the platform adapters. Refer to its acceptance record before packaging.
 
 Edit the runtime source in the relevant submodule, on a local branch. Build
 preparation copies tracked source, including local tracked edits; add new source

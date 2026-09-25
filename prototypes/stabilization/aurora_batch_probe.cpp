@@ -15,6 +15,7 @@
 #include <atomic>
 #include <chrono>
 #include <cstdio>
+#include <cstdlib>
 #include <filesystem>
 #include <stdexcept>
 #include <thread>
@@ -272,6 +273,22 @@ int main(int argc, char** argv) {
       copyGateHeld.store(false);
       require(pixels == expected(16), "Consecutive real GXCopyTex retained missing shader draws");
       std::puts("Consecutive real GXCopyTex preserved all pixels with skip enabled and blocked cold shader");
+      aurora_shutdown();
+      return errors == 0 ? 0 : 4;
+    }
+    if (argc == 3 && std::string_view(argv[2]) == "--long-copy-run") {
+      // Mario Kart Wii menus copy the same destinations every frame while baking
+      // different thumbnails. A long run of copies must still wait for a cold
+      // shader; a 120-frame skip exemption reproduced black vehicle thumbnails.
+      aurora_set_skip_unready_pipelines(true);
+      for (unsigned frame = 0; frame < 130; ++frame) {
+        require(run(0, false, false, 1, false, false, false, 1) == expected(16), "Warm repeated copy pixels failed");
+      }
+      copyGateHeld.store(true);
+      const auto pixels = run(0, false, false, 1, false, false, false, 3);
+      copyGateHeld.store(false);
+      require(pixels == expected(16), "Long copy run retained missing shader draws");
+      std::puts("Long run of real GXCopyTex still waited for a cold shader and preserved all pixels");
       aurora_shutdown();
       return errors == 0 ? 0 : 4;
     }

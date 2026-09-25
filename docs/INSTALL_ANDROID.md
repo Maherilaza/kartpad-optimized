@@ -36,6 +36,13 @@ The latest update also aligns the mobile settings order and labels, adds **Game 
    newer incompatible profile, wait for a matching KartPad update. Never bypass
    the checks or replace executable files manually.
 
+The next Android source build also accepts RVZ through the same system picker;
+the public 0.5.0 APK still accepts ISO/WBFS. RVZ import decompresses the selected
+image into KartPad's existing private game-data layout. It saves space for the
+source image, not the installed extracted data, and still requires free space
+for extraction and the existing RMCP01 revision-0 validation. No intermediate
+full ISO is created.
+
 ## Preferred Game
 
 Code 83 adds **Preferred Game…** to the game selector and paused

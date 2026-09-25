@@ -34,7 +34,7 @@
         236
       ],
       "state": "ready-local",
-      "next_action": "v0.5.0/code135 is published with bounded shader replay, startup and framebuffer fixes. Owner thumbnail acceptance does not close unclassified handset launch, cup-end or race exits. Classify retained exact-session evidence; do not repeat superseded code126 packaging or install work.",
+      "next_action": "v0.5.0/code135 is published with bounded shader replay, startup and framebuffer fixes. Owner thumbnail acceptance does not close unclassified handset launch, cup-end or race exits. Classify retained exact-session evidence; do not repeat superseded code126 packaging or install work. #216 A9+ fresh code135 download now installs and Original loads; missing character bodies and lag remain, Retro untested, older TabA separate; #235 same-reporter #313 reaches races on 0.5.0, with slowdown tracked separately. #215 reporter now confirms working startup on Xiaomi 25057RN09G; installed build and fixing change are unspecified. No repeat launch/log request.",
       "acceptance": "Each classified failure passes its affected import/start, cup-awards or race boundary on the exact target. Similar exits are not assumed to share a cause.",
       "dependency": {
         "owner": "KartPad engineering",
@@ -50,13 +50,13 @@
         196
       ],
       "state": "ready-local",
-      "next_action": "Issue196 reopened: iPhone17ProMax/iOS27 startup remains unresolved. Anonymous guest memory does not fix the separate missing-target crash. Continue from retained exact-symbol evidence; no repeated deliberate crashes or generic analytics requests.",
+      "next_action": "New supplied iPhone17ProMax/iOS27.2 build60 crash reaches FatalMissingGuestTarget through InvokeIndirectCpu; transcript destructor abort is secondary during exit. Analyze exact dispatch/translation evidence. Diagnostic-off mitigation did not resolve this case; no repeated crash or resend request.",
       "dependency": {
         "owner": "KartPad engineering",
         "needs": "Internal diagnosis from retained evidence; reporter outreach is on hold."
       },
       "acceptance": "The same corrected candidate preserves existing data and passes both Original and Retro launch, race and relaunch on the matching iPhone 17 Pro Max/iOS 27 target. Package/reporter/release acceptance remain separate.",
-      "checkpoint": "docs/artifacts/2026-09-19/cross-platform-stabilization.md",
+      "checkpoint": "docs/artifacts/2026-09-21/open-issue-inventory.md",
       "priority_reason": "A game that cannot launch cannot meet offline or online acceptance."
     },
     {
@@ -66,7 +66,7 @@
         206
       ],
       "state": "awaiting-reporter",
-      "next_action": "#277 is closed as duplicate of #206: same reporter/SM-S921W, now code80, quick connection but mobile-data matchmaking fails while Wi-Fi works. Keep its new build evidence in #206. Do not claim code90 fixes networking or repeat known device/connection questions.",
+      "next_action": "Retain SM-S921W mobile-data peer search failure 86420 and reporter-observed Wi-Fi/VPN workarounds. No confirmed carrier cause or app-side correction; do not repeat generic logs or claim CPU work fixes cellular matchmaking.",
       "dependency": {
         "owner": "#206 reporter",
         "needs": "The already requested Wi-Fi endurance confirmation beyond the prior four/five-race window; no reinstall, data clear or generic log request"
@@ -88,7 +88,7 @@
         211
       ],
       "state": "ready-local",
-      "next_action": "New #104 release retest is negative: S24 Ultra/Adreno750, Original 0.5.0/code135, 1x/Normal, Vulkan ready and empty shader queues in sampled frames. Reproduce the actual corrupt character draw internally and test one discriminating correction. No repeated mode sweep or log request.",
+      "next_action": "New #104 release retest is negative: S24 Ultra/Adreno750, Original 0.5.0/code135, 1x/Normal, Vulkan ready and empty shader queues in sampled frames. Reproduce the actual corrupt character draw internally and test one discriminating correction. No repeated mode sweep or log request. #211 now independently confirms persistent character rendering failure on S24 Ultra while characters appear on the reporter's Galaxy A32; do not ask for another ISO or mode sweep.",
       "dependency": {
         "owner": "KartPad engineering",
         "needs": "Internal diagnosis from retained evidence; reporter outreach is on hold."
@@ -184,13 +184,13 @@
         303
       ],
       "state": "awaiting-reporter",
-      "next_action": "The optional debug-utils correction is published in v0.5.0/code135. Await the already requested exact-device launch result for #301/#303 and TabA9+ #216. Preserve original TabA as a separate case. Do not rerun code123/124 packaging or send duplicate requests.",
+      "next_action": "The optional debug-utils correction is published in v0.5.0/code135. #216 A9+ now installs after a fresh download and loads Original; geometry/performance remain open and Retro is untested. #301 startup also works but retains rendering/idle-freeze symptoms. Await #303 exact-device startup acceptance without a duplicate request. Preserve original TabA as a separate unresolved case.",
       "acceptance": "The exact affected driver initializes the hardware backend and reaches gameplay on an identified compatible artifact, with mandatory loader failures still rejected and existing data preserved.",
       "checkpoint": "docs/artifacts/2026-09-20/post-release-issues-and-enhancements.md",
       "priority_reason": "Three separately recorded device cases identify the same actionable loader mechanism; this subset is no longer waiting for generic logs.",
       "dependency": {
-        "owner": "#301/#303 and Tab A9+ #216 reporters",
-        "needs": "Existing September20 code135 launch requests; success or a reviewed log from a remaining failure."
+        "owner": "#303 reporter; KartPad engineering for remaining distinct symptoms",
+        "needs": "Existing exact-device #303 launch result; #216 A9+ Original startup is reporter-confirmed and does not need another generic launch request."
       }
     },
     {
@@ -230,15 +230,15 @@
       "checkpoint": "docs/artifacts/2026-09-20/post-release-issues-and-enhancements.md"
     },
     {
-      "id": "original-ghost-discovery",
+      "id": "retro-ghost-transfer",
       "priority": 2,
       "issues": [
         295
       ],
       "state": "ready-local",
-      "next_action": "Reproduce empty discovery using known-good Original personal-best/downloaded ghost slots through production save parsing and host list flow. Existing clearer errors are not a fix for undiscovered ghosts. Keep Retro custom-track format support separate.",
-      "acceptance": "Known saved ghosts appear for the correct Original license, export round-trips correctly, and empty/corrupt saves show distinct outcomes without changing saves.",
-      "checkpoint": "docs/artifacts/2026-09-20/post-release-issues-and-enhancements.md"
+      "next_action": "Reporter confirmed Original ghost export works on September20. Investigate Retro ghost storage and course mapping, including original Wii courses played in Retro; preserve accepted Original behavior and do not request another Original discovery test.",
+      "acceptance": "Retro ghosts are discovered for the correct profile/license/course and round-trip without replacing personal bests or losing save data; Original export remains working.",
+      "checkpoint": "docs/artifacts/2026-09-21/open-issue-inventory.md"
     },
     {
       "id": "mac-classic-controller",

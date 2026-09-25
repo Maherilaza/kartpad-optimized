@@ -60,7 +60,7 @@ Java_dev_kartpad_android_KartPadDiscImageImporter_nativeExtract(
   try {
     std::unique_ptr<DiscIO::Volume> volume = KartPadOpenDiscDescriptor(fd);
     if (!volume) {
-      return Error(env, "Dolphin could not read the selected ISO or WBFS image.");
+      return Error(env, "Dolphin could not read the selected ISO, WBFS or RVZ image.");
     }
     const DiscIO::Partition partition = volume->GetGamePartition();
     const DiscIO::FileSystem* filesystem = volume->GetFileSystem(partition);

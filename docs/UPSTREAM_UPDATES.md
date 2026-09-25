@@ -90,3 +90,10 @@ records the payload fix, local builds, upstream gaps and remaining device gates.
 The source migration retained upstream base `1912292c804f`; the checked upstream
 head is `83463764b8ac` (114 commits later). That count describes ancestry, not
 114 missing fixes: maintained source already includes selected backports.
+
+## 22 September all-platform integration candidate
+
+The candidate now integrates upstream `83463764b8ac` in the translator and all
+four maintained runtimes, retaining KartPad platform adapters. The previous gap
+above describes the 19 September state. See the [current integration record](artifacts/2026-09-22/upstream-all-platforms.md) for tests, packages and remaining
+acceptance gates. Updating a source pin alone does not validate a release.

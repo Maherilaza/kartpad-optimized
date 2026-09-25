@@ -87,6 +87,11 @@ if(KARTPAD_GAME_RUNTIME_SOURCE)
   # Preserve arithmetic/rounding semantics while merging the scalar exception
   # capture + clear at an opaque out-of-line ARM64 call boundary.
   add_compile_definitions(KARTPAD_ANDROID_COMBINED_FENV=1)
+  # Skip host overflow/underflow/inexact capture while the guest leaves the
+  # matching FPSCR enables clear. Results and register writes are unchanged;
+  # only sticky status bits read by OS context/exception paths differ. See
+  # docs/artifacts/2026-09-23/android-copy-stream-loop.md.
+  add_compile_definitions(KARTPAD_ANDROID_UNOBSERVED_FP_STATUS=1)
   add_subdirectory("${KARTPAD_GAME_RUNTIME_SOURCE}" game-runtime)
   # Local debug game builds hash pipeline configurations on the measured draw path.
   # Keep xxHash's debug assertions; optimize only this measured integer hot path.
@@ -99,6 +104,9 @@ if(KARTPAD_GAME_RUNTIME_SOURCE)
   else()
     message(FATAL_ERROR "Prepared game runtime has no Android product target")
   endif()
+  # Keep JNI exports, but bind calls to functions defined in this same product
+  # locally. Function-only binding preserves external data-symbol semantics.
+  target_link_options(${KARTPAD_GAME_RUNTIME_TARGET} PRIVATE "-Wl,-Bsymbolic-functions")
   target_sources(${KARTPAD_GAME_RUNTIME_TARGET} PRIVATE
     kartpad_touch_input_jni.cpp
     kartpad_runtime_settings_jni.cpp

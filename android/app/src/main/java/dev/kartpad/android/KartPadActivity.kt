@@ -84,6 +84,9 @@ class KartPadActivity : SDLActivity() {
         // SDL catches library/startup failures and does not start the guest.
         // Resume never runs this hook, so pending edits apply only at cold launch.
         if (BuildConfig.GAME_RUNTIME && !identityStartupChecked) {
+            KartPadIdentityStorage.applyConsoleRecovery(filesDir)?.let { error ->
+                throw IllegalStateException(error)
+            }
             KartPadIdentityStorage.applyPending(filesDir)?.let { error ->
                 throw IllegalStateException(error)
             }
@@ -346,6 +349,7 @@ class KartPadActivity : SDLActivity() {
         refreshControllerHandoff()
         if (::motionSteering.isInitialized) motionSteering.start()
         if (BuildConfig.GAME_RUNTIME) KartPadRuntimeHealth.start(this, runtimeProfile)
+        hideGameSystemBars()
     }
 
     override fun onPause() {
@@ -394,6 +398,11 @@ class KartPadActivity : SDLActivity() {
 
     @Suppress("DEPRECATION")
     private fun hideGameSystemBars() {
+        // SDL creates the game window non-fullscreen on Android, which sets
+        // FLAG_FORCE_NOT_FULLSCREEN. Hiding the bars alone can leave their area
+        // reserved on devices without enforced edge-to-edge (Android 14 and
+        // earlier), showing a black band where the status bar was.
+        window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN)
         if (Build.VERSION.SDK_INT >= 30) {
             window.insetsController?.let { controller ->
                 controller.systemBarsBehavior = android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
@@ -1122,7 +1131,7 @@ class KartPadActivity : SDLActivity() {
     }
 
     private fun showPlayerIdentity() {
-        val choices = arrayOf("Rename or Delete Licenses…", "Edit Mii Name…", "Mii Appearance…", "About Player Identity")
+        val choices = arrayOf("Rename or Delete Licenses…", "Edit Mii Name…", "Mii Appearance…", "Restore Previous Console Identity…", "About Player Identity")
         AlertDialog.Builder(this).setTitle(if (KartPadIdentityStorage.hasPending(filesDir))
                 "Player Identity · Change Scheduled" else "Player Identity")
             .setItems(choices) { dialog, which ->
@@ -1132,6 +1141,13 @@ class KartPadActivity : SDLActivity() {
                         0 -> showIdentityRecords(false)
                         1 -> showIdentityRecords(true)
                         2 -> showMiiManager()
+                        3 -> AlertDialog.Builder(this).setTitle("Restore Previous Console Identity")
+                            .setMessage("For error 22005 after an update: restore the console serial saved by your previous KartPad installation. Saves and profiles are not edited. Recovery backups are retained. Fully close and reopen the app afterward.")
+                            .setPositiveButton("Restore Previous Identity") { _, _ ->
+                                runCatching { KartPadIdentityStorage.stageConsoleRecovery(filesDir) }
+                                    .onSuccess { identityScheduled() }
+                                    .onFailure { showParityBoundary("Recovery Not Scheduled", it.message ?: "Identity could not be verified.") }
+                            }.setNegativeButton("Cancel", null).show()
                         else -> showParityBoundary("Player Identity",
                             "A Mii is your identity and appearance; a license holds progress for one game profile. Create a license with New inside the game, then choose your Mii. Renaming a Mii updates its linked licenses without changing friend codes or progress. Fully close KartPad from Recents and reopen to apply edits; returning to the menu and resuming does not apply them.")
                     }
@@ -1812,10 +1828,10 @@ class KartPadActivity : SDLActivity() {
             }
         }
         val autoAccelerate = Switch(this).apply {
-            text = "Auto-accelerate"
+            text = "Touch auto-accelerate"
             setTextColor(Color.WHITE)
             isChecked = KartPadTouchSettings.autoAccelerate(this@KartPadActivity)
-            contentDescription = "Auto-accelerate: hold A for one second to lock; off uses normal hold controls"
+            contentDescription = "Touch auto-accelerate: hold touch A for one second to lock; off uses normal hold controls"
             setOnCheckedChangeListener { _, checked ->
                 KartPadTouchSettings.setAutoAccelerate(this@KartPadActivity, checked)
                 kartPadOverlay.reloadPresentationSettings()

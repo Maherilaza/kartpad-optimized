@@ -241,7 +241,7 @@ class KartPadGameDataActivity : Activity() {
             gravity = Gravity.CENTER
         })
         column.addView(TextView(this).apply {
-            text = "KartPad extracts your selected ISO/WBFS image or copies an extracted DATA folder into private storage."
+            text = "KartPad extracts your selected ISO/WBFS/RVZ image or copies an extracted DATA folder into private storage. RVZ reduces the source image size, not the extracted game data."
             textSize = 14f
             setTextColor(Color.LTGRAY)
             gravity = Gravity.CENTER
@@ -259,7 +259,7 @@ class KartPadGameDataActivity : Activity() {
         column.addView(progress)
         importButton = Button(this).apply {
             text = "Import or Reimport Wii Disc Image…"
-            contentDescription = "Choose a Mario Kart Wii ISO or WBFS disc image"
+            contentDescription = "Choose a Mario Kart Wii ISO, WBFS or RVZ disc image"
             isEnabled = BuildConfig.DISC_IMAGE_IMPORT
         }
         column.addView(importButton)

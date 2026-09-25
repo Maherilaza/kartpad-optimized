@@ -1,10 +1,54 @@
 # Maintenance work and test board
 
-Scoped intake update: 20 September 2026; 61 open issues. The older family and release snapshots below retain their dates. Start at the
+Scoped intake update: 22 September 2026; 63 open issues. The older family and release snapshots below retain their dates. Start at the
 [support-agent hub](SUPPORT-AGENTS.md). The [priority source](maintenance-priorities.json)
 owns ordering, readiness, exact next actions and acceptance; this board records
 support decisions and evidence. Refresh GitHub and local ownership before acting.
 The [device matrix](COMPATIBILITY-MATRIX.md) preserves target-specific observations.
+
+## 23 September Android optimization loop
+
+[Private candidate comparisons](artifacts/2026-09-23/android-candidate-comparison.md)
+now include repeated stationary Cookie Land battles and a matching Mailbox/FIFO
+reversal. Displayed cadence and guest CPU are measured separately. The supplied
+Reddit reports are classified in the [loop ledger](artifacts/2026-09-23/android-optimization-loop.md),
+including sustained slowdown, resolution-change freeze and input/handheld requests.
+None is closed from this Pixel-only evidence. CPU-affinity and cache-size
+experiments without reliable gains are removed, as are unproven scalar fast paths
+and helper calling-convention changes. Private build 195 retains guarded FIFO and
+bounded diagnostics. Exact-artifact Original/Retro offline and bounded lifecycle
+checks completed; significant pipeline-related hitches remain. The
+[morning report](artifacts/2026-09-23/android-morning-report.md) records the
+installed artifact and acceptance limits. No new public build was published.
+
+## 21 September evening loop
+
+[All 63 open issues](artifacts/2026-09-21/open-issue-inventory.md) have a new
+issue-specific reply with a retained URL. No issues were automatically closed.
+[The active evening goal](artifacts/2026-09-21/evening-goal-loop.md) continues
+engineering after intake rather than waiting for another generic log collection.
+
+- Build60 has reported A10X/iPad improvements (#135/#310), with remaining stalls
+  and #310 online-transition crash. #196 supplied a build60 missing-guest-target
+  stack; diagnostic-off is not its fix.
+- Honor X7c #235 now reaches races in the same reporter's #313; 15 FPS performance
+  remains. #295 Original export works; Retro transfer is the remaining feature.
+- Android RVZ descriptor import passes the full Pixel system-picker import: all
+  2,043 extracted file hashes match, and both saves/five preferences are unchanged.
+  Normal private code167 subsequently launches Original and Retro, with a short
+  Original acceleration/pause/quit check. Not yet published; other providers/devices
+  and full player-driven acceptance remain separate.
+- A link-only control reproduces released code135 BuildID. Function-only local
+  binding removes 10,873 internal jump slots while preserving dynamic exports
+  and API28. This is artifact evidence, not an FPS improvement yet.
+
+- #216 A9+ now installs code135 after a fresh download and loads Original;
+  missing character bodies and lag remain. Retro is untested, and the older Tab A
+  is a separate unresolved case. #316's screenshot confirms displaced geometry.
+- [PR315](https://github.com/chrissotraidis/kartpad/pull/315) retains local binding,
+  background cache persistence, snapshot/CP-summary and inactive-key reductions,
+  and one ARAM TLS lookup per voice. Targeted work removal is verified; whole-frame
+  gains remain within run variation. API29 TLS stays opt-in, API28 is default.
 
 ## 20 September post-release priorities
 
@@ -15,7 +59,7 @@ rendering; #198 reports waiting, not improved performance. #302's pin correction
 is shipped and its release follow-up was missed.
 
 Explicit smaller follow-ups: Android shake-to-trick parity (Apple has it),
-Original ghost discovery (#295), and separate Mac Classic/Android ipega input
+Retro ghost transfer (#295; Original export is now reporter-confirmed), and separate Mac Classic/Android ipega input
 paths. Auto-accelerate, shared D-pad/trigger mappings, the L1 item preset and
 combined release assets are already implemented. Larger NAND/identity, USA,
 cheat, DSU, external-display and older-OS requests remain explicitly scoped in

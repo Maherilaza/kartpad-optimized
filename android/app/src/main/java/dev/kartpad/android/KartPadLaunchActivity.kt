@@ -19,7 +19,7 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.ScrollView
 import android.widget.TextView
-import android.widget.Switch
+import android.widget.ImageButton
 import android.graphics.drawable.RippleDrawable
 import java.util.concurrent.Executors
 
@@ -282,7 +282,7 @@ open class KartPadLaunchActivity : Activity() {
                 if (retroInstalled) "Installed pack · ${RetroRewindRelease.VERSION}"
                 else "Official pack · ${RetroRewindRelease.VERSION} · downloaded in the app"
             } else if (gameDataReady) "Game data imported"
-            else "PAL (Europe) · ISO / WBFS · RMCP01 rev 0"
+            else "PAL (Europe) · ISO / WBFS / RVZ · RMCP01 rev 0"
             button.update(badge, action, note, current == profile || (current == null && !isRetro))
         }
     }
@@ -311,26 +311,25 @@ open class KartPadLaunchActivity : Activity() {
             addView(label("KartPad", 30f).apply { setTypeface(typeface, Typeface.BOLD) })
         }
         header.addView(brand, LinearLayout.LayoutParams(if (largeText) -1 else 0, -2, if (largeText) 0f else 1f))
-        val theme = Switch(this).apply {
-            text = "Dark mode"
-            contentDescription = "Dark mode"
-            setTextColor(primaryTextColor)
-            isChecked = darkMode
-            minHeight = dp(48)
-            switchPadding = dp(10)
-            thumbTintList = ColorStateList.valueOf(Color.WHITE)
-            trackTintList = ColorStateList.valueOf(if (darkMode) Color.rgb(230, 6, 29) else Color.GRAY)
-            setOnCheckedChangeListener { _, checked ->
-                if (checked != darkMode) {
-                    getSharedPreferences("kartpad_launcher", MODE_PRIVATE).edit().putBoolean("dark_mode", checked).apply()
-                    // Activity recreation applies the theme to native dialogs as well.
-                    // Saved preferred-launch state prevents a theme change from starting a game.
-                    preferredLaunch.consumed = true
-                    recreate()
-                }
+        val theme = ImageButton(this).apply {
+            setImageResource(if (darkMode) R.drawable.ic_kartpad_moon else R.drawable.ic_kartpad_sun)
+            imageTintList = ColorStateList.valueOf(primaryTextColor)
+            contentDescription = if (darkMode) "Switch to light mode" else "Switch to dark mode"
+            tooltipText = contentDescription
+            setPadding(dp(12), dp(12), dp(12), dp(12))
+            background = RippleDrawable(ColorStateList.valueOf(Color.argb(40, 128, 128, 128)),
+                GradientDrawable().apply {
+                    shape = GradientDrawable.OVAL
+                    setColor(if (darkMode) Color.rgb(37, 37, 37) else Color.rgb(233, 231, 225))
+                }, null)
+            setOnClickListener {
+                getSharedPreferences("kartpad_launcher", MODE_PRIVATE).edit().putBoolean("dark_mode", !darkMode).apply()
+                // Apply the theme to dialogs without triggering preferred-game autostart.
+                preferredLaunch.consumed = true
+                recreate()
             }
         }
-        header.addView(theme, LinearLayout.LayoutParams(-2, -2).apply { marginEnd = dp(16) })
+        header.addView(theme, LinearLayout.LayoutParams(dp(48), dp(48)).apply { marginEnd = dp(16) })
         header.addView(link("Help") { showSetupHelp() })
         column.addView(header, layout(dp(if (compact) 16 else 28)))
         original = ModeButton(this, "Mario Kart Wii", compact, false, darkMode).apply {
@@ -421,7 +420,7 @@ open class KartPadLaunchActivity : Activity() {
             column.addView(label(body, 16f, true), layout(dp(24)))
         }
         section("1. Import Mario Kart Wii",
-            "Use your own PAL (Europe) ISO or WBFS: RMCP01, revision 0. An extracted DATA folder also works. RVZ files must be converted before importing.")
+            "Use your own PAL (Europe) ISO, WBFS or RVZ: RMCP01, revision 0. An extracted DATA folder also works. Disc images are extracted into private storage.")
         section("2. Add Retro Rewind, if you want it",
             "Import Mario Kart Wii first, then choose Retro Rewind. KartPad can download and install the official ${RetroRewindRelease.VERSION} pack. You do not need to import a second disc.")
         section("Stuck on a step?",
@@ -566,7 +565,7 @@ open class KartPadLaunchActivity : Activity() {
     /** One focusable row retains the same selection callback and controller behavior. */
     private class ModeButton(
         context: android.content.Context, private val gameTitle: String,
-        compact: Boolean, isRetro: Boolean, private val dark: Boolean,
+        compact: Boolean, private val isRetro: Boolean, private val dark: Boolean,
     ) : LinearLayout(context) {
         private fun dp(value: Int) = (value * resources.displayMetrics.density + 0.5f).toInt()
         private val accent = if (isRetro) Color.rgb(255, 174, 20) else Color.rgb(26, 133, 255)
@@ -630,10 +629,10 @@ open class KartPadLaunchActivity : Activity() {
                 else -> "Setup needed"
             }
             action.text = "$actionTitle  →"
-            action.setTextColor(if (primary) Color.WHITE else red)
+            action.setTextColor(Color.WHITE)
             action.background = GradientDrawable().apply {
                 cornerRadius = dp(10).toFloat()
-                setColor(if (primary) Color.rgb(228, 6, 27) else Color.TRANSPARENT)
+                setColor(if (isRetro) Color.rgb(20, 92, 204) else Color.rgb(228, 6, 27))
             }
             val current = status == "CURRENT GAME · PAUSED"
             val shape = GradientDrawable().apply {

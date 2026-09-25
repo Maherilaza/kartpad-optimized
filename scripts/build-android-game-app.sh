@@ -8,7 +8,16 @@ version_code_override="${KARTPAD_ANDROID_VERSION_CODE:-}"
 version_name_override="${KARTPAD_ANDROID_VERSION_NAME:-}"
 package_format="${KARTPAD_ANDROID_PACKAGE_FORMAT:-apk}"
 profileable="${KARTPAD_ANDROID_PROFILEABLE:-0}"
+native_tls="${KARTPAD_ANDROID_NATIVE_TLS_EXPERIMENT:-0}"
 frame_capture="${KARTPAD_ANDROID_FRAME_CAPTURE:-0}"
+case "$native_tls" in
+  0|1) ;;
+  *) echo "ERROR: KARTPAD_ANDROID_NATIVE_TLS_EXPERIMENT must be 0 or 1" >&2; exit 64 ;;
+esac
+if [[ "$native_tls" == 1 && "$version_name_override" != *-native-tls* ]]; then
+  echo "ERROR: native TLS experiments require an explicit version name containing -native-tls" >&2
+  exit 64
+fi
 case "$frame_capture" in
   0|1) ;;
   *) echo "ERROR: KARTPAD_ANDROID_FRAME_CAPTURE must be 0 or 1" >&2; exit 64 ;;
@@ -128,6 +137,10 @@ fi
 if [[ "$profileable" == 1 ]]; then
   gradle_args+=("-PkartpadProfileable=true")
   echo "Local profiling enabled; keep performance captures private."
+fi
+if [[ "$native_tls" == 1 ]]; then
+  gradle_args+=("-PkartpadNativeTlsExperiment=true")
+  echo "Private native TLS experiment: Android API29 minimum; not compatible with Android 9."
 fi
 if [[ "$frame_capture" == 1 ]]; then
   gradle_args+=("-PkartpadFrameCapture=true")
