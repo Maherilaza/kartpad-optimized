@@ -1,4 +1,4 @@
-# Android build 218 — installed on Pixel, performance unverified
+# Android build 218 — owner completed Retro online race on Pixel
 
 ## Current state
 
@@ -20,8 +20,9 @@ The release app denies `run-as`, so no fresh private save/config/identity
 backup or byte-for-byte readback was obtained. The phone was in active use;
 its screen was left alone during installation. In-place package replacement
 is verified; game-data readiness, the existing licence, and identity continuity
-still need an app-level check. No physical game launch or performance result
-is claimed for 218.
+were not byte-verified. The owner subsequently launched Retro, joined online
+and confirmed completion of a race. This establishes gameplay for that session;
+it does not establish exact save/identity continuity or a matched speedup.
 
 ## Changes since 208
 
@@ -55,15 +56,58 @@ before/after installed APKs. The candidate is
 `work/kartpad-code218-gx-nodraw-bound.apk`, built from Android runtime `27074c2`.
 No public release or merge was performed.
 
-## Next Android gates
+## Physical Retro session and remaining issues
 
-1. Open Original and Retro; confirm existing data and licence remain available.
-2. Check active gameplay for visual regressions, crashes, and audio problems.
-3. Measure stationary Original Cookie Land Balloon Battle at 2x with 11 CPU
-   opponents: game-thread CPU/present, compositor intervals, and thermal state.
-   The archived build-203/208 result of 12.652 ms CPU/present is historical;
-   there is no fresh same-session build-208 baseline from this installation.
-4. If a fresh A/B is needed, rebuild the baseline source under a higher version
-   code and install in place. Do not downgrade or remove the app.
-5. Investigate measured regressions or remaining hotspots before another
-   optimization round. Adreno rendering and Retro/WFC require their own checks.
+The owner reported fewer glitches and improved stability, then confirmed one
+completed Retro online race on this physical Pixel. Active lap-three gameplay
+was also observed. No additional owner testing is requested for this work.
+There was no matched old-build comparison, so the improvement is an owner
+assessment rather than a measured speedup.
+
+The 120-second capture starting 09:47:18.615 JST contains 21 one-second FPS
+samples (logged every 300 presents), ranging from 39.22 to 60.06, median 52.28.
+These are not whole-race FPS statistics. Game CPU samples range from 14.474 to
+19.682 ms/present. Two persistent pipeline waits inside the actual capture were
+106.558 and 128.542 ms. Buffered earlier history is excluded from these counts.
+No fatal/crash/disconnect lines were found in the bounded capture. Thermal
+status was 1 before and after, and the display-list cache reported no evictions.
+
+The 119.726-second playback audio capture decodes correctly, with no silence
+longer than 100 ms midway through capture at the -50 dB threshold. This is not
+a listening-based claim that all crackle or glitches are absent.
+
+A final log entry at 09:49:21.596 reports a 1,014 ms blocking socket receive on
+the game thread, near the capture boundary. Its exact scene is unconfirmed.
+Investigate deferred/cooperative completion while preserving guest network
+semantics; blindly shortening the timeout could break authentication.
+
+Private evidence: `owner-retro-online-094718-analysis.md`, matching log, audio,
+receipt and thermal snapshots under `work/android-pixel-comparison-20260925/`.
+
+## Android issue disposition and support
+
+Current reports were reviewed on 25 September. None of the following is closed
+by the Pixel result:
+
+- #321: ROG Phone 7S / Adreno 740 native launch crash; attached driver stack
+  requires analysis. No demonstrated correction in build 218.
+- #316 and related geometry reports: displaced character vertices on OnePlus
+  and other Adreno devices; CPU optimizations do not establish a renderer fix.
+- #320: Huawei Y9 Prime 2019 severe race slowdown, including an input-related
+  zero-FPS report. Supplied diagnostics need analysis; Pixel timings do not
+  establish improvement on this phone.
+- #319: physical-controller auto-acceleration on Retroid Pocket 6. Current
+  latch implementation belongs to the touch overlay. The clearer setting
+  label does not implement controller latching.
+- Discord notification-triggered slowdown remains unverified.
+
+Discord replies were posted and visibly verified in the RP6 thread
+(1550722646394536006) and notification-performance thread
+(1550583968964018227), correcting earlier fix expectations and requesting no
+new tests or logs. General and KartPad channel histories were reviewed too;
+this is not a claim that every historical support post has been processed.
+
+The owner explicitly requires publication of an updated APK before asking
+other users for targeted retests. Build 218 remains private. Next engineering
+work should analyze the existing Adreno crash/geometry evidence alongside the
+captured pipeline and network waits. Further Apple work remains deferred.
