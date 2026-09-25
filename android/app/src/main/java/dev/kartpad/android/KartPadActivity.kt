@@ -105,6 +105,7 @@ class KartPadActivity : SDLActivity() {
         ghostDownloaded = savedInstanceState?.getBoolean("ghost_downloaded", false) ?: false
         Os.setenv("KARTPAD_ANDROID_FILES_DIR", filesDir.absolutePath, true)
         Os.setenv("KARTPAD_ANDROID_CACHE_DIR", cacheDir.absolutePath, true)
+        KartPadMemoryProfile.configure(this)
         KartPadRendererDiagnostics.configure(this)
         if (BuildConfig.VERSION_NAME.contains("diagnostics")) Os.setenv("KARTPAD_FUNCTION_TIMING", "1", true)
         KartPadCharacterGraphicsTest.configure(this)

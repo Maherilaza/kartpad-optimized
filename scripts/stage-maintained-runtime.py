@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
-"""Stage the selected pinned runtime source without patch replay or cache mutation."""
+"""Stage the selected pinned runtime source without cache mutation."""
 from __future__ import annotations
 
 import argparse
 import hashlib
 import json
+import os
 import stat
 import sys
+import tempfile
 from pathlib import Path
 import shutil
 import subprocess
 
 PLATFORMS = ("macos", "ios", "android", "tvos")
+PLATFORM_PATCHES = {
+    "android": ("patches/wiicompiled-android-low-memory.patch",),
+}
 
 
 def git(root: Path, *args: str) -> str:
@@ -61,12 +66,9 @@ def maintained_files(source: Path) -> dict[str, Path]:
     return files
 
 
-def stage(repo: Path, platform: str, destination: Path) -> str:
-    if destination.exists() or destination.is_symlink():
-        raise ValueError(f"output already exists; choose a fresh path: {destination}")
-    source, actual = source_checkout(repo, platform, initialize=True)
-    files = maintained_files(source)
-    destination.mkdir(parents=True)
+def materialize(repo: Path, platform: str, files: dict[str, Path], destination: Path) -> None:
+    destination = destination.resolve()
+    destination.mkdir(parents=True, exist_ok=True)
     for name, original in files.items():
         target = destination / name
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -74,6 +76,23 @@ def stage(repo: Path, platform: str, destination: Path) -> str:
             target.symlink_to(original.readlink())
         else:
             shutil.copy2(original, target)
+    environment = os.environ.copy()
+    environment["GIT_CEILING_DIRECTORIES"] = str(destination.parent)
+    for relative in PLATFORM_PATCHES.get(platform, ()):
+        patch = repo / relative
+        if not patch.is_file():
+            raise ValueError(f"missing maintained runtime patch: {relative}")
+        subprocess.run(["git", "apply", "--check", str(patch)], cwd=destination,
+                       env=environment, check=True)
+        subprocess.run(["git", "apply", str(patch)], cwd=destination,
+                       env=environment, check=True)
+
+
+def stage(repo: Path, platform: str, destination: Path) -> str:
+    if destination.exists() or destination.is_symlink():
+        raise ValueError(f"output already exists; choose a fresh path: {destination}")
+    source, actual = source_checkout(repo, platform, initialize=True)
+    materialize(repo, platform, maintained_files(source), destination)
     return actual
 
 
@@ -87,27 +106,31 @@ def verify(repo: Path, platform: str, destination: Path) -> str:
     source, actual = source_checkout(repo, platform, initialize=False)
     if not destination.is_dir() or destination.is_symlink():
         raise ValueError(f"missing prepared source: {destination}; prepare a fresh runtime source")
-    files = maintained_files(source)
     generated = {PROFILE_HEADER, SSE2NEON_HEADER}
     if platform == "android":
         generated.add(ANDROID_TRACE_HEADER)
-    present = {p.relative_to(destination).as_posix() for p in destination.rglob("*")
-               if p.is_file() or p.is_symlink()}
-    expected = set(files) | generated
-    if present != expected:
-        raise ValueError(f"prepared source files differ (missing={sorted(expected - present)}, extra={sorted(present - expected)}); prepare a fresh runtime source")
-    for name, original in files.items():
-        if name in generated:
-            continue
-        prepared = destination / name
-        if original.is_symlink():
-            matches = prepared.is_symlink() and prepared.readlink() == original.readlink()
-        else:
-            matches = (not prepared.is_symlink() and prepared.is_file()
-                       and original.read_bytes() == prepared.read_bytes()
-                       and stat.S_IMODE(original.stat().st_mode) == stat.S_IMODE(prepared.stat().st_mode))
-        if not matches:
-            raise ValueError(f"prepared source differs: {name}; edit maintained source and prepare a fresh runtime source")
+    with tempfile.TemporaryDirectory(dir=destination.parent) as directory:
+        expected_root = Path(directory)
+        materialize(repo, platform, maintained_files(source), expected_root)
+        files = {p.relative_to(expected_root).as_posix(): p for p in expected_root.rglob("*")
+                 if p.is_file() or p.is_symlink()}
+        present = {p.relative_to(destination).as_posix() for p in destination.rglob("*")
+                   if p.is_file() or p.is_symlink()}
+        expected = set(files) | generated
+        if present != expected:
+            raise ValueError(f"prepared source files differ (missing={sorted(expected - present)}, extra={sorted(present - expected)}); prepare a fresh runtime source")
+        for name, original in files.items():
+            if name in generated:
+                continue
+            prepared = destination / name
+            if original.is_symlink():
+                matches = prepared.is_symlink() and prepared.readlink() == original.readlink()
+            else:
+                matches = (not prepared.is_symlink() and prepared.is_file()
+                           and original.read_bytes() == prepared.read_bytes()
+                           and stat.S_IMODE(original.stat().st_mode) == stat.S_IMODE(prepared.stat().st_mode))
+            if not matches:
+                raise ValueError(f"prepared source differs: {name}; edit maintained source and prepare a fresh runtime source")
     for name in generated:
         if (destination / name).is_symlink():
             raise ValueError(f"unexpected generated source symlink: {name}; prepare a fresh runtime source")
