@@ -20,8 +20,15 @@ library as 218 (`694b9e41…`, from the primary checkout's
   FPS overlay drawing, about 50 FPS and 8.4 ms game CPU per frame on the software
   renderer; no crash, fatal or restart in the log. No race was driven.
 - Not run: the API 29 emulator (no image installed; the gate's emulator cases are
-  covered by `scripts/test-android-pipeline-workers.py`) and any physical Android.
-  The Pixel was not connected, so code219 is **not installed** on it; it still has 218.
+  covered by `scripts/test-android-pipeline-workers.py`).
+- Pixel 9 Pro XL (`47181FDAS005KL`), 13:39 JST: the installed APK pulled first
+  matched archived 218 (`601f6e57…`) and had the same signer. `adb install -r`
+  succeeded with no uninstall, data clear or downgrade. The APK pulled afterward
+  matches code219 exactly; the original first-install date (6 September), data
+  directory and app user ID are unchanged, and the launcher shows Mario Kart Wii
+  and Retro Rewind "Ready to play". The release app denies `run-as`, so saves,
+  licence and identity were not byte-verified. No game was started on the phone.
+  Receipts: `work/android-pixel-code219-20260925/`.
 
 ## iPad Pro build 72
 
@@ -39,4 +46,3 @@ Private receipts are under `work/ios72-install-20260925/`.
 
 An AgePad task was running device sessions on the same iPad; the KartPad
 copies were paused while it held the device, and it was not interrupted.
-
