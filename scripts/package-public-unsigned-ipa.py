@@ -26,7 +26,7 @@ def main() -> int:
         "output",
         type=Path,
         nargs="?",
-        help="Output IPA path (defaults to artifacts/KartPad-v0.4.24-ios.1-unsigned.ipa)",
+        help="Output IPA path (defaults to artifacts/KartPad-v0.5.1-ios-unsigned.ipa)",
     )
     parser.add_argument("--dependency-build", type=Path, help="Original Xcode build containing dependency license files")
     parser.add_argument("--reference-root", type=Path, help="Pinned reference checkout root (normally repo/ref)")
@@ -40,7 +40,7 @@ def main() -> int:
     output = (
         args.output.resolve()
         if args.output
-        else repo / "artifacts/KartPad-v0.4.24-ios.1-unsigned.ipa"
+        else repo / "artifacts/KartPad-v0.5.1-ios-unsigned.ipa"
     )
     if subprocess.check_output(
         ["git", "-C", str(repo), "status", "--porcelain", "--untracked-files=all"],
