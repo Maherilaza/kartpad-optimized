@@ -119,3 +119,8 @@ handoff, two Discord replies were sent; no new GitHub issue replies were posted
 in this session. The latest public APK remains v0.5.0/code135. Performance
 comparisons cited in earlier records compare intermediate candidates, not a
 matched public-code135 versus private-code218 run.
+
+The [second review](android-second-review.md) supersedes two claims above:
+#321's stack is a crash in `vkCmdEndDebugUtilsLabelEXT` from the overlay debug
+group, still present in 218; #320 is a Mali-G51/API 29 phone that ran without
+pipeline workers. Both have proposed runtime patches, not device acceptance.
