@@ -6,6 +6,24 @@ REPO = Path(__file__).resolve().parents[1]
 
 
 class AndroidPublicReleaseTests(unittest.TestCase):
+    def test_every_push_publishes_a_source_fixture_prerelease(self):
+        workflow = (REPO / ".github/workflows/android-fixture-prerelease.yml").read_text()
+        build = (REPO / "scripts/build-android-ci-fixture.sh").read_text()
+        for required in (
+            "push:", "branches:", "'**'", "contents: write",
+            "./scripts/build-android-ci-fixture.sh", "gh release create",
+            "--prerelease", "--latest=false", "not a playable KartPad build",
+        ):
+            self.assertIn(required, workflow)
+        self.assertNotIn("secrets.", workflow)
+        for required in (
+            ":app:assembleDebug", "audit-android-package.sh",
+            "KARTPAD_ANDROID_VERSION_CODE", "KARTPAD_ANDROID_VERSION_NAME",
+        ):
+            self.assertIn(required, build)
+        for forbidden in ("kartpadGameRuntimeSource", "kartpadTranslatedShardManifest"):
+            self.assertNotIn(forbidden, build)
+
     def test_derivation_is_guarded_and_never_installs(self):
         source = (REPO / "scripts/derive-android-release-apk.sh").read_text()
         for required in ("audit-android-bundle.sh", "audit-android-package.sh",

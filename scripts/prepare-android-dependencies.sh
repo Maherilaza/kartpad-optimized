@@ -5,6 +5,22 @@ repo_root="$(git rev-parse --show-toplevel)"
 cache_root="$repo_root/.android-bootstrap/dependencies"
 mkdir -p "$cache_root" "$repo_root/android/app/libs"
 
+file_size() {
+  if [[ "$(uname -s)" == "Darwin" ]]; then
+    stat -f '%z' "$1"
+  else
+    stat -c '%s' "$1"
+  fi
+}
+
+sha256_file() {
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$1" | awk '{print $1}'
+  else
+    shasum -a 256 "$1" | awk '{print $1}'
+  fi
+}
+
 fetch_locked() {
   local url="$1"
   local output="$2"
@@ -14,8 +30,8 @@ fetch_locked() {
     curl --fail --location --show-error --progress-bar "$url" -o "$output"
   fi
   local actual_bytes actual_sha256
-  actual_bytes="$(stat -f '%z' "$output")"
-  actual_sha256="$(shasum -a 256 "$output" | awk '{print $1}')"
+  actual_bytes="$(file_size "$output")"
+  actual_sha256="$(sha256_file "$output")"
   if [[ "$actual_bytes" != "$expected_bytes" || "$actual_sha256" != "$expected_sha256" ]]; then
     echo "ERROR: locked dependency check failed for $(basename "$output")" >&2
     exit 1
@@ -81,7 +97,7 @@ if [[ ! -f "$minizip_root/CMakeLists.txt" ]]; then
   tar -xzf "$minizip_archive" -C "$temporary_minizip_root" --strip-components=1
   mv "$temporary_minizip_root" "$minizip_root"
 fi
-minizip_cmake_sha256="$(shasum -a 256 "$minizip_root/CMakeLists.txt" | awk '{print $1}')"
+minizip_cmake_sha256="$(sha256_file "$minizip_root/CMakeLists.txt")"
 if [[ "$minizip_cmake_sha256" != \
       "7ed446837e293dbb61dd4e9a49566bde6408c7acd95c815e50680aeef4d60695" ]]; then
   echo "ERROR: extracted minizip-ng source digest changed" >&2
@@ -100,7 +116,7 @@ if [[ ! -f "$mbedtls_root/CMakeLists.txt" ]]; then
   tar -xjf "$mbedtls_archive" -C "$temporary_mbedtls_root" --strip-components=1
   mv "$temporary_mbedtls_root" "$mbedtls_root"
 fi
-mbedtls_cmake_sha256="$(shasum -a 256 "$mbedtls_root/CMakeLists.txt" | awk '{print $1}')"
+mbedtls_cmake_sha256="$(sha256_file "$mbedtls_root/CMakeLists.txt")"
 if [[ "$mbedtls_cmake_sha256" != \
       "d2061d05fdd7fc6ebee7a1cd6fd6fbf4ebbf87ffb523a70125c7b4aeef98f3f4" ]]; then
   echo "ERROR: extracted Mbed TLS source digest changed" >&2
@@ -113,12 +129,12 @@ fetch_locked \
   "$bundletool_jar" 32505571 \
   675786493983787ffa11550bdb7c0715679a44e1643f3ff980a529e9c822595c
 
-echo "SDL3 Android AAR: $(shasum -a 256 "$repo_root/android/app/libs/SDL3-3.4.4.aar" | awk '{print $1}')"
-echo "Dawn archive: $(shasum -a 256 "$dawn_archive" | awk '{print $1}')"
+echo "SDL3 Android AAR: $(sha256_file "$repo_root/android/app/libs/SDL3-3.4.4.aar")"
+echo "Dawn archive: $(sha256_file "$dawn_archive")"
 echo "Dawn sanitized targets: $sanitized_targets_sha256"
-echo "minizip-ng archive: $(shasum -a 256 "$minizip_archive" | awk '{print $1}')"
-echo "Mbed TLS archive: $(shasum -a 256 "$mbedtls_archive" | awk '{print $1}')"
-echo "Android bundletool: $(shasum -a 256 "$bundletool_jar" | awk '{print $1}')"
+echo "minizip-ng archive: $(sha256_file "$minizip_archive")"
+echo "Mbed TLS archive: $(sha256_file "$mbedtls_archive")"
+echo "Android bundletool: $(sha256_file "$bundletool_jar")"
 echo "DAWN_ANDROID_ROOT=$dawn_root"
 echo "MINIZIP_ANDROID_ROOT=$minizip_root"
 echo "MBEDTLS_ANDROID_ROOT=$mbedtls_root"

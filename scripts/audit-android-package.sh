@@ -8,9 +8,23 @@ sdk_root="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$HOME/Library/Android/sdk}}"
 apk="${1:-$repo_root/android/app/build/outputs/apk/debug/app-debug.apk}"
 [[ -f "$apk" ]] || { echo "ERROR: APK does not exist: $apk" >&2; exit 1; }
 
+case "$(uname -s)" in
+  Darwin) ndk_host="darwin-x86_64" ;;
+  Linux) ndk_host="linux-x86_64" ;;
+  *) echo "ERROR: unsupported Android audit host: $(uname -s)" >&2; exit 1 ;;
+esac
+
+sha256_file() {
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$1" | awk '{print $1}'
+  else
+    shasum -a 256 "$1" | awk '{print $1}'
+  fi
+}
+
 aapt2="$sdk_root/build-tools/$KARTPAD_ANDROID_BUILD_TOOLS/aapt2"
 zipalign="$sdk_root/build-tools/$KARTPAD_ANDROID_BUILD_TOOLS/zipalign"
-readelf="$sdk_root/ndk/$KARTPAD_ANDROID_NDK/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf"
+readelf="$sdk_root/ndk/$KARTPAD_ANDROID_NDK/toolchains/llvm/prebuilt/$ndk_host/bin/llvm-readelf"
 for tool in "$aapt2" "$zipalign" "$readelf"; do
   [[ -x "$tool" ]] || { echo "ERROR: missing audit tool: $tool" >&2; exit 1; }
 done
@@ -249,4 +263,4 @@ if [[ "$key_markers" != "$expected_key_markers" ]]; then
 fi
 
 echo "Android APK audit passed."
-echo "apk_sha256=$(shasum -a 256 "$apk" | awk '{print $1}')"
+echo "apk_sha256=$(sha256_file "$apk")"
