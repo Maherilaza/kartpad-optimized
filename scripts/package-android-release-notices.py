@@ -105,7 +105,7 @@ def main() -> None:
         "ThirdPartyLicenses/Apache-2.0.txt": REPO / "ref/upstream/dolphin/Externals/Vulkan-Headers/LICENSES/Apache-2.0.txt",
         "ThirdPartyLicenses/Mbed-TLS.txt": REPO / ".android-bootstrap/dependencies/mbedtls-4.1.1/LICENSE",
         "ThirdPartyLicenses/Minizip-NG.txt": REPO / ".android-bootstrap/dependencies/minizip-ng-55db144e03027b43263e5ebcb599bf0878ba58de/LICENSE",
-        "ThirdPartyLicenses/Dawn-BSD.txt": REPO / ".android-bootstrap/dependencies/Dawn-13abc3bc-LICENSE.txt",
+        "ThirdPartyLicenses/Dawn-BSD.txt": REPO / ".android-bootstrap/dependencies/dawn-android-c6b4efde6de3/LICENSES/Dawn-LICENSE",
     }
     for label, filename in {
         "Abseil-Apache-2.0.txt": "abseil-cpp-src/LICENSE",
