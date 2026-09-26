@@ -4,6 +4,7 @@ from __future__ import annotations
 import importlib.util
 import hashlib
 import json
+import os
 import sys
 from pathlib import Path
 import stat
@@ -73,6 +74,18 @@ class MaintainedRuntimeStagingTests(unittest.TestCase):
             self.git(self.repo, "ls-files", "--stage"),
         )
 
+    def install_android_patch(self):
+        path = self.repo / STAGING.PLATFORM_PATCHES["android"][0]
+        path.parent.mkdir()
+        path.write_text("""diff --git a/aurora-main/lib/render.cpp b/aurora-main/lib/render.cpp
+index 59f09cd..f4bc033 100644
+--- a/aurora-main/lib/render.cpp
++++ b/aurora-main/lib/render.cpp
+@@ -1 +1 @@
+-void render() {}
++void render() { int constrained = 1; }
+""")
+
     def prepare_for_verification(self, platform="ios"):
         STAGING.stage(self.repo, platform, self.destination)
         sys.path.insert(0, str(SCRIPT.parents[1] / "builder"))
@@ -139,7 +152,10 @@ class MaintainedRuntimeStagingTests(unittest.TestCase):
         self.source.rename(android)
         self.source = android
         self.git(self.repo, "update-index", "--add", "--cacheinfo", f"160000,{self.revision},vendor/runtimes/android")
+        self.install_android_patch()
         self.prepare_for_verification("android")
+        self.assertEqual((self.destination / "aurora-main/lib/render.cpp").read_text(),
+                         "void render() { int constrained = 1; }\n")
         source = self.repo / "runtime/include/kartpad/android/trace_scope.h"
         source.parent.mkdir(parents=True)
         source.write_text("current trace header")
@@ -149,6 +165,22 @@ class MaintainedRuntimeStagingTests(unittest.TestCase):
         source.write_text("updated trace header")
         with self.assertRaisesRegex(ValueError, "Android trace header differs"):
             STAGING.verify(self.repo, "android", self.destination)
+
+    def test_android_patch_applies_to_relative_destination(self):
+        android = self.source.with_name("android")
+        self.source.rename(android)
+        self.source = android
+        self.git(self.repo, "update-index", "--add", "--cacheinfo",
+                 f"160000,{self.revision},vendor/runtimes/android")
+        self.install_android_patch()
+        previous = Path.cwd()
+        try:
+            os.chdir(self.root)
+            STAGING.stage(self.repo, "android", Path("relative"))
+        finally:
+            os.chdir(previous)
+        self.assertEqual((self.root / "relative/aurora-main/lib/render.cpp").read_text(),
+                         "void render() { int constrained = 1; }\n")
 
     def test_tracked_runtime_is_flattened_and_aurora_keeps_its_directory(self):
         before = self.source_snapshot()
